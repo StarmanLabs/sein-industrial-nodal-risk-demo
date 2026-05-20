@@ -39,6 +39,7 @@ jobs:
           if grep -RInE "ghp_|github_pat_|GITHUB_TOKEN|AWS_ACCESS_KEY|BEGIN RSA|BEGIN OPENSSH|api_key|apikey|client_secret|password|passwd|cookies|C[:][\\\\][\\\\][U]sers[\\\\][\\\\]|C[:]/[U]sers/|D[:][\\\\][\\\\]Cursos[\\\\][\\\\]|/[h]ome/|/[U]sers/" . \
             --exclude-dir=.git \
             --exclude-dir=assets \
+            --exclude='public-demo-security.yml' \
             --exclude='*.png'; then
             echo "Potential secret or local path found."
             exit 1
