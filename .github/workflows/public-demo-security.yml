@@ -48,7 +48,8 @@ jobs:
       - name: Validate demo data shape
         run: |
           python - <<'PY'
-          import pandas as pd
+          import csv
+          import json
           from pathlib import Path
 
           base = Path("data/public_demo")
@@ -62,16 +63,30 @@ jobs:
           if missing:
               raise SystemExit(f"Missing public demo files: {missing}")
 
-          profile = pd.read_csv(base / "barra_profile_demo.csv")
-          monthly = pd.read_csv(base / "barra_month_demo.csv")
-          system = pd.read_csv(base / "monthly_system_context_demo.csv")
+          def row_count(path):
+              with path.open(newline="", encoding="utf-8") as handle:
+                  reader = csv.reader(handle)
+                  rows = list(reader)
+              return max(len(rows) - 1, 0)
 
-          if len(profile) > 50:
-              raise SystemExit(f"Too many profile rows: {len(profile)}")
-          if len(monthly) > 2000:
-              raise SystemExit(f"Too many monthly rows: {len(monthly)}")
-          if len(system) != 36:
-              raise SystemExit(f"Unexpected system context rows: {len(system)}")
+          profile_rows = row_count(base / "barra_profile_demo.csv")
+          monthly_rows = row_count(base / "barra_month_demo.csv")
+          system_rows = row_count(base / "monthly_system_context_demo.csv")
+          manifest = json.loads((base / "public_demo_manifest.json").read_text(encoding="utf-8"))
+
+          if profile_rows > 50:
+              raise SystemExit(f"Too many profile rows: {profile_rows}")
+          if monthly_rows > 2000:
+              raise SystemExit(f"Too many monthly rows: {monthly_rows}")
+          if system_rows != 36:
+              raise SystemExit(f"Unexpected system context rows: {system_rows}")
+          expected = manifest.get("rows", {})
+          if expected.get("barra_profile_demo") != profile_rows:
+              raise SystemExit("Manifest/profile row mismatch")
+          if expected.get("barra_month_demo") != monthly_rows:
+              raise SystemExit("Manifest/monthly row mismatch")
+          if expected.get("monthly_system_context_demo") != system_rows:
+              raise SystemExit("Manifest/system row mismatch")
           PY
 
       - name: Validate pinned dependencies
