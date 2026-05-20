@@ -1,0 +1,86 @@
+name: Public Demo Security Gate
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  public-demo-security:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify public repository boundary
+        run: |
+          set -euo pipefail
+          forbidden_dirs=(
+            "data/raw"
+            "data/interim"
+            "data/manual"
+            "data/final"
+            "scripts"
+            "src"
+            "app"
+            "data_demo"
+            "browser_profiles"
+          )
+          for path in "${forbidden_dirs[@]}"; do
+            if [ -e "$path" ]; then
+              echo "Forbidden public path found: $path"
+              exit 1
+            fi
+          done
+
+      - name: Scan for obvious secrets and local paths
+        run: |
+          set -euo pipefail
+          if grep -RInE "ghp_|github_pat_|GITHUB_TOKEN|AWS_ACCESS_KEY|BEGIN RSA|BEGIN OPENSSH|api_key|apikey|client_secret|password|passwd|cookies|C[:][\\\\][\\\\][U]sers[\\\\][\\\\]|C[:]/[U]sers/|D[:][\\\\][\\\\]Cursos[\\\\][\\\\]|/[h]ome/|/[U]sers/" . \
+            --exclude-dir=.git \
+            --exclude-dir=assets \
+            --exclude='*.png'; then
+            echo "Potential secret or local path found."
+            exit 1
+          fi
+
+      - name: Validate demo data shape
+        run: |
+          python - <<'PY'
+          import pandas as pd
+          from pathlib import Path
+
+          base = Path("data/public_demo")
+          required = [
+              base / "barra_profile_demo.csv",
+              base / "barra_month_demo.csv",
+              base / "monthly_system_context_demo.csv",
+              base / "public_demo_manifest.json",
+          ]
+          missing = [str(path) for path in required if not path.exists()]
+          if missing:
+              raise SystemExit(f"Missing public demo files: {missing}")
+
+          profile = pd.read_csv(base / "barra_profile_demo.csv")
+          monthly = pd.read_csv(base / "barra_month_demo.csv")
+          system = pd.read_csv(base / "monthly_system_context_demo.csv")
+
+          if len(profile) > 50:
+              raise SystemExit(f"Too many profile rows: {len(profile)}")
+          if len(monthly) > 2000:
+              raise SystemExit(f"Too many monthly rows: {len(monthly)}")
+          if len(system) != 36:
+              raise SystemExit(f"Unexpected system context rows: {len(system)}")
+          PY
+
+      - name: Validate pinned dependencies
+        run: |
+          set -euo pipefail
+          while IFS= read -r line; do
+            [ -z "$line" ] && continue
+            case "$line" in \#*) continue ;; esac
+            if [[ "$line" != *"=="* ]]; then
+              echo "Dependency is not pinned: $line"
+              exit 1
+            fi
+          done < requirements.txt
