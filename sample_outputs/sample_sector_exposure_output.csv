@@ -1,0 +1,51 @@
+sector,contract_type,barra,avg_industrial_exposure_score,p90_industrial_exposure_score,priority_months,watchlist_months,dominant_driver
+agroindustry_seasonal,balanced_30pct_spot_ppa,HUAYLLACHO 15,58.97258856879715,69.51982454825881,0,11,price_level
+agroindustry_seasonal,balanced_30pct_spot_ppa,SAN IGNACIO 15,58.75181484419642,69.06216319532989,0,10,price_level
+agroindustry_seasonal,balanced_30pct_spot_ppa,SAN ANTONIO 15,58.725542725197066,69.06216319532989,0,10,price_level
+agroindustry_seasonal,balanced_30pct_spot_ppa,ZORRITOS 220,58.53478481915877,68.72115784081285,0,10,price_level
+agroindustry_seasonal,balanced_30pct_spot_ppa,PLANTAETANOL 60,59.09799620680841,68.85929617280078,0,9,price_level
+agroindustry_seasonal,balanced_30pct_spot_ppa,NCTUMBES60,58.35732107602382,68.93252415961159,0,10,price_level
+agroindustry_seasonal,balanced_30pct_spot_ppa,TINTAYA EXISTENTE 138,57.2129486856842,67.78792809920486,0,8,price_level
+agroindustry_seasonal,balanced_30pct_spot_ppa,MISAPUQUIO 33,57.592304151327326,68.1509123318546,0,7,price_level
+agroindustry_seasonal,balanced_30pct_spot_ppa,GE1 33,57.42867063554013,67.12545648068831,0,8,price_level
+agroindustry_seasonal,balanced_30pct_spot_ppa,TINTAYA NUEVA 220,56.84335654620869,67.22265609890651,0,8,price_level
+agroindustry_seasonal,balanced_30pct_spot_ppa,TALARA 220,56.92786053639927,65.86582475222752,0,8,price_level
+agroindustry_seasonal,balanced_30pct_spot_ppa,TALARA13.2,56.623070993707564,66.10290660960047,0,8,price_level
+agroindustry_seasonal,balanced_30pct_spot_ppa,PIURA OESTE 220,56.93580723126919,66.24746749839787,0,6,price_level
+agroindustry_seasonal,balanced_30pct_spot_ppa,BELAUNDE 138,56.2663412109203,65.20919035105113,0,5,price_level
+agroindustry_seasonal,balanced_30pct_spot_ppa,GALLITO CIEGO 60,56.3635533600741,65.32027333670034,0,4,price_level
+agroindustry_seasonal,balanced_30pct_spot_ppa,VALLE DEL CHIRA 220,54.93558807672592,65.03888649261987,0,2,price_level
+agroindustry_seasonal,balanced_30pct_spot_ppa,PARIAC 66,53.721438403421,63.699514525043696,0,1,price_level
+agroindustry_seasonal,balanced_30pct_spot_ppa,JULIACA10,52.192016345051805,62.75066695170334,0,2,price_level
+agroindustry_seasonal,balanced_30pct_spot_ppa,JAEN 138,51.49968576766915,61.89224211161552,0,1,price_level
+agroindustry_seasonal,balanced_30pct_spot_ppa,TOCACHE 138,48.72833286813566,57.9497975151006,0,0,price_level
+agroindustry_seasonal,fixed_reference_ppa,PLANTAETANOL 60,41.3440228468783,50.91407225087789,0,0,price_level
+agroindustry_seasonal,fixed_reference_ppa,ZORRITOS 220,41.12672115785934,51.02788524681125,0,0,price_level
+agroindustry_seasonal,fixed_reference_ppa,HUAYLLACHO 15,41.21712449101008,50.62983882940635,0,0,price_level
+agroindustry_seasonal,fixed_reference_ppa,NCTUMBES60,40.98210585788516,51.11754430837641,0,0,price_level
+agroindustry_seasonal,fixed_reference_ppa,SAN IGNACIO 15,41.07428100589708,50.35492248340559,0,0,price_level
+agroindustry_seasonal,fixed_reference_ppa,SAN ANTONIO 15,41.06230560960727,50.35492248340559,0,0,price_level
+agroindustry_seasonal,fixed_reference_ppa,TINTAYA EXISTENTE 138,40.57876724787853,50.17921734956056,0,0,price_level
+agroindustry_seasonal,fixed_reference_ppa,GE1 33,40.71217647287327,50.35709933783117,0,0,price_level
+agroindustry_seasonal,fixed_reference_ppa,MISAPUQUIO 33,40.42011587128363,50.09107450759479,0,0,price_level
+agroindustry_seasonal,fixed_reference_ppa,TINTAYA NUEVA 220,40.3866933339489,49.85738208716661,0,0,price_level
+agroindustry_seasonal,fixed_reference_ppa,PIURA OESTE 220,40.44668938696165,50.52287363960377,0,0,price_level
+agroindustry_seasonal,fixed_reference_ppa,BELAUNDE 138,40.38432279701504,49.62715946447241,0,0,price_level
+agroindustry_seasonal,fixed_reference_ppa,TALARA 220,40.39597866532001,50.19230674632647,0,0,price_level
+agroindustry_seasonal,fixed_reference_ppa,TALARA13.2,40.24139939283837,50.33120212979267,0,0,price_level
+agroindustry_seasonal,fixed_reference_ppa,GALLITO CIEGO 60,40.37460652613766,49.421047097923534,0,0,price_level
+agroindustry_seasonal,fixed_reference_ppa,PARIAC 66,37.1850505082782,46.84455856057507,0,0,price_level
+agroindustry_seasonal,fixed_reference_ppa,VALLE DEL CHIRA 220,37.23860450721328,46.93154620729776,0,0,price_level
+agroindustry_seasonal,fixed_reference_ppa,JULIACA10,36.272548404005626,45.427203313258055,0,0,price_level
+agroindustry_seasonal,fixed_reference_ppa,JAEN 138,35.068978523368884,45.0487076666854,0,0,price_level
+agroindustry_seasonal,fixed_reference_ppa,TOCACHE 138,33.14683799423273,42.20537986374845,0,0,price_level
+agroindustry_seasonal,full_spot_exposure,PLANTAETANOL 60,64.13669724291417,74.04223040050022,0,18,price_level
+agroindustry_seasonal,full_spot_exposure,HUAYLLACHO 15,64.13934340910924,74.40840071384687,0,17,price_level
+agroindustry_seasonal,full_spot_exposure,SAN IGNACIO 15,63.94873033948287,74.05399993002376,0,17,price_level
+agroindustry_seasonal,full_spot_exposure,SAN ANTONIO 15,63.93043823997669,74.05399993002376,0,17,price_level
+agroindustry_seasonal,full_spot_exposure,ZORRITOS 220,63.72892595506806,74.51297626203609,0,17,price_level
+agroindustry_seasonal,full_spot_exposure,NCTUMBES60,63.56757381747769,74.63521165767779,0,16,price_level
+agroindustry_seasonal,full_spot_exposure,GE1 33,62.78529406754608,73.416389245116,0,17,price_level
+agroindustry_seasonal,full_spot_exposure,MISAPUQUIO 33,63.20133693953265,73.19946741783956,0,15,price_level
+agroindustry_seasonal,full_spot_exposure,TINTAYA EXISTENTE 138,63.05938374728416,73.35469066940357,0,15,price_level
+agroindustry_seasonal,full_spot_exposure,TINTAYA NUEVA 220,62.72163988951089,72.85764071789912,0,15,price_level

@@ -1,0 +1,77 @@
+{
+  "date_created_utc": "2026-05-20T21:54:13.225014+00:00",
+  "source_files_used": [
+    "data/final/product_barra_priority_layer.csv",
+    "data/final/barra_month_decision_panel.csv",
+    "data/final/monthly_system_regime.csv",
+    "data/audit/top50_publication_case_review.csv",
+    "data/audit/final_public_case_selection.csv"
+  ],
+  "output_files_created": [
+    "data/public_demo/barra_profile_demo.csv",
+    "data/public_demo/barra_month_demo.csv",
+    "data/public_demo/monthly_system_context_demo.csv",
+    "product/public_repo/data/public_demo/barra_profile_demo.csv",
+    "product/public_repo/data/public_demo/barra_month_demo.csv",
+    "product/public_repo/data/public_demo/monthly_system_context_demo.csv"
+  ],
+  "rows": {
+    "barra_profile_demo": 19,
+    "barra_month_demo": 650,
+    "monthly_system_context_demo": 36
+  },
+  "columns": {
+    "barra_profile_demo": [
+      "barra",
+      "voltage_kv",
+      "topology_context",
+      "topology_context_type",
+      "nodal_price_stress_score",
+      "system_adjusted_nodal_risk_score",
+      "due_diligence_tier",
+      "priority_score",
+      "robustness_label",
+      "topology_evidence_grade",
+      "main_driver",
+      "persistence_label",
+      "publication_readiness",
+      "final_public_role",
+      "story_use",
+      "outlier_pattern",
+      "public_story_angle",
+      "recommended_next_step",
+      "claim_boundary"
+    ],
+    "barra_month_demo": [
+      "barra",
+      "year",
+      "month",
+      "month_label",
+      "voltage_kv",
+      "nodal_price_stress_score",
+      "system_adjusted_nodal_risk_score",
+      "monthly_nodal_stress_rank",
+      "due_diligence_tier",
+      "data_quality_score",
+      "low_information_flag",
+      "main_driver",
+      "mean_price",
+      "p95_price",
+      "volatility_metric",
+      "critical_window_hours",
+      "topology_evidence_grade"
+    ],
+    "monthly_system_context_demo": [
+      "month_label",
+      "system_regime_score"
+    ]
+  },
+  "sanitization_rules": [
+    "Use selected public-ready and caveated demo cases only.",
+    "Expose public metric names instead of internal acronym-led labels.",
+    "Round numeric screening scores for public readability.",
+    "Exclude raw, interim, manual topology and full final datasets.",
+    "Use precomputed demo outputs; do not expose raw-to-score construction logic in public repo."
+  ],
+  "claim_boundary": "The demo is a screening and due-diligence prioritization layer, not a causal grid diagnosis, forward price model, billing estimate, engineering network study or investment recommendation."
+}

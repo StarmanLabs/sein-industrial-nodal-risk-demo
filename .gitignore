@@ -1,0 +1,54 @@
+# Python and Streamlit runtime artifacts
+__pycache__/
+*.py[cod]
+.streamlit/secrets.toml
+
+# Local environments
+.venv/
+venv/
+env/
+
+# Secrets and credentials
+.env
+.env.*
+credentials.json
+token.json
+*.pem
+*.key
+*.p12
+*.pfx
+*.secret
+credentials*
+secrets*
+token*
+*tokens*
+
+# Private project layers that must not be copied into the public demo
+data/raw/
+data/interim/
+data/final/
+data/manual/
+scripts/
+src/
+notebooks/
+private/
+browser_profiles/
+.chrome/
+.chromium/
+.firefox/
+.playwright/
+.selenium/
+
+# Local machine artifacts
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.bak
+*.zip
+*.rar
+*.7z
+*.sqlite
+*.db
+*.parquet
+*.xlsx
