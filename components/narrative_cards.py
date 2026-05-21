@@ -70,19 +70,15 @@ def product_sidebar() -> None:
     st.sidebar.title("SEIN Nodal Risk")
     st.sidebar.caption("Due diligence industrial")
     st.sidebar.markdown(
-        """
-<nav class="sein-custom-nav">
-  <a class="sein-nav-link" href="/" target="_self">Inicio</a>
-  <a class="sein-nav-link" href="/Resumen_Ejecutivo" target="_self">Resumen Ejecutivo</a>
-  <a class="sein-nav-link" href="/Ranking_de_Prioridad" target="_self">Ranking de Prioridad</a>
-  <a class="sein-nav-link" href="/ICPI_vs_OANRI" target="_self">ICPI vs OANRI</a>
-  <a class="sein-nav-link" href="/Watchlist_Mensual" target="_self">Watchlist Mensual</a>
-  <a class="sein-nav-link" href="/Exposicion_Industrial" target="_self">Exposición Industrial</a>
-  <a class="sein-nav-link" href="/Caso_de_Estudio" target="_self">Caso de Estudio</a>
-</nav>
-""",
+        '<a class="sein-nav-link" href="/" target="_self">Inicio</a>',
         unsafe_allow_html=True,
     )
+    st.sidebar.page_link("pages/1_Resumen_Ejecutivo.py", label="Resumen Ejecutivo")
+    st.sidebar.page_link("pages/2_Ranking_de_Prioridad.py", label="Ranking de Prioridad")
+    st.sidebar.page_link("pages/3_ICPI_vs_OANRI.py", label="ICPI vs OANRI")
+    st.sidebar.page_link("pages/4_Watchlist_Mensual.py", label="Watchlist Mensual")
+    st.sidebar.page_link("pages/5_Exposicion_Industrial.py", label="Exposición Industrial")
+    st.sidebar.page_link("pages/6_Caso_de_Estudio.py", label="Caso de Estudio")
     st.sidebar.divider()
     st.sidebar.caption(
         "Screening analítico para priorizar revisión industrial."
