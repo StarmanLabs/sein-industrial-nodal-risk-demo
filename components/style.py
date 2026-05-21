@@ -66,6 +66,27 @@ def inject_global_style() -> None:
   background: #e1e9f0;
 }
 
+.sein-custom-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+  margin: 0.75rem 0 0.9rem 0;
+}
+
+.sein-nav-link {
+  display: block;
+  text-decoration: none !important;
+  color: #3c4858 !important;
+  font-weight: 650;
+  border-radius: 8px;
+  padding: 0.62rem 0.65rem;
+}
+
+.sein-nav-link:hover {
+  background: #e1e9f0;
+  color: var(--sein-navy) !important;
+}
+
 .block-container {
   max-width: 1400px;
   padding-top: 2.4rem;
