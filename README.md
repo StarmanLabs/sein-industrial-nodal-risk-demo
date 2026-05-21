@@ -6,6 +6,10 @@ It transforms COES nodal marginal-price outputs into a barra-month analytical pa
 
 ## Interactive Demo
 
+Live app:
+
+https://sein-industrial-nodal-risk-demo-edaw4ndep4pm9plvudnyov.streamlit.app/
+
 Run locally:
 
 ```bash

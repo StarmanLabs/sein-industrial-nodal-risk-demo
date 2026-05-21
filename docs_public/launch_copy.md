@@ -14,6 +14,12 @@ Controlled public demo of a decision-support dashboard for industrial due dilige
 SEIN Industrial Nodal Risk Intelligence converts sanitized nodal marginal-price signals into a due-diligence decision queue for industrial electricity exposure analysis in Peru.
 ```
 
+## Live Demo URL
+
+```text
+https://sein-industrial-nodal-risk-demo-edaw4ndep4pm9plvudnyov.streamlit.app/
+```
+
 ## Portfolio One-Liner
 
 ```text

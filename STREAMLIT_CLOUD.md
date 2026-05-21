@@ -24,6 +24,12 @@ Use these settings:
 | Python dependencies | `requirements.txt` |
 | Secrets | none required |
 
+## Live App
+
+```text
+https://sein-industrial-nodal-risk-demo-edaw4ndep4pm9plvudnyov.streamlit.app/
+```
+
 ## Pre-Deploy Check
 
 Before connecting the repository to Streamlit Cloud, confirm the public repository contains:
