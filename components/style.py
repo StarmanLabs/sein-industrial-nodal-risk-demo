@@ -42,10 +42,6 @@ def inject_global_style() -> None:
   border-right: 1px solid var(--sein-line);
 }
 
-[data-testid="stSidebarNav"] {
-  display: none;
-}
-
 [data-testid="stSidebar"] h1 {
   font-size: 1.35rem;
   letter-spacing: 0;

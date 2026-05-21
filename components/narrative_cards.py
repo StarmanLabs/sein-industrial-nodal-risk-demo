@@ -69,16 +69,6 @@ def product_sidebar() -> None:
     inject_global_style()
     st.sidebar.title("SEIN Nodal Risk")
     st.sidebar.caption("Due diligence industrial")
-    st.sidebar.markdown(
-        '<a class="sein-nav-link" href="/" target="_self">Inicio</a>',
-        unsafe_allow_html=True,
-    )
-    st.sidebar.page_link("pages/1_Resumen_Ejecutivo.py", label="Resumen Ejecutivo")
-    st.sidebar.page_link("pages/2_Ranking_de_Prioridad.py", label="Ranking de Prioridad")
-    st.sidebar.page_link("pages/3_ICPI_vs_OANRI.py", label="ICPI vs OANRI")
-    st.sidebar.page_link("pages/4_Watchlist_Mensual.py", label="Watchlist Mensual")
-    st.sidebar.page_link("pages/5_Exposicion_Industrial.py", label="Exposición Industrial")
-    st.sidebar.page_link("pages/6_Caso_de_Estudio.py", label="Caso de Estudio")
     st.sidebar.divider()
     st.sidebar.caption(
         "Screening analítico para priorizar revisión industrial."
