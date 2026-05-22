@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import pandas as pd
 import plotly.express as px
@@ -22,8 +22,8 @@ PRIORITY_COLORS = {
 }
 
 METRIC_LABELS = {
-    "avg_oanri": "OANRI promedio",
-    "avg_icpi": "ICPI promedio",
+    "avg_oanri": "Prioridad operativa promedio",
+    "avg_icpi": "Estrés nodal promedio",
 }
 
 CONTRACT_LABELS = {
@@ -151,15 +151,15 @@ def icpi_oanri_scatter(df: pd.DataFrame):
         size="decision_priority_score",
         hover_name="barra",
         hover_data=hover_cols,
-        title="Mapa de señal ICPI vs OANRI: cola de due diligence por barra",
+        title="Mapa de señal Mapa de Señales: cola de due diligence por barra",
         color_discrete_map=PRIORITY_COLORS,
         labels={
-            "avg_icpi": "ICPI promedio",
-            "avg_oanri": "OANRI promedio",
+            "avg_icpi": "Estrés nodal promedio",
+            "avg_oanri": "Prioridad operativa promedio",
             color_col: "Prioridad",
             "decision_priority_score": "Score de prioridad",
-            "rank_icpi": "Ranking ICPI",
-            "rank_oanri": "Ranking OANRI",
+            "rank_icpi": "Ranking estrés nodal",
+            "rank_oanri": "Ranking prioridad operativa",
             "evidence_grade": "Grado de evidencia",
             "robustness_flag": "Robustez",
             "robustness_flag_es": "Robustez",
@@ -174,7 +174,7 @@ def icpi_oanri_scatter(df: pd.DataFrame):
         line_width=1,
         line_dash="dot",
         line_color="#9aa4b2",
-        annotation_text="ICPI mediano",
+        annotation_text="Estrés mediano",
         annotation_position="top left",
     )
     fig.add_hline(
@@ -182,7 +182,7 @@ def icpi_oanri_scatter(df: pd.DataFrame):
         line_width=1,
         line_dash="dot",
         line_color="#9aa4b2",
-        annotation_text="OANRI mediano",
+        annotation_text="Prioridad mediana",
         annotation_position="bottom left",
     )
     quadrant_annotations = [
@@ -208,7 +208,7 @@ def icpi_oanri_scatter(df: pd.DataFrame):
         )
     fig.update_traces(
         marker={"line": {"width": 0.7, "color": "#ffffff"}, "opacity": 0.86},
-        hovertemplate="<b>%{hovertext}</b><br>ICPI prom.: %{x:.1f}<br>OANRI prom.: %{y:.1f}<extra></extra>",
+        hovertemplate="<b>%{hovertext}</b><br>Estrés nodal: %{x:.1f}<br>Prioridad operativa: %{y:.1f}<extra></extra>",
     )
     return apply_chart_style(fig, height=650)
 
@@ -232,12 +232,12 @@ def system_regime_line(df: pd.DataFrame):
 def barra_month_line(df: pd.DataFrame, barra: str):
     data = df[df["barra"] == barra].sort_values("month").copy()
     data["month_label"] = data["month"].dt.strftime("%Y-%m")
-    data["Estrés nodal relativo (ICPI)"] = data["ICPI_v8"]
-    data["Prioridad ajustada por sistema (OANRI)"] = data["OANRI_v10"]
+    data["Estrés nodal relativo (estrés nodal)"] = data["Estrés nodal"]
+    data["Prioridad operativa"] = data["Prioridad operativa"]
     fig = px.line(
         data,
         x="month_label",
-        y=["Estrés nodal relativo (ICPI)", "Prioridad ajustada por sistema (OANRI)"],
+        y=["Estrés nodal relativo (estrés nodal)", "Prioridad operativa"],
         markers=True,
         title=f"Evolución mensual de señal - {barra}",
         labels={
@@ -246,8 +246,8 @@ def barra_month_line(df: pd.DataFrame, barra: str):
             "variable": "Indicador",
         },
         color_discrete_map={
-            "Estrés nodal relativo (ICPI)": "#173b57",
-            "Prioridad ajustada por sistema (OANRI)": "#c5524a",
+            "Estrés nodal relativo (estrés nodal)": "#173b57",
+            "Prioridad operativa": "#c5524a",
         },
     )
     fig.update_xaxes(type="category")
@@ -269,9 +269,9 @@ def barra_profile_score_bars(row: pd.Series):
     metrics = pd.DataFrame(
         {
             "Métrica": [
-                "ICPI promedio",
-                "OANRI promedio",
-                "OANRI p90",
+                "Estrés nodal promedio",
+                "Prioridad operativa promedio",
+                "Prioridad operativa p90",
                 "Score prioridad",
             ],
             "Valor": [
@@ -347,7 +347,7 @@ def watchlist_heatmap(df: pd.DataFrame, order: list[str] | None = None):
     data = df.pivot_table(
         index="barra",
         columns="month_label",
-        values="OANRI_v10",
+        values="Prioridad operativa",
         aggfunc="mean",
     )
     if order:
@@ -357,8 +357,8 @@ def watchlist_heatmap(df: pd.DataFrame, order: list[str] | None = None):
         data,
         aspect="auto",
         color_continuous_scale=HEAT_SCALE,
-        title="Mapa de calor mensual de watchlist - OANRI",
-        labels={"color": "OANRI"},
+        title="Mapa de calor mensual de watchlist - prioridad operativa",
+        labels={"color": "Prioridad operativa"},
     )
     fig.update_xaxes(title="Mes", type="category")
     fig.update_yaxes(title="Barra")
@@ -424,3 +424,4 @@ def contract_comparison_chart(df: pd.DataFrame):
     )
     fig.update_traces(marker_line_width=0, hovertemplate="<b>%{y}</b><br>Score prom.: %{x:.1f}<extra></extra>")
     return apply_chart_style(fig, height=360)
+

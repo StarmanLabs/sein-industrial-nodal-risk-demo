@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import sys
 from pathlib import Path
@@ -78,7 +78,7 @@ with cols[1]:
 with cols[2]:
     metric_card("Filas top 20", f"{len(watchlist):,.0f}", "barra-mes")
 with cols[3]:
-    metric_card("Máx. OANRI", f"{watchlist['OANRI_v10'].max():.1f}", "episodio más alto", kind="warning")
+    metric_card("Máx. prioridad operativa", f"{watchlist['Prioridad operativa'].max():.1f}", "episodio más alto", kind="warning")
 
 insight_grid(
     [
@@ -89,7 +89,7 @@ insight_grid(
         ),
         (
             "Cómo leer el color",
-            "Color más intenso significa OANRI mensual más alto: ese mes la barra tuvo mayor prioridad relativa dentro del sistema.",
+            "Color más intenso significa prioridad operativa mensual más alto: ese mes la barra tuvo mayor prioridad relativa dentro del sistema.",
             "evidence",
         ),
         (
@@ -113,7 +113,7 @@ st.plotly_chart(watchlist_heatmap(heatmap_data, order=ordered_barras), use_conta
 
 section_header(
     "Lectura por barra",
-    "Selecciona una barra para ver evolución ICPI/OANRI y clasificar persistencia vs episodios.",
+    "Selecciona una barra para ver evolución estrés nodal/prioridad operativa y clasificar persistencia vs episodios.",
 )
 selected_barra = barra_selector(heatmap_data, key="watchlist_barra")
 if selected_barra and not panel.empty:
@@ -127,8 +127,8 @@ compact_table(
     [
         "month",
         "barra",
-        "ICPI_v8",
-        "OANRI_v10",
+        "Estrés nodal",
+        "Prioridad operativa",
         "ranking_mensual_v10",
         "decision_tier",
         "primary_driver",

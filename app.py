@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import streamlit as st
 
@@ -67,7 +67,7 @@ def render_inicio() -> None:
 
     hero_header(
         "Convierte señales nodales del SEIN en una cola de due diligence industrial",
-        "Integra precios marginales COES, ICPI/OANRI, robustez, watchlists mensuales, "
+        "Integra precios marginales COES, estrés nodal, prioridad operativa, robustez, watchlists mensuales, "
         "escenarios industriales y evidencia topológica revisada para decidir qué barras "
         "merecen revisión primero.",
     )
@@ -112,7 +112,7 @@ def render_inicio() -> None:
 
     section_header("Qué significa due diligence en este dashboard")
     due_diligence_definition_grid()
-    section_header("Con qué datos se construyen ICPI y OANRI")
+    section_header("Con qué datos se construyen Estrés nodal y Prioridad operativa")
     methodology_definition_grid()
     section_header("Guía rápida de lectura")
     indicator_definition_grid()
@@ -120,7 +120,7 @@ def render_inicio() -> None:
     priority_system_legend()
     action_panel(
         "Ruta recomendada de uso",
-        "Empieza en Resumen Ejecutivo, usa Ranking como cola de trabajo, ICPI vs OANRI como mapa estratégico, Watchlist para persistencia temporal, Exposición Industrial para escenarios sectoriales y Caso de Estudio para justificar una barra específica.",
+        "Empieza en Resumen Ejecutivo, usa Ranking como cola de trabajo, Mapa de Señales como vista estratégica, Watchlist para persistencia temporal, Exposición Industrial para escenarios sectoriales y Caso de Estudio para justificar una barra específica.",
     )
 
 
@@ -150,8 +150,8 @@ def render_resumen() -> None:
     top_icpi = profiles.sort_values("rank_icpi", na_position="last").head(1).iloc[0]
     insight_grid(
         [
-            ("Hallazgo ejecutivo", f"{len(priority_ab):,.0f} barras entran a la cola A/B. Lideran {top_oanri['barra']} por OANRI y {top_icpi['barra']} por ICPI.", "decision"),
-            ("Por qué importa", "ICPI captura señal nodal relativa; OANRI añade lectura de régimen operativo para priorizar revisión.", "evidence"),
+            ("Hallazgo ejecutivo", f"{len(priority_ab):,.0f} barras entran a la cola A/B. Lideran {top_oanri['barra']} por prioridad operativa y {top_icpi['barra']} por estrés nodal.", "decision"),
+            ("Por qué importa", "Estrés nodal captura señal relativa por barra; prioridad operativa añade lectura de régimen del sistema para priorizar revisión.", "evidence"),
             ("Siguiente acción", "Abrir Prioridad A, contrastar exposición industrial y revisar evidencia topológica antes de bajar a casos.", "action"),
             ("Lectura correcta", "El ranking ordena una cola de due diligence: sirve para decidir dónde mirar primero y con qué hipótesis.", "caveat"),
         ]
@@ -160,9 +160,9 @@ def render_resumen() -> None:
     section_header("Barras que dominan la cola ejecutiva")
     left, right = st.columns(2)
     with left:
-        st.plotly_chart(top_bar_chart(profiles, "avg_oanri", "barra", "Top 10 barras por OANRI"), use_container_width=True)
+        st.plotly_chart(top_bar_chart(profiles, "avg_oanri", "barra", "Top 10 barras por prioridad operativa"), use_container_width=True)
     with right:
-        st.plotly_chart(top_bar_chart(profiles, "avg_icpi", "barra", "Top 10 barras por ICPI"), use_container_width=True)
+        st.plotly_chart(top_bar_chart(profiles, "avg_icpi", "barra", "Top 10 barras por estrés nodal"), use_container_width=True)
     if not regime.empty:
         section_header("Régimen operativo mensual")
         st.plotly_chart(system_regime_line(regime), use_container_width=True)
@@ -215,7 +215,7 @@ def render_ranking() -> None:
 
 
 def render_icpi_oanri() -> None:
-    page_header("ICPI vs OANRI", "¿Qué barras combinan estrés nodal relativo con relevancia ajustada por régimen operativo?")
+    page_header("Mapa de Señales", "¿Qué barras combinan estrés nodal relativo con prioridad operativa?")
     df = load_product_layer()
     panel = load_monthly_panel()
     if df.empty:
@@ -229,11 +229,11 @@ def render_icpi_oanri() -> None:
     evidence_a = int(df["evidence_grade"].astype(str).str.upper().eq("A").sum())
     context_summary_panel(
         "Mapa de decisión: señal local vs prioridad ajustada",
-        f"Panel COES mensual {start_month} a {end_month}. Cada punto es una barra; la posición muestra ICPI/OANRI promedio, el color muestra prioridad y el tamaño resume el score.",
+        f"Panel COES mensual {start_month} a {end_month}. Cada punto es una barra; la posición muestra estrés nodal y prioridad operativa promedio, el color muestra prioridad y el tamaño resume el score.",
         [
             ("Barras SEIN", f"{df['barra'].nunique():,.0f}", "muestra pública"),
             ("Prioridad A/B", f"{priority_ab:,.0f}", f"{priority_ab / max(len(df), 1):.0%} del universo"),
-            ("Mediana ICPI", f"{float(df['avg_icpi'].median()):,.1f}", "línea vertical"),
+            ("Mediana estrés nodal", f"{float(df['avg_icpi'].median()):,.1f}", "línea vertical"),
             ("Evidencia A", f"{evidence_a:,.0f}", "identidad y contexto cerrados"),
         ],
     )
@@ -241,10 +241,10 @@ def render_icpi_oanri() -> None:
     section_header("Cómo leer los cuadrantes")
     decision_matrix(
         [
-            ("ICPI alto + OANRI alto", "Candidata fuerte. La señal local y la lectura ajustada por sistema apuntan en la misma dirección.", "high"),
-            ("ICPI alto + OANRI menor", "Señal local relevante. Revisar persistencia, meses extremos, contrato y evidencia topológica.", "local"),
-            ("ICPI menor + OANRI alto", "Sensibilidad a régimen. Revisar si la prioridad aparece en meses de presión sistémica.", "system"),
-            ("ICPI menor + OANRI menor", "Monitoreo base. Útil para contexto y comparación dentro del universo completo.", "monitor"),
+            ("Estrés alto + prioridad alta", "Candidata fuerte. La señal local y la lectura operativa apuntan en la misma dirección.", "high"),
+            ("Estrés alto + prioridad menor", "Señal local relevante. Revisar persistencia, meses extremos, contrato y evidencia topológica.", "local"),
+            ("Estrés menor + prioridad alta", "Sensibilidad a régimen. Revisar si la prioridad aparece en meses de presión sistémica.", "system"),
+            ("Estrés menor + prioridad menor", "Monitoreo base. Útil para contexto y comparación dentro del universo completo.", "monitor"),
         ]
     )
     section_header("Candidatas principales")
@@ -292,9 +292,9 @@ def render_watchlist() -> None:
     with cols[2]:
         metric_card("Filas top", f"{len(watchlist):,.0f}", "barra-mes")
     with cols[3]:
-        metric_card("Máx. OANRI", f"{watchlist['OANRI_v10'].max():.1f}", "episodio más alto", kind="warning")
+        metric_card("Máx. prioridad operativa", f"{watchlist['Prioridad operativa'].max():.1f}", "episodio más alto", kind="warning")
 
-    section_header("Mapa mensual de watchlist", "Color más intenso significa OANRI mensual más alto. Filas repetidamente intensas sugieren persistencia; bloques aislados sugieren episodios puntuales.")
+    section_header("Mapa mensual de watchlist", "Color más intenso significa prioridad operativa mensual más alta. Filas repetidamente intensas sugieren persistencia; bloques aislados sugieren episodios puntuales.")
     st.plotly_chart(watchlist_heatmap(heatmap_data, order=ordered_barras), use_container_width=True)
     section_header("Lectura por barra")
     selected_barra = barra_selector(heatmap_data, key="watchlist_barra")
@@ -304,7 +304,7 @@ def render_watchlist() -> None:
         st.plotly_chart(barra_month_line(panel, selected_barra), use_container_width=True)
 
     section_header("Top mensual de señales")
-    compact_table(watchlist.sort_values(["month", "ranking_mensual_v10"]).head(120), ["month", "barra", "ICPI_v8", "OANRI_v10", "ranking_mensual_v10", "decision_tier", "primary_driver"])
+    compact_table(watchlist.sort_values(["month", "ranking_mensual_v10"]).head(120), ["month", "barra", "Estrés nodal", "Prioridad operativa", "ranking_mensual_v10", "decision_tier", "primary_driver"])
 
 
 def render_exposicion() -> None:
@@ -387,9 +387,9 @@ def render_caso() -> None:
     with cols[1]:
         metric_card("Score", f"{row['decision_priority_score']:.1f}", "0-100 relativo", kind="warning")
     with cols[2]:
-        metric_card("Rank ICPI", f"{row['rank_icpi']:.0f}", "1 = mayor señal", kind="info")
+        metric_card("Rank estrés", f"{row['rank_icpi']:.0f}", "1 = mayor señal", kind="info")
     with cols[3]:
-        metric_card("Rank OANRI", f"{row['rank_oanri']:.0f}", "1 = mayor prioridad", kind="info")
+        metric_card("Rank prioridad", f"{row['rank_oanri']:.0f}", "1 = mayor prioridad", kind="info")
     with cols[4]:
         metric_card("Evidencia", row["evidence_grade"], "soporte revisado", kind="good")
 
@@ -400,7 +400,7 @@ def render_caso() -> None:
         [
             ("Activo o conexión relevante", _clean(row.get("topology_context_asset"), row["barra"]), "decision"),
             ("Tipo de contexto", f"{_clean(row.get('topology_context_type_es'))}. Rol: {_clean(row.get('evidence_family_es'))}.", "evidence"),
-            ("Cobertura COES", f"Serie mensual usada para ICPI/OANRI: {price_window}; meses observados: {_clean(row.get('coes_price_key_months_observed'), '0')}.", "action"),
+            ("Cobertura COES", f"Serie mensual usada para estrés nodal/prioridad operativa: {price_window}; meses observados: {_clean(row.get('coes_price_key_months_observed'), '0')}.", "action"),
             ("Límite de lectura", _clean(row.get("decision_claim_boundary")), "caveat"),
         ]
     )
@@ -418,7 +418,7 @@ def render_caso() -> None:
     section_header("Due-diligence checklist")
     c1, c2 = st.columns(2)
     with c1:
-        action_panel("Validaciones analíticas", "1. Confirmar si la señal es persistente o episódica. 2. Revisar meses con mayor OANRI. 3. Comparar ranking ICPI/OANRI. 4. Verificar robustez y evidencia.")
+        action_panel("Validaciones analíticas", "1. Confirmar si la señal es persistente o episódica. 2. Revisar meses con mayor prioridad operativa. 3. Comparar ranking de estrés nodal y prioridad operativa. 4. Verificar robustez y evidencia.")
     with c2:
         action_panel("Preguntas de negocio", "1. ¿Existe demanda industrial cercana? 2. ¿La exposición es spot, indexada o cubierta? 3. ¿La evidencia topológica soporta revisión adicional? 4. ¿Hay indicadores de confiabilidad relevantes?")
 
@@ -428,7 +428,7 @@ PAGES = {
     "Inicio": render_inicio,
     "Resumen Ejecutivo": render_resumen,
     "Ranking de Prioridad": render_ranking,
-    "ICPI vs OANRI": render_icpi_oanri,
+    "Mapa de Señales": render_icpi_oanri,
     "Watchlist Mensual": render_watchlist,
     "Exposición Industrial": render_exposicion,
     "Caso de Estudio": render_caso,

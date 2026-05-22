@@ -1,7 +1,7 @@
-# Claim Boundary
+# Límite de Interpretación
 
-This public demo is a controlled portfolio version of a private analytical system.
+Este demo público es una versión controlada de un sistema analítico privado.
 
-It identifies relative nodal marginal-price stress, monthly system-regime context and due-diligence candidates.
+Identifica estrés nodal relativo, prioridad operativa mensual y candidatas de due diligence industrial.
 
-It is not a causal grid diagnosis, electricity price forecast, billing estimate, engineering network study or investment recommendation.
+No prueba congestión física, no predice precios, no calcula facturas, no realiza estudios de flujo de potencia y no constituye recomendación de inversión.

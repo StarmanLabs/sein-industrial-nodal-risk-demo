@@ -1,8 +1,8 @@
-# SEIN Industrial Nodal Risk Intelligence
+﻿# SEIN Industrial Nodal Risk Intelligence
 
 SEIN Industrial Nodal Risk Intelligence is a closed-code data product for industrial electricity due diligence in Peru.
 
-It transforms COES nodal marginal-price outputs into a barra-month analytical panel, builds Nodal Price Stress and System-Adjusted Nodal Risk screening indicators, and translates those signals into due-diligence priorities for industrial exposure analysis.
+It transforms COES nodal marginal-price outputs into a barra-month analytical panel, builds Estrés nodal and System-Adjusted Nodal Risk screening indicators, and translates those signals into due-diligence priorities for industrial exposure analysis.
 
 ## Interactive Demo
 
@@ -42,8 +42,8 @@ This public showcase documents the methodology, product design, selected visuals
 ## Product Pages
 
 1. Executive Overview
-2. Nodal Price Stress
-3. System-Adjusted Risk
+2. Estrés nodal
+3. Prioridad operativa
 4. Industrial Exposure Simulator
 5. Evidence and Topology Context
 6. Methodology and Audit
@@ -60,3 +60,4 @@ The controlled demo uses selected cases for portfolio storytelling:
 ## Portfolio Value
 
 The project demonstrates data engineering, index construction, energy-economics judgment, industrial analytics, dashboard design, closed-code product strategy, and public communication discipline.
+

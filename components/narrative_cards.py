@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from html import escape
 
@@ -152,7 +152,7 @@ def priority_system_legend() -> None:
         [
             (
                 "Prioridad A",
-                "Llegó aquí porque combina señal ICPI/OANRI alta, presencia repetida en meses relevantes, robustez fuerte y evidencia revisada. Es la primera cola de revisión.",
+                "Llegó aquí porque combina señal estrés nodal/prioridad operativa alta, presencia repetida en meses relevantes, robustez fuerte y evidencia revisada. Es la primera cola de revisión.",
                 "decision",
             ),
             (
@@ -210,13 +210,13 @@ def methodology_definition_grid() -> None:
                 "decision",
             ),
             (
-                "ICPI en simple",
+                "estrés nodal en simple",
                 "Es un termómetro relativo de estrés nodal. Si es alto, esa barra mostró precios marginales más intensos, volátiles o extremos frente al resto del sistema.",
                 "evidence",
             ),
             (
-                "OANRI en simple",
-                "Es el ICPI leído con contexto del sistema. Si es alto, la barra no solo tuvo señal local: también ganó importancia bajo meses de presión operativa sistémica.",
+                "prioridad operativa en simple",
+                "Es el estrés nodal leído con contexto del sistema. Si es alto, la barra no solo tuvo señal local: también ganó importancia bajo meses de presión operativa sistémica.",
                 "action",
             ),
             (
@@ -410,16 +410,16 @@ def scope_grid(allowed: object, interpretation_scope: object, next_evidence: obj
 def indicator_definition_grid() -> None:
     cards = [
         (
-            "ICPI",
+            "estrés nodal",
             "Índice de estrés de precio marginal por barra. Usa nivel de precio, volatilidad, colas altas, prima de estrés y episodios críticos. Escala 0-100: 100 significa señal más intensa dentro del universo analizado, no precio absoluto.",
         ),
         (
-            "OANRI",
+            "prioridad operativa",
             "Indicador de prioridad nodal ajustada por régimen operativo. Parte de la señal local y la cruza con meses de presión del sistema. Escala 0-100: mayor valor, mayor prioridad para revisión bajo contexto sistémico.",
         ),
         (
             "Score de prioridad",
-            "Convierte ICPI/OANRI, recurrencia, watchlist, robustez y evidencia revisada en una cola de trabajo. Sirve para decidir dónde empezar la due diligence.",
+            "Convierte estrés nodal/prioridad operativa, recurrencia, watchlist, robustez y evidencia revisada en una cola de trabajo. Sirve para decidir dónde empezar la due diligence.",
         ),
     ]
     rendered_cards = "\n".join(
@@ -473,3 +473,4 @@ def evidence_definition_grid() -> None:
 """,
         unsafe_allow_html=True,
     )
+

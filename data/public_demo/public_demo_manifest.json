@@ -1,11 +1,10 @@
 {
-  "date_created_utc": "2026-05-20T22:26:16.793076+00:00",
-  "source_files_used": [
-    "data/final/product_barra_priority_layer.csv",
-    "data/final/barra_month_decision_panel.csv",
-    "data/final/monthly_system_regime.csv",
-    "data/audit/top50_publication_case_review.csv",
-    "data/audit/final_public_case_selection.csv"
+  "date_created_utc": "2026-05-22T07:07:52.336165+00:00",
+  "public_scope": "217-barra sanitized portfolio layer",
+  "source_layer_description": [
+    "validated private barra-level product layer",
+    "validated private barra-month decision panel",
+    "validated private monthly system-regime context"
   ],
   "output_files_created": [
     "data/public_demo/barra_profile_demo.csv",
@@ -16,62 +15,75 @@
     "product/public_repo/data/public_demo/monthly_system_context_demo.csv"
   ],
   "rows": {
-    "barra_profile_demo": 19,
-    "barra_month_demo": 650,
+    "barra_profile_demo": 217,
+    "barra_month_demo": 6779,
     "monthly_system_context_demo": 36
   },
   "columns": {
     "barra_profile_demo": [
       "barra",
-      "voltage_kv",
-      "topology_context",
-      "topology_context_type",
-      "nodal_price_stress_score",
-      "system_adjusted_nodal_risk_score",
-      "due_diligence_tier",
-      "priority_score",
-      "robustness_label",
-      "topology_evidence_grade",
-      "main_driver",
-      "persistence_label",
-      "publication_readiness",
-      "final_public_role",
-      "story_use",
-      "outlier_pattern",
-      "public_story_angle",
-      "recommended_next_step",
-      "claim_boundary"
+      "tension_kv",
+      "zona_geografica",
+      "contexto_topologico",
+      "tipo_contexto",
+      "rol_evidencia",
+      "resumen_contexto",
+      "estres_nodal",
+      "prioridad_operativa",
+      "prioridad_operativa_p90",
+      "ranking_estres_nodal",
+      "ranking_prioridad_operativa",
+      "score_revision",
+      "prioridad",
+      "robustez",
+      "soporte_evidencia",
+      "driver_principal",
+      "persistencia",
+      "meses_prioridad",
+      "meses_seguimiento",
+      "meses_observados",
+      "primer_mes",
+      "ultimo_mes",
+      "estado_publicacion",
+      "accion_recomendada",
+      "limite_interpretacion"
     ],
     "barra_month_demo": [
       "barra",
-      "year",
-      "month",
-      "month_label",
-      "voltage_kv",
-      "nodal_price_stress_score",
-      "system_adjusted_nodal_risk_score",
-      "monthly_nodal_stress_rank",
-      "due_diligence_tier",
-      "data_quality_score",
-      "low_information_flag",
-      "main_driver",
-      "mean_price",
-      "p95_price",
-      "volatility_metric",
-      "critical_window_hours",
-      "topology_evidence_grade"
+      "anio",
+      "mes",
+      "mes_periodo",
+      "tension_kv",
+      "estres_nodal",
+      "prioridad_operativa",
+      "ranking_mensual",
+      "categoria_revision",
+      "prioridad_barra",
+      "calidad_dato",
+      "informacion_limitada",
+      "driver_principal",
+      "precio_promedio",
+      "precio_p95",
+      "volatilidad",
+      "horas_criticas",
+      "soporte_evidencia"
     ],
     "monthly_system_context_demo": [
-      "month_label",
-      "system_regime_score"
+      "mes_periodo",
+      "regimen_sistema"
     ]
   },
+  "public_metric_names": {
+    "estres_nodal": "señal relativa de presión de precio marginal por barra",
+    "prioridad_operativa": "señal nodal leída con contexto mensual del sistema",
+    "score_revision": "traducción ejecutiva para cola de due diligence"
+  },
   "sanitization_rules": [
-    "Use selected public-ready and caveated demo cases only.",
-    "Expose public metric names instead of internal acronym-led labels.",
+    "Expose only aggregated barra-level and barra-month screening outputs.",
+    "Use descriptive Spanish public metric names.",
     "Round numeric screening scores for public readability.",
-    "Exclude raw, interim, manual topology and full final datasets.",
-    "Use precomputed demo outputs; do not expose raw-to-score construction logic in public repo."
+    "Exclude raw files, interim datasets, manual topology review files and closed pipeline code.",
+    "Do not expose raw-to-score construction logic in the public repository."
   ],
-  "claim_boundary": "The demo is a screening and due-diligence prioritization layer, not a causal grid diagnosis, forward price model, billing estimate, engineering network study or investment recommendation."
+  "claim_boundary": "The public layer is a screening and due-diligence prioritization product. It is not a causal grid diagnosis, forward price model, billing estimate, engineering network study or investment recommendation."
 }

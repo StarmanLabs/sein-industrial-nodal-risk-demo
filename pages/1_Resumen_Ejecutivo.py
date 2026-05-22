@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import sys
 from pathlib import Path
@@ -68,12 +68,12 @@ insight_grid(
     [
         (
             "Hallazgo ejecutivo",
-            f"{len(priority_ab):,.0f} barras entran a la cola A/B. Lideran {top_oanri['barra']} por OANRI y {top_icpi['barra']} por ICPI.",
+            f"{len(priority_ab):,.0f} barras entran a la cola A/B. Lideran {top_oanri['barra']} por prioridad operativa y {top_icpi['barra']} por estrés nodal.",
             "decision",
         ),
         (
             "Por qué importa",
-            "ICPI captura señal nodal relativa; OANRI añade lectura de régimen operativo para priorizar revisión.",
+            "estrés nodal captura señal nodal relativa; prioridad operativa añade lectura de régimen operativo para priorizar revisión.",
             "evidence",
         ),
         (
@@ -91,17 +91,17 @@ insight_grid(
 
 section_header(
     "Barras que dominan la cola ejecutiva",
-    "Top 10 por OANRI muestra prioridad ajustada; Top 10 por ICPI muestra estrés nodal relativo puro.",
+    "Top 10 por prioridad operativa muestra prioridad ajustada; Top 10 por estrés nodal muestra estrés nodal relativo puro.",
 )
 left, right = st.columns(2)
 with left:
     st.plotly_chart(
-        top_bar_chart(profiles, "avg_oanri", "barra", "Top 10 barras por OANRI"),
+        top_bar_chart(profiles, "avg_oanri", "barra", "Top 10 barras por prioridad operativa"),
         use_container_width=True,
     )
 with right:
     st.plotly_chart(
-        top_bar_chart(profiles, "avg_icpi", "barra", "Top 10 barras por ICPI"),
+        top_bar_chart(profiles, "avg_icpi", "barra", "Top 10 barras por estrés nodal"),
         use_container_width=True,
     )
 

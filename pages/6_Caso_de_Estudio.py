@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import sys
 from pathlib import Path
@@ -61,9 +61,9 @@ with cols[0]:
 with cols[1]:
     metric_card("Score", f"{row['decision_priority_score']:.1f}", "0-100 relativo", kind="warning")
 with cols[2]:
-    metric_card("Rank ICPI", f"{row['rank_icpi']:.0f}", "1 = mayor señal", kind="info")
+    metric_card("Rank estrés nodal", f"{row['rank_icpi']:.0f}", "1 = mayor señal", kind="info")
 with cols[3]:
-    metric_card("Rank OANRI", f"{row['rank_oanri']:.0f}", "1 = mayor prioridad", kind="info")
+    metric_card("Rank prioridad operativa", f"{row['rank_oanri']:.0f}", "1 = mayor prioridad", kind="info")
 with cols[4]:
     metric_card("Evidencia", row["evidence_grade"], "soporte revisado", kind="good")
 
@@ -100,7 +100,7 @@ insight_grid(
         ),
         (
             "Cobertura COES",
-            f"Serie mensual usada para ICPI/OANRI: {price_window}; meses observados: {_clean(row.get('coes_price_key_months_observed'), '0')}.",
+            f"Serie mensual usada para estrés nodal/prioridad operativa: {price_window}; meses observados: {_clean(row.get('coes_price_key_months_observed'), '0')}.",
             "action",
         ),
         (
@@ -168,7 +168,7 @@ check_cols = st.columns(2)
 with check_cols[0]:
     action_panel(
         "Validaciones analíticas",
-        "1. Confirmar si la señal es persistente o episódica. 2. Revisar meses con mayor OANRI. 3. Comparar ranking ICPI/OANRI. 4. Verificar robustez y evidencia.",
+        "1. Confirmar si la señal es persistente o episódica. 2. Revisar meses con mayor prioridad operativa. 3. Comparar ranking estrés nodal/prioridad operativa. 4. Verificar robustez y evidencia.",
     )
 with check_cols[1]:
     action_panel(

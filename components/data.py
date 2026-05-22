@@ -17,6 +17,17 @@ PRIORITY_ES = {
     "Low information": "Baja informacion",
 }
 
+PRIORITY_EN = {
+    "Prioridad A": "Priority A",
+    "Prioridad B": "Priority B",
+    "Seguimiento": "Watchlist",
+    "Watchlist": "Watchlist",
+    "Monitorear": "Monitor",
+    "Información limitada": "Low information",
+    "Baja informacion": "Low information",
+    "Low information": "Low information",
+}
+
 ROBUSTNESS_ES = {
     "High robustness": "Robustez alta",
     "Moderate robustness": "Robustez moderada",
@@ -102,49 +113,79 @@ def load_product_layer() -> pd.DataFrame:
 
     monthly = load_monthly_panel()
     out = profiles.copy()
-    out["nivel_tension_kv"] = out["voltage_kv"]
-    out["topology_context_asset"] = out["topology_context"]
-    out["topology_context_type_es"] = out["topology_context_type"].map(
-        lambda value: CONTEXT_TYPE_ES.get(str(value), str(value))
-    )
-    out["evidence_family_es"] = "Contexto publico revisado"
-    out["avg_icpi"] = out["nodal_price_stress_score"]
-    out["avg_oanri"] = out["system_adjusted_nodal_risk_score"]
-    out["p90_oanri"] = out["avg_oanri"]
-    out["decision_priority_score"] = out["priority_score"]
-    out["due_diligence_priority"] = out["due_diligence_tier"]
-    out["due_diligence_priority_es"] = out["due_diligence_priority"].map(
-        lambda value: PRIORITY_ES.get(str(value), str(value))
-    )
-    out["robustness_flag"] = out["robustness_label"]
-    out["robustness_flag_es"] = out["robustness_flag"].map(
-        lambda value: ROBUSTNESS_ES.get(str(value), str(value))
-    )
-    out["evidence_grade"] = out["topology_evidence_grade"]
-    out["priority_reason"] = out["public_story_angle"]
-    out["recommended_action"] = out["recommended_next_step"]
-    out["decision_claim_boundary"] = out["claim_boundary"]
-    out["interpretation_caveat"] = out["claim_boundary"]
-    out["persistence_category"] = out["persistence_label"]
-    out["persistence_category_es"] = out["persistence_label"].replace(
-        {"Persistent": "Persistente", "Episodic": "Episodica"}
-    )
-    out["episodic_stress_category"] = out["persistence_label"]
+    if "tension_kv" in out.columns:
+        out["nivel_tension_kv"] = out["tension_kv"]
+        out["topology_context_asset"] = out["contexto_topologico"]
+        out["topology_context_type_es"] = out["tipo_contexto"]
+        out["evidence_family_es"] = out.get("rol_evidencia", "Contexto público revisado")
+        out["avg_icpi"] = out["estres_nodal"]
+        out["avg_oanri"] = out["prioridad_operativa"]
+        out["p90_oanri"] = out.get("prioridad_operativa_p90", out["avg_oanri"])
+        out["rank_icpi"] = out["ranking_estres_nodal"]
+        out["rank_oanri"] = out["ranking_prioridad_operativa"]
+        out["decision_priority_score"] = out["score_revision"]
+        out["due_diligence_priority_es"] = out["prioridad"]
+        out["due_diligence_priority"] = out["prioridad"].map(
+            lambda value: PRIORITY_EN.get(str(value), str(value))
+        )
+        out["robustness_flag_es"] = out["robustez"]
+        out["robustness_flag"] = out["robustez"]
+        out["evidence_grade"] = out["soporte_evidencia"]
+        out["priority_reason"] = out.get("resumen_contexto", "")
+        out["recommended_action"] = out["accion_recomendada"]
+        out["decision_claim_boundary"] = out["limite_interpretacion"]
+        out["interpretation_caveat"] = out["limite_interpretacion"]
+        out["persistence_category"] = out["persistencia"]
+        out["persistence_category_es"] = out["persistencia"]
+        out["primary_driver"] = out["driver_principal"]
+        out["primary_driver_es"] = out["driver_principal"]
+    else:
+        out["nivel_tension_kv"] = out["voltage_kv"]
+        out["topology_context_asset"] = out["topology_context"]
+        out["topology_context_type_es"] = out["topology_context_type"].map(
+            lambda value: CONTEXT_TYPE_ES.get(str(value), str(value))
+        )
+        out["evidence_family_es"] = "Contexto publico revisado"
+        out["avg_icpi"] = out["nodal_price_stress_score"]
+        out["avg_oanri"] = out["system_adjusted_nodal_risk_score"]
+        out["p90_oanri"] = out["avg_oanri"]
+        out["decision_priority_score"] = out["priority_score"]
+        out["due_diligence_priority"] = out["due_diligence_tier"]
+        out["due_diligence_priority_es"] = out["due_diligence_priority"].map(
+            lambda value: PRIORITY_ES.get(str(value), str(value))
+        )
+        out["robustness_flag"] = out["robustness_label"]
+        out["robustness_flag_es"] = out["robustness_flag"].map(
+            lambda value: ROBUSTNESS_ES.get(str(value), str(value))
+        )
+        out["evidence_grade"] = out["topology_evidence_grade"]
+        out["priority_reason"] = out["public_story_angle"]
+        out["recommended_action"] = out["recommended_next_step"]
+        out["decision_claim_boundary"] = out["claim_boundary"]
+        out["interpretation_caveat"] = out["claim_boundary"]
+        out["persistence_category"] = out["persistence_label"]
+        out["persistence_category_es"] = out["persistence_label"].replace(
+            {"Persistent": "Persistente", "Episodic": "Episodica"}
+        )
+        out["primary_driver"] = out["main_driver"]
+        out["primary_driver_es"] = out["main_driver"].map(
+            lambda value: DRIVER_ES.get(str(value), str(value))
+        )
+    out["episodic_stress_category"] = out["persistence_category"]
     out["episodic_stress_category_es"] = out["persistence_category_es"]
-    out["primary_driver"] = out["main_driver"]
-    out["primary_driver_es"] = out["main_driver"].map(
-        lambda value: DRIVER_ES.get(str(value), str(value))
-    )
-    out["topology_context_summary"] = (
+    out["topology_context_summary"] = out.get(
+        "resumen_contexto",
         out["topology_context_asset"].fillna(out["barra"])
-        + " funciona como contexto de subestacion, central, conexion o corredor para revisar la senal nodal actual."
+        + " funciona como contexto para revisar la señal nodal actual.",
     )
     out["external_evidence_summary"] = (
         "Caso incluido en la muestra publica tras control de publicacion; la evidencia completa permanece en la capa privada auditada."
     )
 
-    out["rank_icpi"] = out["avg_icpi"].rank(ascending=False, method="min")
-    out["rank_oanri"] = out["avg_oanri"].rank(ascending=False, method="min")
+    if "rank_icpi" not in out.columns:
+        out["rank_icpi"] = out["avg_icpi"].rank(ascending=False, method="min")
+    if "rank_oanri" not in out.columns:
+        out["rank_oanri"] = out["avg_oanri"].rank(ascending=False, method="min")
 
     if not monthly.empty:
         grouped = monthly.groupby("barra", dropna=False)
@@ -189,28 +230,52 @@ def load_monthly_panel() -> pd.DataFrame:
         return df
 
     out = _parse_month_label(df)
-    out["ICPI_v8"] = out["nodal_price_stress_score"]
-    out["OANRI_v10"] = out["system_adjusted_nodal_risk_score"]
-    out["ranking_mensual_v10"] = out["monthly_nodal_stress_rank"]
-    out["decision_tier"] = out["due_diligence_tier"].map(
-        {
-            "Priority A": "Priority due diligence",
-            "Priority B": "Priority due diligence",
-            "Watchlist": "Watchlist",
-            "Monitor": "Monitor",
-            "Low information": "Lower relative exposure",
-        }
-    )
-    out["quality_score_v10"] = out["data_quality_score"]
-    out["flag_low_info_v10"] = out["low_information_flag"]
-    out["primary_driver"] = out["main_driver"].str.lower().str.replace(" ", "_")
-    out["nivel_tension_kv"] = out["voltage_kv"]
-    out["std_price"] = out["volatility_metric"]
-    out["duracion_total_critica_h"] = out["critical_window_hours"]
+    if "mes_periodo" in out.columns:
+        out["month"] = pd.to_datetime(out["mes_periodo"] + "-01", errors="coerce")
+        out["ICPI_v8"] = out["estres_nodal"]
+        out["OANRI_v10"] = out["prioridad_operativa"]
+        out["ranking_mensual_v10"] = out["ranking_mensual"]
+        out["decision_tier"] = out["categoria_revision"].map(
+            {
+                "Prioridad de revisión": "Priority due diligence",
+                "Seguimiento": "Watchlist",
+                "Monitorear": "Monitor",
+                "Menor exposición relativa": "Lower relative exposure",
+            }
+        ).fillna(out["categoria_revision"])
+        out["quality_score_v10"] = out["calidad_dato"]
+        out["flag_low_info_v10"] = out["informacion_limitada"]
+        out["primary_driver"] = out["driver_principal"]
+        out["nivel_tension_kv"] = out["tension_kv"]
+        out["mean_price"] = out["precio_promedio"]
+        out["p95_price"] = out["precio_p95"]
+        out["std_price"] = out["volatilidad"]
+        out["duracion_total_critica_h"] = out["horas_criticas"]
+        out["volatility_metric"] = out["volatilidad"]
+        out["critical_window_hours"] = out["horas_criticas"]
+    else:
+        out["ICPI_v8"] = out["nodal_price_stress_score"]
+        out["OANRI_v10"] = out["system_adjusted_nodal_risk_score"]
+        out["ranking_mensual_v10"] = out["monthly_nodal_stress_rank"]
+        out["decision_tier"] = out["due_diligence_tier"].map(
+            {
+                "Priority A": "Priority due diligence",
+                "Priority B": "Priority due diligence",
+                "Watchlist": "Watchlist",
+                "Monitor": "Monitor",
+                "Low information": "Lower relative exposure",
+            }
+        )
+        out["quality_score_v10"] = out["data_quality_score"]
+        out["flag_low_info_v10"] = out["low_information_flag"]
+        out["primary_driver"] = out["main_driver"].str.lower().str.replace(" ", "_")
+        out["nivel_tension_kv"] = out["voltage_kv"]
+        out["std_price"] = out["volatility_metric"]
+        out["duracion_total_critica_h"] = out["critical_window_hours"]
     out["block_cost_v10"] = (out["mean_price"].rank(pct=True)).fillna(0)
-    out["block_volatility_v10"] = (out["volatility_metric"].rank(pct=True)).fillna(0)
+    out["block_volatility_v10"] = (out["std_price"].rank(pct=True)).fillna(0)
     out["block_stress_v10"] = (out["p95_price"].rank(pct=True)).fillna(0)
-    out["block_criticality_v10"] = (out["critical_window_hours"].rank(pct=True)).fillna(0)
+    out["block_criticality_v10"] = (out["duracion_total_critica_h"].rank(pct=True)).fillna(0)
     out["system_regime_v10_0_1"] = (out["OANRI_v10"] / 100).clip(0, 1)
     return out
 
@@ -229,7 +294,11 @@ def load_system_regime() -> pd.DataFrame:
     if df.empty:
         return df
     out = _parse_month_label(df)
-    out["system_regime_v10_0_1"] = out["system_regime_score"]
+    if "mes_periodo" in out.columns:
+        out["month"] = pd.to_datetime(out["mes_periodo"] + "-01", errors="coerce")
+        out["system_regime_v10_0_1"] = out["regimen_sistema"]
+    else:
+        out["system_regime_v10_0_1"] = out["system_regime_score"]
     return out
 
 

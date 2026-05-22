@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import sys
 from pathlib import Path
@@ -27,10 +27,10 @@ def _fmt_number(value: float) -> str:
     return f"{value:,.1f}"
 
 
-st.set_page_config(page_title="ICPI vs OANRI", layout="wide")
+st.set_page_config(page_title="Mapa de Señales", layout="wide")
 product_sidebar()
 page_header(
-    "ICPI vs OANRI",
+    "Mapa de Señales",
     "¿Qué barras combinan estrés nodal relativo con relevancia ajustada por régimen operativo?",
 )
 
@@ -58,13 +58,13 @@ context_summary_panel(
     "Mapa de decisión: señal local vs prioridad ajustada",
     (
         f"Panel COES mensual {start_month} a {end_month}. Cada punto es una barra; "
-        "la posición muestra ICPI y OANRI promedio, el color muestra prioridad y "
+        "la posición muestra estrés nodal y prioridad operativa promedio, el color muestra prioridad y "
         "el tamaño resume el score de due diligence."
     ),
     [
         ("Barras SEIN", f"{df['barra'].nunique():,.0f}", "unidad de análisis"),
         ("Prioridad A/B", f"{priority_ab:,.0f}", f"{high_priority_share:.0%} del universo"),
-        ("Mediana ICPI", _fmt_number(float(df["avg_icpi"].median())), "línea vertical"),
+        ("Mediana estrés nodal", _fmt_number(float(df["avg_icpi"].median())), "línea vertical"),
         ("Evidencia A", f"{evidence_a:,.0f}", "identidad y contexto cerrados"),
     ],
 )
@@ -95,7 +95,7 @@ insight_grid(
 )
 
 section_header(
-    "Mapa de señal ICPI/OANRI",
+    "Mapa de señal estrés nodal/prioridad operativa",
     "Visual principal del producto: separa estrés nodal relativo de prioridad ajustada por régimen.",
 )
 st.plotly_chart(icpi_oanri_scatter(df), use_container_width=True)
@@ -104,22 +104,22 @@ section_header("Cómo leer los cuadrantes")
 decision_matrix(
     [
         (
-            "ICPI alto + OANRI alto",
+            "estrés nodal alto + prioridad operativa alto",
             "Candidata fuerte. La señal local y la lectura ajustada por sistema apuntan en la misma dirección.",
             "high",
         ),
         (
-            "ICPI alto + OANRI menor",
+            "estrés nodal alto + prioridad operativa menor",
             "Señal local relevante. Revisar persistencia, meses extremos, contrato y evidencia topológica.",
             "local",
         ),
         (
-            "ICPI menor + OANRI alto",
+            "estrés nodal menor + prioridad operativa alto",
             "Sensibilidad a régimen. Revisar si la prioridad aparece en meses de presión sistémica.",
             "system",
         ),
         (
-            "ICPI menor + OANRI menor",
+            "estrés nodal menor + prioridad operativa menor",
             "Monitoreo base. Útil para contexto y comparación dentro del universo completo.",
             "monitor",
         ),
@@ -128,7 +128,7 @@ decision_matrix(
 
 section_header(
     "Candidatas principales",
-    "Lista corta ordenada por combinación de rankings OANRI e ICPI para bajar a revisión por barra.",
+    "Lista corta ordenada por combinación de rankings prioridad operativa y estrés nodal para bajar a revisión por barra.",
 )
 top_candidates = df.sort_values(["rank_oanri", "rank_icpi"], na_position="last").head(15)
 compact_table(

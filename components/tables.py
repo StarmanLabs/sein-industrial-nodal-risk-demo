@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import pandas as pd
 import streamlit as st
@@ -13,8 +13,8 @@ COLUMN_LABELS = {
     "external_evidence_summary": "Evidencia externa",
     "zona_geografica": "Zona geográfica",
     "nivel_tension_kv": "Tensión kV",
-    "rank_icpi": "Rank ICPI",
-    "rank_oanri": "Rank OANRI",
+    "rank_icpi": "Rank estrés nodal",
+    "rank_oanri": "Rank prioridad operativa",
     "persistence_category": "Persistencia",
     "persistence_category_es": "Persistencia",
     "episodic_stress_category": "Estrés episódico",
@@ -27,11 +27,11 @@ COLUMN_LABELS = {
     "recommended_action": "Acción recomendada",
     "decision_priority_score": "Score prioridad",
     "month": "Mes",
-    "ICPI_v8": "ICPI",
-    "OANRI_v10": "OANRI",
-    "avg_icpi": "ICPI prom.",
-    "avg_oanri": "OANRI prom.",
-    "ranking_mensual_v10": "Ranking OANRI mensual",
+    "Estrés nodal": "estrés nodal",
+    "Prioridad operativa": "prioridad operativa",
+    "avg_icpi": "estrés nodal prom.",
+    "avg_oanri": "prioridad operativa prom.",
+    "ranking_mensual_v10": "Ranking prioridad operativa mensual",
     "decision_tier": "Tier decisión",
     "primary_driver": "Driver principal",
     "sector": "Sector",
@@ -195,3 +195,4 @@ def compact_table(df: pd.DataFrame, columns: list[str]) -> None:
         hide_index=True,
         height=430,
     )
+

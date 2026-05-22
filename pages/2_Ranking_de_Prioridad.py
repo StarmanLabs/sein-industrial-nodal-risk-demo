@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import sys
 from pathlib import Path
@@ -97,7 +97,7 @@ insight_grid(
         ),
         (
             "Main insight",
-            "La cola combina señal ICPI/OANRI, recurrencia mensual, robustez y evidencia A de activo, conexión, subestación, central o corredor.",
+            "La cola combina señal estrés nodal/prioridad operativa, recurrencia mensual, robustez y evidencia A de activo, conexión, subestación, central o corredor.",
             "evidence",
         ),
         (

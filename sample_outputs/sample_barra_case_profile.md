@@ -1,23 +1,19 @@
-# Sample Barra Case Profile
+# Perfil Público de Barra
 
 Barra: PLANTAETANOL 60
 
-Priority tier: Priority A
+Prioridad: Prioridad A
 
-Nodal Price Stress Score: 77.44
+Estrés nodal: 77.44
 
-System-Adjusted Nodal Risk Score: 65.17
+Prioridad operativa: 65.17
 
-Main driver: Price level
+Score de revisión: 75.71
 
-Topology context: S.E.PLANTA ETANOL
+Driver principal: Nivel de precio
 
-Publication readiness: public_hero_candidate
+Contexto topológico: S.E.PLANTA ETANOL
 
-Public story role: featured_hero
+Acción sugerida: Abrir revisión estructurada: exposición contractual, contexto topológico, indicadores de confiabilidad y supuestos de demanda industrial cercana.
 
-Story use: Lead portfolio case
-
-Recommended review: Open structured due-diligence review: contract exposure, topology/context evidence, reliability indicators and nearby industrial demand assumptions.
-
-Limitations: Use as screening and due-diligence prioritization; do not imply a physical-causal grid diagnosis or billing impact.
+Límite de lectura: Apta para soporte de decisión, screening industrial y due diligence. No implica causalidad física, power-flow, predicción de precios ni cálculo de facturas reales.
