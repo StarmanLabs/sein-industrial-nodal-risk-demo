@@ -2,7 +2,9 @@
 
 ## Status
 
-This folder is a controlled public showcase. It does not include the closed production pipeline or the full analytical dataset.
+This folder is a controlled public showcase. It does not include the closed production pipeline, raw files, manual topology registers or private audit materials.
+
+The current public demo layer contains 217 barras, 36 monthly periods and 6,779 barra-month screening rows. These rows are sanitized final-product outputs for portfolio interaction, not raw or interim analytical data.
 
 ## Public Files
 

@@ -2,7 +2,7 @@
 
 SEIN Industrial Nodal Risk Intelligence is a closed-code data product for industrial electricity due diligence in Peru.
 
-It transforms COES nodal marginal-price outputs into a barra-month analytical panel, builds Estrés nodal and System-Adjusted Nodal Risk screening indicators, and translates those signals into due-diligence priorities for industrial exposure analysis.
+It transforms COES nodal marginal-price outputs into a barra-month analytical panel, builds descriptive screening indicators such as Estrés nodal and Prioridad operativa, and translates those signals into due-diligence priorities for industrial exposure analysis.
 
 ## Interactive Demo
 
@@ -48,9 +48,13 @@ This public showcase documents the methodology, product design, selected visuals
 5. Evidence and Topology Context
 6. Methodology and Audit
 
+## Public Demo Scope
+
+The deployed public demo uses a controlled 217-barra, 36-month public layer. It does not expose raw COES files, interim processing outputs, closed pipeline code, manual topology registers or private audit materials.
+
 ## Featured Demo Cases
 
-The controlled demo uses selected cases for portfolio storytelling:
+The full demo includes the 217-barra universe. The cases below are recommended for portfolio storytelling and screenshots:
 
 - PLANTAETANOL 60 and ZORRITOS 220 as lead public cases.
 - TINTAYA EXISTENTE 138 and GE1 33 as sector-relevance cases.
