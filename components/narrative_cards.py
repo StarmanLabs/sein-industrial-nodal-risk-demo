@@ -94,6 +94,126 @@ def hero_header(title: str, body: str, kicker: str = "SEIN Industrial Nodal Risk
     )
 
 
+def executive_kpi_strip(items: list[tuple[str, object, str, str]]) -> None:
+    rendered_items = "\n".join(
+        f"""
+  <div class="sein-exec-kpi {escape(kind)}">
+    <div class="sein-exec-kpi-label">{escape(label)}</div>
+    <div class="sein-exec-kpi-value">{escape(str(value))}</div>
+    <div class="sein-exec-kpi-note">{escape(note)}</div>
+  </div>
+"""
+        for label, value, note, kind in items
+    )
+    st.markdown(
+        f"""
+<div class="sein-exec-kpi-strip">
+{rendered_items}
+</div>
+""",
+        unsafe_allow_html=True,
+    )
+
+
+def decision_flow(steps: list[tuple[str, str]]) -> None:
+    rendered_steps = "\n".join(
+        f"""
+  <div class="sein-flow-step">
+    <div class="sein-flow-number">{index:02d}</div>
+    <div>
+      <div class="sein-flow-title">{escape(title)}</div>
+      <div class="sein-flow-body">{escape(body)}</div>
+    </div>
+  </div>
+"""
+        for index, (title, body) in enumerate(steps, start=1)
+    )
+    st.markdown(
+        f"""
+<div class="sein-flow-panel">
+  <div class="sein-flow-copy">
+    <div class="sein-flow-kicker">Flujo del producto</div>
+    <div class="sein-flow-headline">De precios marginales a una cola de revisión industrial</div>
+    <div class="sein-flow-text">La app convierte datos técnicos en una secuencia de trabajo: detectar señales, priorizar barras y decidir dónde profundizar.</div>
+  </div>
+  <div class="sein-flow-steps">
+{rendered_steps}
+  </div>
+</div>
+""",
+        unsafe_allow_html=True,
+    )
+
+
+def use_path_panel(items: list[tuple[str, str]]) -> None:
+    rendered_items = "\n".join(
+        f"""
+  <div class="sein-use-step">
+    <span>{escape(label)}</span>
+    <p>{escape(body)}</p>
+  </div>
+"""
+        for label, body in items
+    )
+    st.markdown(
+        f"""
+<div class="sein-use-panel">
+  <div class="sein-use-title">Cómo se usa</div>
+  <div class="sein-use-grid">
+{rendered_items}
+  </div>
+</div>
+""",
+        unsafe_allow_html=True,
+    )
+
+
+def decision_taxonomy() -> None:
+    items = [
+        ("Revisión inmediata", "Primera cola de due diligence: señal alta, recurrencia y soporte suficiente.", "urgent"),
+        ("Revisión selectiva", "Candidata relevante; gana prioridad si el sector, contrato o ubicación aumentan exposición.", "selective"),
+        ("Seguimiento mensual", "Caso episódico o sensible a escenarios; se vigila por persistencia y cambios recientes.", "watch"),
+        ("Contexto base", "Permanece en el universo analítico para comparación, referencia y nuevos eventos.", "base"),
+    ]
+    rendered_items = "\n".join(
+        f"""
+  <div class="sein-taxonomy-item {escape(kind)}">
+    <div class="sein-taxonomy-title">{escape(title)}</div>
+    <div class="sein-taxonomy-body">{escape(body)}</div>
+  </div>
+"""
+        for title, body, kind in items
+    )
+    st.markdown(
+        f"""
+<div class="sein-taxonomy-panel">
+  <div class="sein-taxonomy-header">
+    <div>
+      <div class="sein-taxonomy-kicker">Taxonomía de decisión</div>
+      <div class="sein-taxonomy-headline">Cómo leer la cola de revisión</div>
+    </div>
+    <div class="sein-taxonomy-caption">Los nombres técnicos quedan para la ficha metodológica; aquí se comunica qué acción tomar.</div>
+  </div>
+  <div class="sein-taxonomy-grid">
+{rendered_items}
+  </div>
+</div>
+""",
+        unsafe_allow_html=True,
+    )
+
+
+def compact_scope_note(body: str) -> None:
+    st.markdown(
+        f"""
+<div class="sein-compact-note">
+  <strong>Lectura prudente.</strong> {escape(body)}
+</div>
+""",
+        unsafe_allow_html=True,
+    )
+
+
 def section_header(title: str, caption: str | None = None) -> None:
     caption_html = (
         f"<div class='sein-section-caption'>{escape(caption)}</div>" if caption else ""

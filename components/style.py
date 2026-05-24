@@ -8,18 +8,19 @@ def inject_global_style() -> None:
         """
 <style>
 :root {
-  --sein-bg: #f5f7fa;
+  --sein-bg: #f5f8fb;
   --sein-panel: #ffffff;
   --sein-panel-soft: #f8fafc;
-  --sein-ink: #182235;
-  --sein-muted: #657286;
-  --sein-line: #d9e1ea;
-  --sein-navy: #173b57;
-  --sein-teal: #138a8a;
+  --sein-ink: #102033;
+  --sein-muted: #64748b;
+  --sein-line: #d8e3ea;
+  --sein-navy: #164a63;
+  --sein-deep: #0e2f43;
+  --sein-teal: #168c8c;
   --sein-blue: #2f6f9f;
-  --sein-amber: #d9902f;
-  --sein-red: #c5524a;
-  --sein-green: #287c67;
+  --sein-amber: #c47a16;
+  --sein-red: #b23a2e;
+  --sein-green: #1f8a5b;
 }
 
 .stApp {
@@ -104,12 +105,275 @@ h2, h3 {
   border: 1px solid #cfdbe7;
   border-radius: 8px;
   background:
-    linear-gradient(135deg, rgba(23, 59, 87, 0.96), rgba(19, 138, 138, 0.88)),
-    radial-gradient(circle at 76% 20%, rgba(255,255,255,0.22), transparent 28%);
+    linear-gradient(135deg, rgba(14, 47, 67, 0.98), rgba(22, 140, 140, 0.9)),
+    radial-gradient(circle at 84% 18%, rgba(255,255,255,0.20), transparent 30%);
   color: #ffffff;
   padding: 1.35rem 1.45rem;
   margin: 0.35rem 0 1rem 0;
   box-shadow: 0 12px 32px rgba(24, 34, 53, 0.11);
+}
+
+.sein-exec-kpi-strip {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin: 0.9rem 0 1rem 0;
+}
+
+.sein-exec-kpi {
+  background: var(--sein-panel);
+  border: 1px solid var(--sein-line);
+  border-radius: 8px;
+  padding: 0.9rem 0.95rem;
+  min-height: 104px;
+  box-shadow: 0 8px 22px rgba(16, 32, 51, 0.045);
+  position: relative;
+  overflow: hidden;
+}
+
+.sein-exec-kpi::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 4px;
+  width: 100%;
+  background: var(--sein-blue);
+}
+
+.sein-exec-kpi.signal::before { background: var(--sein-teal); }
+.sein-exec-kpi.action::before { background: var(--sein-green); }
+.sein-exec-kpi.watch::before { background: var(--sein-amber); }
+.sein-exec-kpi.scope::before { background: var(--sein-navy); }
+
+.sein-exec-kpi-label {
+  color: var(--sein-muted);
+  font-size: 0.72rem;
+  font-weight: 760;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.36rem;
+}
+
+.sein-exec-kpi-value {
+  color: var(--sein-ink);
+  font-size: 2.05rem;
+  line-height: 1.05;
+  font-weight: 820;
+}
+
+.sein-exec-kpi-note {
+  color: #475569;
+  font-size: 0.78rem;
+  line-height: 1.32;
+  margin-top: 0.42rem;
+}
+
+.sein-flow-panel {
+  display: grid;
+  grid-template-columns: minmax(300px, 0.92fr) minmax(0, 1.8fr);
+  gap: 0.85rem;
+  border: 1px solid var(--sein-line);
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 10px 26px rgba(16, 32, 51, 0.05);
+  margin: 0.95rem 0 1.1rem 0;
+  padding: 0.9rem;
+}
+
+.sein-flow-copy {
+  background: linear-gradient(180deg, #eef6f8 0%, #f8fafc 100%);
+  border-left: 4px solid var(--sein-teal);
+  border-radius: 8px;
+  padding: 1rem 1rem;
+}
+
+.sein-flow-kicker,
+.sein-taxonomy-kicker {
+  color: var(--sein-muted);
+  font-size: 0.7rem;
+  font-weight: 780;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  margin-bottom: 0.34rem;
+}
+
+.sein-flow-headline,
+.sein-taxonomy-headline {
+  color: var(--sein-ink);
+  font-size: 1.18rem;
+  line-height: 1.18;
+  font-weight: 820;
+  margin-bottom: 0.4rem;
+}
+
+.sein-flow-text {
+  color: #475569;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.sein-flow-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  border: 1px solid var(--sein-line);
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fbfcfe;
+}
+
+.sein-flow-step {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  gap: 0.65rem;
+  align-items: start;
+  background: transparent;
+  border-right: 1px solid var(--sein-line);
+  padding: 0.95rem;
+  min-height: 112px;
+}
+
+.sein-flow-step:last-child { border-right: 0; }
+
+.sein-flow-number {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--sein-navy);
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 0.78rem;
+}
+
+.sein-flow-title {
+  color: var(--sein-ink);
+  font-size: 0.9rem;
+  font-weight: 800;
+  margin-bottom: 0.28rem;
+}
+
+.sein-flow-body {
+  color: #475569;
+  font-size: 0.82rem;
+  line-height: 1.42;
+}
+
+.sein-use-panel {
+  border-radius: 8px;
+  border: 1px solid var(--sein-line);
+  background: #ffffff;
+  padding: 0.9rem 1rem;
+  box-shadow: 0 8px 22px rgba(16, 32, 51, 0.04);
+  margin: 0.9rem 0 1rem 0;
+}
+
+.sein-use-title {
+  color: var(--sein-ink);
+  font-size: 1rem;
+  font-weight: 820;
+  margin-bottom: 0.7rem;
+}
+
+.sein-use-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+
+.sein-use-step {
+  border-left: 4px solid var(--sein-blue);
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 0.75rem 0.82rem;
+}
+
+.sein-use-step span {
+  display: block;
+  color: var(--sein-ink);
+  font-weight: 800;
+  font-size: 0.86rem;
+  margin-bottom: 0.26rem;
+}
+
+.sein-use-step p {
+  color: #475569;
+  font-size: 0.83rem;
+  line-height: 1.42;
+  margin: 0;
+}
+
+.sein-taxonomy-panel {
+  border: 1px solid var(--sein-line);
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 0.95rem;
+  box-shadow: 0 10px 26px rgba(16, 32, 51, 0.05);
+  margin: 0.9rem 0 1rem 0;
+}
+
+.sein-taxonomy-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: end;
+  margin-bottom: 0.85rem;
+}
+
+.sein-taxonomy-caption {
+  max-width: 460px;
+  color: #475569;
+  font-size: 0.86rem;
+  line-height: 1.4;
+}
+
+.sein-taxonomy-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.sein-taxonomy-item {
+  border: 1px solid var(--sein-line);
+  border-radius: 8px;
+  padding: 0.82rem 0.88rem;
+  min-height: 122px;
+  background: #fbfcfe;
+}
+
+.sein-taxonomy-item.urgent { border-top: 4px solid var(--sein-red); }
+.sein-taxonomy-item.selective { border-top: 4px solid var(--sein-amber); }
+.sein-taxonomy-item.watch { border-top: 4px solid var(--sein-teal); }
+.sein-taxonomy-item.base { border-top: 4px solid var(--sein-muted); }
+
+.sein-taxonomy-title {
+  color: var(--sein-ink);
+  font-size: 0.9rem;
+  font-weight: 820;
+  margin-bottom: 0.34rem;
+}
+
+.sein-taxonomy-body {
+  color: #475569;
+  font-size: 0.82rem;
+  line-height: 1.42;
+}
+
+.sein-compact-note {
+  border-radius: 8px;
+  border: 1px solid #ead7b7;
+  background: #fffaf1;
+  color: #475569;
+  padding: 0.78rem 0.9rem;
+  font-size: 0.86rem;
+  line-height: 1.44;
+  margin: 0.9rem 0;
+}
+
+.sein-compact-note strong {
+  color: #7a4d12;
 }
 
 .sein-hero-kicker {
@@ -758,7 +1022,12 @@ div[data-testid="stMetric"] {
   .sein-matrix-grid,
   .sein-scope-grid,
   .sein-definition-grid,
-  .sein-insight-grid {
+  .sein-insight-grid,
+  .sein-exec-kpi-strip,
+  .sein-flow-panel,
+  .sein-flow-steps,
+  .sein-use-grid,
+  .sein-taxonomy-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -778,7 +1047,12 @@ div[data-testid="stMetric"] {
   .sein-matrix-grid,
   .sein-scope-grid,
   .sein-definition-grid,
-  .sein-insight-grid {
+  .sein-insight-grid,
+  .sein-exec-kpi-strip,
+  .sein-flow-panel,
+  .sein-flow-steps,
+  .sein-use-grid,
+  .sein-taxonomy-grid {
     grid-template-columns: 1fr;
   }
 

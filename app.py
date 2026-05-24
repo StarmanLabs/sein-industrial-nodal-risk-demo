@@ -35,21 +35,22 @@ from components.filters import (
 from components.narrative_cards import (
     action_panel,
     badge_row,
+    compact_scope_note,
     decision_matrix,
+    decision_flow,
     decision_summary_card,
-    due_diligence_definition_grid,
-    evidence_definition_grid,
+    decision_taxonomy,
+    executive_kpi_strip,
     hero_header,
     humanize_analytical_text,
-    indicator_definition_grid,
     insight_grid,
-    methodology_definition_grid,
     metric_card,
     page_header,
     priority_system_legend,
     product_sidebar,
     section_header,
     context_summary_panel,
+    use_path_panel,
 )
 from components.tables import compact_table, priority_table
 
@@ -66,61 +67,55 @@ def render_inicio() -> None:
     panel = load_monthly_panel()
 
     hero_header(
-        "Convierte señales nodales del SEIN en una cola de due diligence industrial",
-        "Integra precios marginales COES, estrés nodal, prioridad operativa, robustez, watchlists mensuales, "
-        "escenarios industriales y evidencia topológica revisada para decidir qué barras "
-        "merecen revisión primero.",
+        "Prioriza barras del SEIN para due diligence industrial",
+        "Un sistema de soporte a decisión que transforma precios marginales COES en señales comparables, "
+        "ranking de revisión y escenarios de exposición industrial.",
     )
 
     if profiles.empty:
         st.error("No se encontró la capa pública del producto. Revisa que `data/public_demo` esté incluido en el despliegue.")
         st.stop()
 
-    cols = st.columns(5)
-    with cols[0]:
-        metric_card("Barras", f"{profiles['barra'].nunique():,.0f}", "universo analítico", kind="info")
-    with cols[1]:
-        metric_card("Meses", f"{panel['month'].nunique() if not panel.empty else 0:,.0f}", "2023-2025", kind="neutral")
-    with cols[2]:
-        metric_card("Evidencia A", f"{profiles['evidence_grade'].astype(str).str.upper().eq('A').sum():,.0f}", "muestra pública auditada", kind="good")
-    with cols[3]:
-        metric_card("Prioridad A/B", f"{profiles['due_diligence_priority'].isin(['Priority A', 'Priority B']).sum():,.0f}", "cola principal", kind="warning")
-    with cols[4]:
-        metric_card("Watchlist", f"{(profiles['due_diligence_priority'] == 'Watchlist').sum():,.0f}", "seguimiento mensual", kind="info")
+    revision_queue = int(profiles["due_diligence_priority"].isin(["Priority A", "Priority B"]).sum())
+    watchlist_count = int((profiles["due_diligence_priority"] == "Watchlist").sum())
+    executive_kpi_strip(
+        [
+            ("Universo SEIN", f"{profiles['barra'].nunique():,.0f}", "barras comparables", "scope"),
+            ("Cobertura", f"{panel['month'].nunique() if not panel.empty else 0:,.0f}", "meses 2023-2025", "signal"),
+            ("Panel mensual", f"{len(panel):,.0f}", "observaciones barra-mes", "scope"),
+            ("Cola de revisión", f"{revision_queue:,.0f}", "candidatas principales", "action"),
+            ("Seguimiento", f"{watchlist_count:,.0f}", "casos de monitoreo mensual", "watch"),
+        ]
+    )
 
     badge_row(
         [
             ("Soporte a decisión", "watchlist"),
             ("Estrés marginal nodal", "monitor"),
-            ("Priorización con evidencia", "evidence-a"),
-            ("Exposición industrial", "priority-b"),
+            ("Ranking de revisión", "evidence-a"),
+            ("Escenarios industriales", "priority-b"),
         ]
     )
 
-    section_header(
-        "Qué decisión habilita",
-        "La página de inicio responde qué hace el producto, cómo leer sus métricas y dónde empezar la revisión.",
-    )
-    insight_grid(
+    decision_flow(
         [
-            ("Qué ordena", "Barras del SEIN según señales relativas de estrés marginal nodal y relevancia ajustada por régimen operativo.", "decision"),
-            ("Qué prioriza", "Casos A/B para revisión contractual, topológica, industrial o de confiabilidad, usando la muestra pública con evidencia A de contexto.", "evidence"),
-            ("A quién sirve", "Analistas económicos, energía, industria, minería, consultoría, planeamiento y equipos BI orientados a due diligence.", "action"),
-            ("Uso correcto", "Funciona como triage analítico. Las decisiones finales se contrastan con contrato, ingeniería, operación y evidencia externa.", "caveat"),
+            ("Medir señales", "Normaliza precio, volatilidad y episodios por barra."),
+            ("Ordenar revisión", "Jerarquiza barras por señal, recurrencia y contexto."),
+            ("Contrastar contexto", "Valida contrato, sector, ubicación y evidencia técnica."),
         ]
     )
 
-    section_header("Qué significa due diligence en este dashboard")
-    due_diligence_definition_grid()
-    section_header("Con qué datos se construyen Estrés nodal y Prioridad operativa")
-    methodology_definition_grid()
-    section_header("Guía rápida de lectura")
-    indicator_definition_grid()
-    evidence_definition_grid()
-    priority_system_legend()
-    action_panel(
-        "Ruta recomendada de uso",
-        "Empieza en Resumen Ejecutivo, usa Ranking como cola de trabajo, Mapa de Señales como vista estratégica, Watchlist para persistencia temporal, Exposición Industrial para escenarios sectoriales y Caso de Estudio para justificar una barra específica.",
+    use_path_panel(
+        [
+            ("1. Ver el resumen", "Ubica dónde se concentra la señal más fuerte y qué barras lideran la cola."),
+            ("2. Abrir el ranking", "Filtra por prioridad, tensión o robustez para formar una lista corta de revisión."),
+            ("3. Bajar al caso", "Contrasta evolución mensual, exposición industrial y contexto técnico de la barra."),
+        ]
+    )
+    decision_taxonomy()
+    compact_scope_note(
+        "La lectura correcta es priorización analítica: el dashboard indica dónde conviene invertir tiempo experto. "
+        "La ficha técnica documenta fórmulas, evidencia, robustez y límites metodológicos."
     )
 
 
