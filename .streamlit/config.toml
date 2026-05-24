@@ -4,6 +4,9 @@ headless = true
 [browser]
 gatherUsageStats = false
 
+[client]
+showSidebarNavigation = false
+
 [theme]
 base = "light"
 primaryColor = "#2f6f9f"

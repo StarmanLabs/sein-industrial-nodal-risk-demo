@@ -90,10 +90,10 @@ def render_inicio() -> None:
 
     badge_row(
         [
-            ("Decision-support system", "watchlist"),
-            ("Relative nodal marginal-price stress", "monitor"),
-            ("Evidence-informed prioritization", "evidence-a"),
-            ("Industrial exposure screening", "priority-b"),
+            ("Soporte a decisión", "watchlist"),
+            ("Estrés marginal nodal", "monitor"),
+            ("Priorización con evidencia", "evidence-a"),
+            ("Exposición industrial", "priority-b"),
         ]
     )
 
