@@ -2,6 +2,7 @@
 
 import streamlit as st
 
+from components import narrative_cards as narrative
 from components.charts import (
     barra_component_profile,
     barra_month_line,
@@ -32,27 +33,73 @@ from components.filters import (
     sector_selector,
     tension_filter,
 )
-from components.narrative_cards import (
-    action_panel,
-    badge_row,
-    compact_scope_note,
-    decision_matrix,
-    decision_flow,
-    decision_summary_card,
-    decision_taxonomy,
-    executive_kpi_strip,
-    hero_header,
-    humanize_analytical_text,
-    insight_grid,
-    metric_card,
-    page_header,
-    priority_system_legend,
-    product_sidebar,
-    section_header,
-    context_summary_panel,
-    use_path_panel,
-)
 from components.tables import compact_table, priority_table
+
+
+action_panel = narrative.action_panel
+badge_row = narrative.badge_row
+decision_matrix = narrative.decision_matrix
+decision_summary_card = narrative.decision_summary_card
+hero_header = narrative.hero_header
+humanize_analytical_text = narrative.humanize_analytical_text
+insight_grid = narrative.insight_grid
+metric_card = narrative.metric_card
+page_header = narrative.page_header
+priority_system_legend = narrative.priority_system_legend
+product_sidebar = narrative.product_sidebar
+section_header = narrative.section_header
+context_summary_panel = narrative.context_summary_panel
+
+
+def _fallback_markdown_block(css_class: str, title: str, body: str) -> None:
+    st.markdown(
+        f"""
+<div class="{css_class}">
+  <strong>{title}</strong>
+  <p>{body}</p>
+</div>
+""",
+        unsafe_allow_html=True,
+    )
+
+
+def _fallback_kpi_strip(items: list[tuple[str, object, str, str]]) -> None:
+    cols = st.columns(len(items))
+    for col, (label, value, note, kind) in zip(cols, items):
+        with col:
+            metric_card(label, value, note, kind=kind)
+
+
+def _fallback_decision_flow(steps: list[tuple[str, str]]) -> None:
+    text = " | ".join(f"{index}. {title}: {body}" for index, (title, body) in enumerate(steps, start=1))
+    _fallback_markdown_block("sein-action-panel", "Flujo del producto", text)
+
+
+def _fallback_use_path_panel(items: list[tuple[str, str]]) -> None:
+    text = " | ".join(f"{label}: {body}" for label, body in items)
+    _fallback_markdown_block("sein-action-panel", "Cómo se usa", text)
+
+
+def _fallback_decision_taxonomy() -> None:
+    insight_grid(
+        [
+            ("Revisión inmediata", "Primera cola de due diligence: señal alta, recurrencia y soporte suficiente.", "decision"),
+            ("Revisión selectiva", "Candidata relevante; gana prioridad si el sector, contrato o ubicación aumentan exposición.", "evidence"),
+            ("Seguimiento mensual", "Caso episódico o sensible a escenarios; se vigila por persistencia y cambios recientes.", "action"),
+            ("Contexto base", "Permanece en el universo analítico para comparación, referencia y nuevos eventos.", "caveat"),
+        ]
+    )
+
+
+def _fallback_scope_note(body: str) -> None:
+    action_panel("Lectura prudente", body)
+
+
+executive_kpi_strip = getattr(narrative, "executive_kpi_strip", _fallback_kpi_strip)
+decision_flow = getattr(narrative, "decision_flow", _fallback_decision_flow)
+use_path_panel = getattr(narrative, "use_path_panel", _fallback_use_path_panel)
+decision_taxonomy = getattr(narrative, "decision_taxonomy", _fallback_decision_taxonomy)
+compact_scope_note = getattr(narrative, "compact_scope_note", _fallback_scope_note)
 
 
 st.set_page_config(
