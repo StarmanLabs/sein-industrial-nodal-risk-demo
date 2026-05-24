@@ -60,8 +60,3 @@ The full demo includes the 217-barra universe. The cases below are recommended f
 - TINTAYA EXISTENTE 138 and GE1 33 as sector-relevance cases.
 - VALLE DEL CHIRA 220 and JAEN 138 as methodology examples.
 - HUAYLLACHO 15 and NCTUMBES60 as reserve cases with explicit caveats.
-
-## Portfolio Value
-
-The project demonstrates data engineering, index construction, energy-economics judgment, industrial analytics, dashboard design, closed-code product strategy, and public communication discipline.
-
