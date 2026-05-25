@@ -1,5 +1,7 @@
 ﻿from __future__ import annotations
 
+from html import escape
+
 import streamlit as st
 
 from components import narrative_cards as narrative
@@ -158,7 +160,6 @@ def render_inicio() -> None:
 
 
 def render_resumen() -> None:
-    page_header("Resumen Ejecutivo", "¿Dónde están las señales más fuertes de due diligence?")
     profiles = load_product_layer()
     panel = load_monthly_panel()
     regime = load_system_regime()
@@ -166,40 +167,182 @@ def render_resumen() -> None:
         st.error("La capa producto no está disponible.")
         st.stop()
 
-    cols = st.columns(5)
-    with cols[0]:
-        metric_card("Barras analizadas", f"{profiles['barra'].nunique():,.0f}", "capa producto", kind="info")
-    with cols[1]:
-        metric_card("Meses analizados", f"{panel['month'].nunique() if not panel.empty else 0}", "panel histórico")
-    with cols[2]:
-        metric_card("Revisión inmediata", f"{(profiles['due_diligence_priority'] == 'Priority A').sum():,.0f}", "primera cola", kind="danger")
-    with cols[3]:
-        metric_card("Revisión selectiva", f"{(profiles['due_diligence_priority'] == 'Priority B').sum():,.0f}", "segunda cola", kind="warning")
-    with cols[4]:
-        metric_card("Seguimiento mensual", f"{(profiles['due_diligence_priority'] == 'Watchlist').sum():,.0f}", "monitoreo activo", kind="info")
-
-    priority_ab = profiles[profiles["due_diligence_priority"].isin(["Priority A", "Priority B"])]
+    priority_a_count = int((profiles["due_diligence_priority"] == "Priority A").sum())
+    priority_b_count = int((profiles["due_diligence_priority"] == "Priority B").sum())
+    watchlist_count = int((profiles["due_diligence_priority"] == "Watchlist").sum())
+    barras_count = int(profiles["barra"].nunique())
+    months_count = int(panel["month"].nunique()) if not panel.empty else 0
     top_oanri = profiles.sort_values("rank_oanri", na_position="last").head(1).iloc[0]
     top_icpi = profiles.sort_values("rank_icpi", na_position="last").head(1).iloc[0]
-    insight_grid(
-        [
-            ("Hallazgo ejecutivo", f"{len(priority_ab):,.0f} barras entran a la cola de revisión. Lideran {top_oanri['barra']} por prioridad operativa y {top_icpi['barra']} por estrés nodal.", "decision"),
-            ("Por qué importa", "Estrés nodal captura señal relativa por barra; prioridad operativa añade lectura de régimen del sistema para priorizar revisión.", "evidence"),
-            ("Siguiente acción", "Abrir revisión inmediata, contrastar exposición industrial y revisar contexto topológico antes de bajar a casos.", "action"),
-            ("Lectura correcta", "El ranking ordena una cola de due diligence: sirve para decidir dónde mirar primero y con qué hipótesis.", "caveat"),
-        ]
-    )
 
-    section_header("Barras que dominan la cola ejecutiva")
-    left, right = st.columns(2)
-    with left:
-        st.plotly_chart(top_bar_chart(profiles, "avg_oanri", "barra", "Top 10 barras por prioridad operativa"), use_container_width=True)
-    with right:
-        st.plotly_chart(top_bar_chart(profiles, "avg_icpi", "barra", "Top 10 barras por estrés nodal"), use_container_width=True)
+    def _icon(name: str) -> str:
+        icons = {
+            "warning": '<svg viewBox="0 0 24 24"><path d="M12 3 2 21h20L12 3Z"/><path d="M12 9v5M12 17h.01"/></svg>',
+            "target": '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/><path d="m15 9 5-5"/></svg>',
+            "eye": '<svg viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>',
+            "network": '<svg viewBox="0 0 24 24"><circle cx="6" cy="17" r="2"/><circle cx="12" cy="4" r="2"/><circle cx="19" cy="19" r="2"/><path d="M7 15 11 6M13 6l5 11M8 17h9"/></svg>',
+            "calendar": '<svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16M8 14h.01M12 14h.01M16 14h.01M8 17h.01M12 17h.01"/></svg>',
+            "trend": '<svg viewBox="0 0 24 24"><path d="M4 19V5M4 19h16M7 15l4-4 3 3 5-7"/><path d="M16 7h3v3"/></svg>',
+            "pulse": '<svg viewBox="0 0 24 24"><path d="M3 13h4l2-7 4 14 2-7h6"/></svg>',
+            "shield": '<svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.5 2.9 8.5 7 10 4.1-1.5 7-5.5 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-5"/></svg>',
+            "link": '<svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7 0l2-2a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-2 2a5 5 0 0 0 7 7l1-1"/></svg>',
+        }
+        return icons[name]
+
+    def _kpi_item(value: object, label: str, note: str, kind: str, icon_name: str) -> str:
+        return f"""
+<div class="exec-kpi-item {kind}">
+  <div class="exec-kpi-icon">{_icon(icon_name)}</div>
+  <div class="exec-kpi-value">{escape(str(value))}</div>
+  <div class="exec-kpi-label">{escape(label)}</div>
+  <div class="exec-kpi-note">{escape(note)}</div>
+</div>
+"""
+
+    def _ranking_rows(data, value_col: str, color: str) -> str:
+        top = data.nlargest(10, value_col).reset_index(drop=True)
+        max_value = float(top[value_col].max()) if not top.empty else 1.0
+        rows = []
+        for index, row in top.iterrows():
+            width = max(8, min(100, float(row[value_col]) / max_value * 100))
+            rows.append(
+                f"""
+<div class="exec-rank-row">
+  <div class="exec-rank-number">{index + 1}</div>
+  <div class="exec-rank-name">{escape(str(row['barra']))}</div>
+  <div class="exec-rank-bar"><span style="width:{width:.1f}%;background:{color};"></span></div>
+  <div class="exec-rank-value">{float(row[value_col]):.1f}</div>
+</div>
+"""
+            )
+        return "\n".join(rows)
+
+    top_oanri_rows = _ranking_rows(profiles, "avg_oanri", "linear-gradient(90deg,#f29d24,#f07600)")
+    top_icpi_rows = _ranking_rows(profiles, "avg_icpi", "linear-gradient(90deg,#087a82,#46c7bd)")
+    shared_mask = profiles.nlargest(10, "avg_oanri")["barra"].isin(profiles.nlargest(10, "avg_icpi")["barra"])
+    shared_names = profiles.nlargest(10, "avg_oanri").loc[shared_mask, "barra"].head(2).tolist()
+    shared_html = "".join(f"<span>{escape(name)}</span>" for name in shared_names) or "<span>Sin coincidencias top 10</span>"
+
+    st.markdown(
+        f"""
+<div class="exec-page">
+  <div class="exec-header">
+    <div>
+      <div class="exec-kicker">Panel de soporte a decisiones</div>
+      <h1>Resumen Ejecutivo</h1>
+      <p>¿Dónde están las señales más fuertes de due diligence?</p>
+    </div>
+    <div class="exec-caveat">
+      <div class="exec-caveat-icon">{_icon("shield")}</div>
+      <div>
+        <strong>Este dashboard es una capa de screening y priorización.</strong>
+        <span>No prueba congestión física, no predice precios y no reemplaza due diligence técnica, contractual u operativa.</span>
+      </div>
+    </div>
+  </div>
+  <div class="exec-kpi-band">
+    {_kpi_item(priority_a_count, "Revisión inmediata", "Señal alta, recurrencia y soporte suficiente.", "urgent", "warning")}
+    {_kpi_item(priority_b_count, "Revisión selectiva", "Prioridad si sector, contrato o ubicación aumentan exposición.", "selective", "target")}
+    {_kpi_item(watchlist_count, "Seguimiento mensual", "Caso episódico o sensible; se vigila por persistencia.", "watch", "eye")}
+    {_kpi_item(barras_count, "Barras analizadas", "Universo comparable del SEIN.", "scope", "network")}
+    {_kpi_item(months_count, "Meses analizados", "Panel histórico 2023-2025.", "scope", "calendar")}
+  </div>
+  <div class="exec-main-finding">
+    <div class="exec-finding-icon">{_icon("trend")}</div>
+    <div class="exec-finding-copy">
+      <div class="exec-section-kicker">Hallazgo principal</div>
+      <h2>La cola está liderada por {escape(str(top_oanri['barra']))} en prioridad operativa y {escape(str(top_icpi['barra']))} en estrés nodal.</h2>
+      <p>Estas barras combinan señales relevantes y contexto del sistema que amerita revisión. El siguiente paso es contrastar contrato, demanda industrial, ubicación y evidencia técnica.</p>
+    </div>
+    <div class="exec-next-steps">
+      <div class="exec-section-kicker">¿Qué hacer ahora?</div>
+      <div class="exec-step"><strong>1</strong><span><b>Abrir ranking</b><br>Filtrar revisión inmediata y selectiva.</span></div>
+      <div class="exec-step"><strong>2</strong><span><b>Contrastar contexto</b><br>Exposición industrial y evidencia topológica.</span></div>
+      <div class="exec-step"><strong>3</strong><span><b>Bajar a caso de estudio</b><br>Entender por qué una barra merece atención.</span></div>
+    </div>
+    <div class="exec-mini-map" aria-hidden="true">
+      <svg viewBox="0 0 280 230">
+        <path d="M156 10 209 36l-4 39 42 26-18 37 29 43-45 13-8 46-51 13-24 34-50-21-34-39 15-42-37-31 26-45-9-52 45-29Z" fill="rgba(22,140,140,.20)" stroke="#168c8c" stroke-width="2"/>
+        <path d="M156 10 128 84 209 36 176 126 247 101 190 169 258 181 205 240M128 84 50 109 176 126 61 185 190 169 154 253" fill="none" stroke="rgba(22,140,140,.42)" stroke-width="1.4"/>
+        <g fill="#23d3d3">
+          <circle cx="156" cy="10" r="5"/><circle cx="209" cy="36" r="4"/><circle cx="128" cy="84" r="4"/><circle cx="176" cy="126" r="5"/><circle cx="247" cy="101" r="4"/><circle cx="190" cy="169" r="5"/><circle cx="258" cy="181" r="4"/><circle cx="205" cy="240" r="4"/><circle cx="61" cy="185" r="4"/><circle cx="50" cy="109" r="4"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+  <div class="exec-mid-grid">
+    <div class="exec-explain-stack">
+      <div class="exec-explain-card orange">
+        <div class="exec-explain-icon">{_icon("target")}</div>
+        <h3>¿Qué es la prioridad operativa?</h3>
+        <p>Combina la señal de la barra con el contexto del sistema.</p>
+        <p>Responde: ¿dónde la señal es relevante en meses de mayor presión del sistema?</p>
+        <strong>Estar arriba = mayor prioridad para revisar.</strong>
+      </div>
+      <div class="exec-explain-card teal">
+        <div class="exec-explain-icon">{_icon("pulse")}</div>
+        <h3>¿Qué es el estrés nodal?</h3>
+        <p>Mide qué tan intensa, volátil o extrema fue la señal de precio marginal de la barra frente a las demás.</p>
+        <strong>Estar arriba = señal de precio más intensa que el universo.</strong>
+      </div>
+    </div>
+    <div class="exec-rank-card orange">
+      <div class="exec-rank-title">{_icon("target")}<span>Top 10 por prioridad operativa</span><em>Puntaje promedio</em></div>
+      <div class="exec-rank-header"><span>#</span><span>Barra</span><span></span><span>Puntaje</span></div>
+      {top_oanri_rows}
+    </div>
+    <div class="exec-rank-card teal">
+      <div class="exec-rank-title">{_icon("pulse")}<span>Top 10 por estrés nodal</span><em>Puntaje promedio</em></div>
+      <div class="exec-rank-header"><span>#</span><span>Barra</span><span></span><span>Puntaje</span></div>
+      {top_icpi_rows}
+    </div>
+  </div>
+  <div class="exec-overlap-note">
+    <div>{_icon("link")} <strong>Coincidencias relevantes en ambos rankings:</strong> {shared_html}</div>
+    <span>→ Prioridad preferente de revisión.</span>
+  </div>
+</div>
+""",
+        unsafe_allow_html=True,
+    )
     if not regime.empty:
-        section_header("Régimen operativo mensual")
-        st.plotly_chart(system_regime_line(regime), use_container_width=True)
-    action_panel("Lectura ejecutiva", "Usa esta vista como entrada: identifica barras que concentran señal y baja al caso específico para revisar contrato, demanda industrial, contexto topológico y recurrencia mensual.")
+        st.markdown(
+            """
+<div class="exec-regime-shell">
+  <div class="exec-regime-title">
+    <div class="exec-regime-icon">↗</div>
+    <div>
+      <h3>Régimen operativo mensual</h3>
+      <p>Contexto del sistema para interpretar la prioridad operativa.</p>
+    </div>
+  </div>
+</div>
+""",
+            unsafe_allow_html=True,
+        )
+        chart_col, note_col = st.columns([4.3, 1.2])
+        with chart_col:
+            st.plotly_chart(system_regime_line(regime), use_container_width=True)
+        with note_col:
+            st.markdown(
+                """
+<div class="exec-regime-note">
+  <div class="exec-regime-note-icon">♢</div>
+  <p>Los meses de mayor presión del sistema ayudan a explicar por qué ciertas barras ganan prioridad en determinados periodos.</p>
+  <strong>No indica causalidad física por barra específica.</strong>
+</div>
+""",
+                unsafe_allow_html=True,
+            )
+    st.markdown(
+        """
+<div class="exec-bottom-action">
+  <div><strong>Lectura ejecutiva:</strong> usa esta vista como entrada para armar tu lista corta de revisión. El detalle por barra está en el ranking y en el caso de estudio.</div>
+  <span>Ir a Ranking de Prioridad →</span>
+</div>
+""",
+        unsafe_allow_html=True,
+    )
 
 
 def render_ranking() -> None:
@@ -466,6 +609,9 @@ PAGES = {
     "Exposición Industrial": render_exposicion,
     "Caso de Estudio": render_caso,
 }
-selected_page = st.sidebar.radio("Página", list(PAGES.keys()), label_visibility="collapsed")
+page_names = list(PAGES.keys())
+query_page = st.query_params.get("page", "Inicio")
+default_page_index = page_names.index(query_page) if query_page in PAGES else 0
+selected_page = st.sidebar.radio("Página", page_names, index=default_page_index, label_visibility="collapsed")
 product_sidebar_footer()
 PAGES[selected_page]()

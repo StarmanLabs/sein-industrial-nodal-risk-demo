@@ -229,14 +229,16 @@ def system_regime_line(df: pd.DataFrame):
         x="month",
         y="system_regime_v10_0_1",
         markers=True,
-        title="Contexto mensual de estrés del régimen del sistema",
+        title="",
         labels={
             "month": "Mes",
             "system_regime_v10_0_1": "Régimen del sistema (0-1)",
         },
     )
-    fig.update_traces(line={"color": "#138a8a", "width": 3}, marker={"size": 7})
-    return apply_chart_style(fig, height=310)
+    fig.update_traces(line={"color": "#087a82", "width": 3}, marker={"size": 6, "color": "#087a82"})
+    fig = apply_chart_style(fig, height=290)
+    fig.update_layout(margin={"l": 24, "r": 18, "t": 18, "b": 42})
+    return fig
 
 
 def barra_month_line(df: pd.DataFrame, barra: str):
