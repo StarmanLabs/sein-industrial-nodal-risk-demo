@@ -223,7 +223,7 @@ def render_resumen() -> None:
     shared_names = profiles.nlargest(10, "avg_oanri").loc[shared_mask, "barra"].head(2).tolist()
     shared_html = "".join(f"<span>{escape(name)}</span>" for name in shared_names) or "<span>Sin coincidencias top 10</span>"
 
-    st.markdown(
+    st.html(
         f"""
 <div class="exec-page">
   <div class="exec-header">
@@ -270,22 +270,21 @@ def render_resumen() -> None:
       </svg>
     </div>
   </div>
-  <div class="exec-mid-grid">
-    <div class="exec-explain-stack">
-      <div class="exec-explain-card orange">
-        <div class="exec-explain-icon">{_icon("target")}</div>
-        <h3>¿Qué es la prioridad operativa?</h3>
-        <p>Combina la señal de la barra con el contexto del sistema.</p>
-        <p>Responde: ¿dónde la señal es relevante en meses de mayor presión del sistema?</p>
-        <strong>Estar arriba = mayor prioridad para revisar.</strong>
-      </div>
-      <div class="exec-explain-card teal">
-        <div class="exec-explain-icon">{_icon("pulse")}</div>
-        <h3>¿Qué es el estrés nodal?</h3>
-        <p>Mide qué tan intensa, volátil o extrema fue la señal de precio marginal de la barra frente a las demás.</p>
-        <strong>Estar arriba = señal de precio más intensa que el universo.</strong>
-      </div>
+  <div class="exec-explain-row">
+    <div class="exec-explain-card orange">
+      <div class="exec-explain-icon">{_icon("target")}</div>
+      <h3>¿Qué es la prioridad operativa?</h3>
+      <p>Combina la señal de la barra con el contexto mensual del sistema para ordenar dónde revisar primero.</p>
+      <strong>Más alto = mayor prioridad de revisión.</strong>
     </div>
+    <div class="exec-explain-card teal">
+      <div class="exec-explain-icon">{_icon("pulse")}</div>
+      <h3>¿Qué es el estrés nodal?</h3>
+      <p>Mide qué tan intensa, volátil o extrema fue la señal de precio marginal de una barra frente al universo comparable.</p>
+      <strong>Más alto = señal nodal más intensa.</strong>
+    </div>
+  </div>
+  <div class="exec-rank-grid">
     <div class="exec-rank-card orange">
       <div class="exec-rank-title">{_icon("target")}<span>Top 10 por prioridad operativa</span><em>Puntaje promedio</em></div>
       <div class="exec-rank-header"><span>#</span><span>Barra</span><span></span><span>Puntaje</span></div>
@@ -303,10 +302,9 @@ def render_resumen() -> None:
   </div>
 </div>
 """,
-        unsafe_allow_html=True,
     )
     if not regime.empty:
-        st.markdown(
+        st.html(
             """
 <div class="exec-regime-shell">
   <div class="exec-regime-title">
@@ -318,13 +316,12 @@ def render_resumen() -> None:
   </div>
 </div>
 """,
-            unsafe_allow_html=True,
         )
         chart_col, note_col = st.columns([4.3, 1.2])
         with chart_col:
             st.plotly_chart(system_regime_line(regime), use_container_width=True)
         with note_col:
-            st.markdown(
+            st.html(
                 """
 <div class="exec-regime-note">
   <div class="exec-regime-note-icon">♢</div>
@@ -332,16 +329,14 @@ def render_resumen() -> None:
   <strong>No indica causalidad física por barra específica.</strong>
 </div>
 """,
-                unsafe_allow_html=True,
             )
-    st.markdown(
+    st.html(
         """
 <div class="exec-bottom-action">
   <div><strong>Lectura ejecutiva:</strong> usa esta vista como entrada para armar tu lista corta de revisión. El detalle por barra está en el ranking y en el caso de estudio.</div>
   <span>Ir a Ranking de Prioridad →</span>
 </div>
 """,
-        unsafe_allow_html=True,
     )
 
 
