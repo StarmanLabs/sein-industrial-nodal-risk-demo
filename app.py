@@ -47,6 +47,7 @@ metric_card = narrative.metric_card
 page_header = narrative.page_header
 priority_system_legend = narrative.priority_system_legend
 product_sidebar = narrative.product_sidebar
+product_sidebar_footer = getattr(narrative, "product_sidebar_footer", lambda: None)
 section_header = narrative.section_header
 context_summary_panel = narrative.context_summary_panel
 
@@ -135,34 +136,24 @@ def render_inicio() -> None:
         ]
     )
 
-    badge_row(
-        [
-            ("Soporte a decisión", "watchlist"),
-            ("Estrés marginal nodal", "monitor"),
-            ("Ranking de revisión", "evidence-a"),
-            ("Escenarios industriales", "priority-b"),
-        ]
-    )
-
     decision_flow(
         [
-            ("Medir señales", "Normaliza precio, volatilidad y episodios por barra."),
-            ("Ordenar revisión", "Jerarquiza barras por señal, recurrencia y contexto."),
-            ("Contrastar contexto", "Valida contrato, sector, ubicación y evidencia técnica."),
+            ("Medir señales", "Captura y normaliza precios marginales, volatilidad, episodios y persistencia por barra."),
+            ("Ordenar prioridad", "Combina estrés nodal, régimen operativo, robustez y evidencia contextual para priorizar revisión."),
+            ("Contrastar evidencia", "Valida contrato, sector, ubicación, demanda industrial y soporte técnico antes de decidir."),
         ]
     )
 
     use_path_panel(
         [
-            ("1. Ver el resumen", "Ubica dónde se concentra la señal más fuerte y qué barras lideran la cola."),
-            ("2. Abrir el ranking", "Filtra por prioridad, tensión o robustez para formar una lista corta de revisión."),
-            ("3. Bajar al caso", "Contrasta evolución mensual, exposición industrial y contexto técnico de la barra."),
+            ("1. Resumen Ejecutivo", "Identifica dónde se concentran las señales más relevantes."),
+            ("2. Ranking de Prioridad", "Filtra y arma tu cola corta de revisión con los casos más críticos."),
+            ("3. Caso de Estudio", "Profundiza en una barra específica y entiende por qué merece atención."),
         ]
     )
     decision_taxonomy()
     compact_scope_note(
-        "La lectura correcta es priorización analítica: el dashboard indica dónde conviene invertir tiempo experto. "
-        "La ficha técnica documenta fórmulas, evidencia, robustez y límites metodológicos."
+        "Este dashboard prioriza señales observadas para orientar revisión experta."
     )
 
 
@@ -476,4 +467,5 @@ PAGES = {
     "Caso de Estudio": render_caso,
 }
 selected_page = st.sidebar.radio("Página", list(PAGES.keys()), label_visibility="collapsed")
+product_sidebar_footer()
 PAGES[selected_page]()

@@ -72,11 +72,42 @@ def humanize_analytical_text(text: object) -> str:
 
 def product_sidebar() -> None:
     inject_global_style()
-    st.sidebar.title("SEIN Nodal Risk")
-    st.sidebar.caption("Due diligence industrial")
+    st.sidebar.markdown(
+        """
+<div class="sein-sidebar-brand">
+  <div class="sein-sidebar-mark" aria-hidden="true">
+    <svg viewBox="0 0 72 72" role="img">
+      <path d="M16 46 31 17l24 12-8 28-31-11Z" fill="none" stroke="#23d3d3" stroke-width="2.5"/>
+      <path d="M31 17 47 57M16 46l39-17M23 33l24 24" stroke="#75f2ff" stroke-width="1.6" opacity=".75"/>
+      <circle cx="31" cy="17" r="4" fill="#f7a623"/>
+      <circle cx="55" cy="29" r="4" fill="#22d3d3"/>
+      <circle cx="47" cy="57" r="4" fill="#23d160"/>
+      <circle cx="16" cy="46" r="4" fill="#22d3d3"/>
+      <circle cx="23" cy="33" r="2.7" fill="#9efcff"/>
+    </svg>
+  </div>
+  <div>
+    <div class="sein-sidebar-title">SEIN</div>
+    <div class="sein-sidebar-subtitle">Industrial<br>Nodal Risk<br>Intelligence</div>
+  </div>
+</div>
+<div class="sein-sidebar-section">Navegación</div>
+""",
+        unsafe_allow_html=True,
+    )
     st.sidebar.divider()
-    st.sidebar.caption(
-        "Screening analítico para priorizar revisión industrial."
+
+
+def product_sidebar_footer() -> None:
+    st.sidebar.markdown(
+        """
+<div class="sein-sidebar-note">
+  <div class="sein-sidebar-note-icon">ϟ</div>
+  <strong>Energía, datos y criterio económico</strong>
+  <span>para mejores decisiones industriales.</span>
+</div>
+""",
+        unsafe_allow_html=True,
     )
 
 
@@ -90,9 +121,46 @@ def hero_header(title: str, body: str, kicker: str = "SEIN Industrial Nodal Risk
     st.markdown(
         f"""
 <div class="sein-hero">
-  <div class="sein-hero-kicker">{escape(kicker)}</div>
-  <div class="sein-hero-title">{escape(title)}</div>
-  <div class="sein-hero-body">{escape(body)}</div>
+  <div class="sein-hero-content">
+    <div class="sein-hero-kicker">{escape(kicker)}</div>
+    <div class="sein-hero-title">{escape(title).replace("due diligence industrial", "<span>due diligence industrial</span>")}</div>
+    <div class="sein-hero-body">{escape(body)}</div>
+    <div class="sein-hero-proof">Identifica qué barras revisar primero, por qué aparecen y qué evidencia falta contrastar.</div>
+    <div class="sein-hero-actions">
+      <div class="sein-hero-action primary">Ver resumen ejecutivo <span>→</span></div>
+      <div class="sein-hero-action">Abrir ranking <span>→</span></div>
+      <div class="sein-hero-action">Analizar caso <span>→</span></div>
+    </div>
+  </div>
+  <div class="sein-hero-visual" aria-hidden="true">
+    <svg viewBox="0 0 420 430" role="img">
+      <defs>
+        <filter id="glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <path class="peru-outline" d="M250 20 318 58l-6 54 55 35-24 51 38 58-58 18-10 70-71 18-31 46-68-29-46-53 21-58-51-42 35-62-12-72 61-39Z"/>
+      <g class="peru-lines">
+        <path d="M250 20 211 126 318 58 274 182 367 147 292 243 381 256 313 344 242 362 143 379 118 268 67 226 102 164 151 53"/>
+        <path d="M211 126 102 164 274 182 118 268 292 243 242 362"/>
+        <path d="M318 58 367 147 381 256 313 344"/>
+      </g>
+      <g filter="url(#glow)">
+        <circle cx="250" cy="20" r="5"/>
+        <circle cx="318" cy="58" r="5"/>
+        <circle cx="211" cy="126" r="5"/>
+        <circle cx="274" cy="182" r="5"/>
+        <circle cx="367" cy="147" r="5"/>
+        <circle cx="292" cy="243" r="5"/>
+        <circle cx="381" cy="256" r="5"/>
+        <circle cx="313" cy="344" r="5"/>
+        <circle cx="242" cy="362" r="5"/>
+        <circle cx="143" cy="379" r="5"/>
+        <circle cx="118" cy="268" r="5"/>
+        <circle cx="67" cy="226" r="5"/>
+        <circle cx="102" cy="164" r="5"/>
+        <circle cx="151" cy="53" r="5"/>
+      </g>
+    </svg>
+  </div>
 </div>
 """,
         unsafe_allow_html=True,
@@ -100,9 +168,30 @@ def hero_header(title: str, body: str, kicker: str = "SEIN Industrial Nodal Risk
 
 
 def executive_kpi_strip(items: list[tuple[str, object, str, str]]) -> None:
+    icons = {
+        "Universo SEIN": "pin",
+        "Cobertura": "calendar",
+        "Panel mensual": "database",
+        "Cola de revisión": "users",
+        "Seguimiento": "trend",
+    }
+
+    def _icon(name: str) -> str:
+        icon = icons.get(name, "database")
+        if icon == "pin":
+            return '<svg viewBox="0 0 24 24"><path d="M12 22s7-6.1 7-13A7 7 0 0 0 5 9c0 6.9 7 13 7 13Z"/><circle cx="12" cy="9" r="2.5"/></svg>'
+        if icon == "calendar":
+            return '<svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16M8 14h.01M12 14h.01M16 14h.01M8 17h.01M12 17h.01"/></svg>'
+        if icon == "users":
+            return '<svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>'
+        if icon == "trend":
+            return '<svg viewBox="0 0 24 24"><path d="M3 17h18M4 14l5-5 4 4 7-8"/><path d="M16 5h4v4"/></svg>'
+        return '<svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="7" ry="3"/><path d="M5 5v6c0 1.7 3.1 3 7 3s7-1.3 7-3V5"/><path d="M5 11v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg>'
+
     rendered_items = "\n".join(
         f"""
   <div class="sein-exec-kpi {escape(kind)}">
+    <div class="sein-exec-kpi-icon">{_icon(label)}</div>
     <div class="sein-exec-kpi-label">{escape(label)}</div>
     <div class="sein-exec-kpi-value">{escape(str(value))}</div>
     <div class="sein-exec-kpi-note">{escape(note)}</div>
@@ -121,12 +210,17 @@ def executive_kpi_strip(items: list[tuple[str, object, str, str]]) -> None:
 
 
 def decision_flow(steps: list[tuple[str, str]]) -> None:
+    flow_icons = [
+        '<svg viewBox="0 0 24 24"><path d="M4 13h3l2-6 4 12 3-8h4"/></svg>',
+        '<svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg>',
+        '<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>',
+    ]
     rendered_steps = "\n".join(
         f"""
   <div class="sein-flow-step">
-    <div class="sein-flow-number">{index:02d}</div>
+    <div class="sein-flow-icon {['signal', 'rank', 'proof'][index - 1]}">{flow_icons[index - 1]}</div>
     <div>
-      <div class="sein-flow-title">{escape(title)}</div>
+      <div class="sein-flow-title">{index}. {escape(title)}</div>
       <div class="sein-flow-body">{escape(body)}</div>
     </div>
   </div>
@@ -136,11 +230,7 @@ def decision_flow(steps: list[tuple[str, str]]) -> None:
     st.markdown(
         f"""
 <div class="sein-flow-panel">
-  <div class="sein-flow-copy">
-    <div class="sein-flow-kicker">Flujo del producto</div>
-    <div class="sein-flow-headline">De precios marginales a una cola de revisión industrial</div>
-    <div class="sein-flow-text">La app convierte datos técnicos en una secuencia de trabajo: detectar señales, priorizar barras y decidir dónde profundizar.</div>
-  </div>
+  <div class="sein-flow-headline">De datos nodales a una cola de revisión</div>
   <div class="sein-flow-steps">
 {rendered_steps}
   </div>
@@ -151,14 +241,21 @@ def decision_flow(steps: list[tuple[str, str]]) -> None:
 
 
 def use_path_panel(items: list[tuple[str, str]]) -> None:
+    icons = [
+        '<svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>',
+        '<svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg>',
+        '<svg viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9Z"/><path d="M14 3v6h6M9 15h5M9 18h3"/></svg>',
+    ]
     rendered_items = "\n".join(
         f"""
   <div class="sein-use-step">
+    <div class="sein-use-icon {['summary', 'ranking', 'case'][index - 1]}">{icons[index - 1]}</div>
     <span>{escape(label)}</span>
     <p>{escape(body)}</p>
+    <a>{['Ir al resumen', 'Abrir ranking', 'Ver caso'][index - 1]} <strong>→</strong></a>
   </div>
 """
-        for label, body in items
+        for index, (label, body) in enumerate(items, start=1)
     )
     st.markdown(
         f"""
@@ -175,29 +272,36 @@ def use_path_panel(items: list[tuple[str, str]]) -> None:
 
 def decision_taxonomy() -> None:
     items = [
-        ("Revisión inmediata", "Primera cola de due diligence: señal alta, recurrencia y soporte suficiente.", "urgent"),
-        ("Revisión selectiva", "Candidata relevante; gana prioridad si el sector, contrato o ubicación aumentan exposición.", "selective"),
-        ("Seguimiento mensual", "Caso episódico o sensible a escenarios; se vigila por persistencia y cambios recientes.", "watch"),
-        ("Contexto base", "Permanece en el universo analítico para comparación, referencia y nuevos eventos.", "base"),
+        ("Revisión inmediata", "Señal alta, recurrencia y soporte suficiente.", "urgent", "warning"),
+        ("Revisión selectiva", "Prioridad si sector, contrato o ubicación aumentan exposición.", "selective", "target"),
+        ("Seguimiento mensual", "Caso episódico o sensible a escenarios; vigilar persistencia.", "watch", "eye"),
+        ("Contexto base", "Permanece en el universo para comparación y referencia.", "base", "database"),
+        ("Requiere contexto adicional", "Información limitada; priorizar obtención de evidencia.", "limited", "help"),
     ]
+    icons = {
+        "warning": '<svg viewBox="0 0 24 24"><path d="M12 3 2 21h20L12 3Z"/><path d="M12 9v5M12 17h.01"/></svg>',
+        "target": '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/><path d="m15 9 5-5"/></svg>',
+        "eye": '<svg viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>',
+        "database": '<svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="7" ry="3"/><path d="M5 5v6c0 1.7 3.1 3 7 3s7-1.3 7-3V5"/><path d="M5 11v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg>',
+        "help": '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.7 2.7 0 0 1 5 1.4c0 2.1-2.5 2.3-2.5 4.1M12 18h.01"/></svg>',
+    }
     rendered_items = "\n".join(
         f"""
   <div class="sein-taxonomy-item {escape(kind)}">
+    <div class="sein-taxonomy-icon">{icons[icon]}</div>
     <div class="sein-taxonomy-title">{escape(title)}</div>
     <div class="sein-taxonomy-body">{escape(body)}</div>
   </div>
 """
-        for title, body, kind in items
+        for title, body, kind, icon in items
     )
     st.markdown(
         f"""
 <div class="sein-taxonomy-panel">
   <div class="sein-taxonomy-header">
     <div>
-      <div class="sein-taxonomy-kicker">Taxonomía de decisión</div>
-      <div class="sein-taxonomy-headline">Cómo leer la cola de revisión</div>
+      <div class="sein-taxonomy-headline">Taxonomía de decisión</div>
     </div>
-    <div class="sein-taxonomy-caption">Los nombres técnicos quedan para la ficha metodológica; aquí se comunica qué acción tomar.</div>
   </div>
   <div class="sein-taxonomy-grid">
 {rendered_items}
@@ -212,7 +316,10 @@ def compact_scope_note(body: str) -> None:
     st.markdown(
         f"""
 <div class="sein-compact-note">
-  <strong>Lectura prudente.</strong> {escape(body)}
+  <div class="sein-compact-note-icon">
+    <svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.5 2.9 8.5 7 10 4.1-1.5 7-5.5 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-5"/></svg>
+  </div>
+  <div>{escape(body)}<br><strong>No prueba congestión física, no predice precios y no reemplaza due diligence contractual, operativa o de ingeniería.</strong></div>
 </div>
 """,
         unsafe_allow_html=True,
