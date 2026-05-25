@@ -1399,14 +1399,10 @@ h2, h3 {
   color: var(--sein-blue);
 }
 
-.exec-caveat-icon svg {
+.exec-caveat-icon .exec-icon {
   width: 100%;
   height: 100%;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+  font-size: 2.2rem;
 }
 
 .exec-caveat strong {
@@ -1462,18 +1458,32 @@ h2, h3 {
   color: var(--sein-teal);
 }
 
-.exec-kpi-icon svg,
-.exec-explain-icon svg,
-.exec-rank-title svg,
-.exec-overlap-note svg {
-  width: 62%;
-  height: 62%;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+.exec-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 1.15em;
+  height: 1.15em;
+  color: currentColor;
+  font-weight: 900;
+  line-height: 1;
 }
+
+.exec-icon::before {
+  display: block;
+  font-family: Arial, sans-serif;
+  font-size: 1em;
+  line-height: 1;
+}
+
+.exec-icon-warning::before { content: "⚠"; }
+.exec-icon-target::before { content: "◎"; }
+.exec-icon-eye::before { content: "◉"; }
+.exec-icon-network::before { content: "⌬"; }
+.exec-icon-calendar::before { content: "▦"; }
+.exec-icon-trend::before { content: "↗"; }
+.exec-icon-pulse::before { content: "∿"; }
+.exec-icon-shield::before { content: "◇"; }
+.exec-icon-link::before { content: "∞"; }
 
 .exec-kpi-item.urgent .exec-kpi-icon { color: var(--sein-red); background: #fff1ef; }
 .exec-kpi-item.selective .exec-kpi-icon { color: #f08c00; background: #fff7ed; }
@@ -1544,6 +1554,12 @@ h2, h3 {
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+
+.exec-finding-icon .exec-icon {
+  width: 42px;
+  height: 42px;
+  font-size: 2.3rem;
 }
 
 .exec-section-kicker {
@@ -1698,33 +1714,38 @@ h2, h3 {
 
 .exec-rank-title {
   display: grid;
-  grid-template-columns: 30px minmax(0, 1fr) auto;
-  gap: 0.55rem;
+  grid-template-columns: 24px minmax(0, 1fr) auto;
+  gap: 0.45rem;
   align-items: center;
   margin-bottom: 0.7rem;
 }
 
-.exec-rank-title svg {
+.exec-rank-title .exec-icon {
   color: var(--sein-teal);
+  font-size: 1.05rem;
 }
 
-.exec-rank-card.orange .exec-rank-title svg {
+.exec-rank-card.orange .exec-rank-title .exec-icon {
   color: #f07600;
 }
 
 .exec-rank-title span {
   color: var(--sein-ink);
-  font-size: 0.86rem;
+  font-size: 0.76rem;
   font-weight: 860;
   text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .exec-rank-title em {
   color: #536275;
-  font-size: 0.7rem;
+  font-size: 0.62rem;
   font-style: normal;
   text-transform: uppercase;
   font-weight: 760;
+  white-space: nowrap;
 }
 
 .exec-rank-header,
@@ -1802,10 +1823,11 @@ h2, h3 {
   flex-wrap: wrap;
 }
 
-.exec-overlap-note svg {
+.exec-overlap-note .exec-icon {
   width: 24px;
   height: 24px;
   color: var(--sein-teal);
+  font-size: 1.2rem;
 }
 
 .exec-overlap-note span span,

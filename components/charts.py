@@ -224,20 +224,27 @@ def icpi_oanri_scatter(df: pd.DataFrame):
 
 
 def system_regime_line(df: pd.DataFrame):
-    fig = px.line(
-        df,
-        x="month",
-        y="system_regime_v10_0_1",
-        markers=True,
-        title="",
-        labels={
-            "month": "Mes",
-            "system_regime_v10_0_1": "Régimen del sistema (0-1)",
-        },
+    data = df.sort_values("month").copy()
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(
+            x=data["month"],
+            y=data["system_regime_v10_0_1"],
+            mode="lines+markers",
+            line={"color": "#087a82", "width": 3},
+            marker={"size": 6, "color": "#087a82"},
+            hovertemplate="Mes: %{x|%Y-%m}<br>Presión del sistema: %{y:.2f}<extra></extra>",
+            showlegend=False,
+        )
     )
-    fig.update_traces(line={"color": "#087a82", "width": 3}, marker={"size": 6, "color": "#087a82"})
+    fig.update_layout(
+        title=None,
+        xaxis_title="Mes",
+        yaxis_title="Presión del sistema (0-1)",
+        showlegend=False,
+    )
     fig = apply_chart_style(fig, height=290)
-    fig.update_layout(margin={"l": 24, "r": 18, "t": 18, "b": 42})
+    fig.update_layout(title_text="", margin={"l": 24, "r": 18, "t": 10, "b": 42})
     return fig
 
 

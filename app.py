@@ -176,18 +176,7 @@ def render_resumen() -> None:
     top_icpi = profiles.sort_values("rank_icpi", na_position="last").head(1).iloc[0]
 
     def _icon(name: str) -> str:
-        icons = {
-            "warning": '<svg viewBox="0 0 24 24"><path d="M12 3 2 21h20L12 3Z"/><path d="M12 9v5M12 17h.01"/></svg>',
-            "target": '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/><path d="m15 9 5-5"/></svg>',
-            "eye": '<svg viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>',
-            "network": '<svg viewBox="0 0 24 24"><circle cx="6" cy="17" r="2"/><circle cx="12" cy="4" r="2"/><circle cx="19" cy="19" r="2"/><path d="M7 15 11 6M13 6l5 11M8 17h9"/></svg>',
-            "calendar": '<svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16M8 14h.01M12 14h.01M16 14h.01M8 17h.01M12 17h.01"/></svg>',
-            "trend": '<svg viewBox="0 0 24 24"><path d="M4 19V5M4 19h16M7 15l4-4 3 3 5-7"/><path d="M16 7h3v3"/></svg>',
-            "pulse": '<svg viewBox="0 0 24 24"><path d="M3 13h4l2-7 4 14 2-7h6"/></svg>',
-            "shield": '<svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.5 2.9 8.5 7 10 4.1-1.5 7-5.5 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-5"/></svg>',
-            "link": '<svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7 0l2-2a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-2 2a5 5 0 0 0 7 7l1-1"/></svg>',
-        }
-        return icons[name]
+        return f'<span class="exec-icon exec-icon-{escape(name)}" aria-hidden="true"></span>'
 
     def _kpi_item(value: object, label: str, note: str, kind: str, icon_name: str) -> str:
         return f"""
@@ -313,7 +302,7 @@ def render_resumen() -> None:
             """
 <div class="exec-regime-shell">
   <div class="exec-regime-title">
-    <div class="exec-regime-icon">↗</div>
+    <div class="exec-regime-icon"><span class="exec-icon exec-icon-trend" aria-hidden="true"></span></div>
     <div>
       <h3>Régimen operativo mensual</h3>
       <p>Contexto del sistema para interpretar la prioridad operativa.</p>
