@@ -335,11 +335,49 @@ def render_resumen() -> None:
 
 
 def render_ranking() -> None:
-    page_header("Ranking de Prioridad por Barra", "¿Qué barras deberían revisarse primero?")
     df = load_product_layer()
     if df.empty:
         st.error("La capa producto no está disponible.")
         st.stop()
+
+    st.html(
+        """
+<div class="rank-page">
+  <div class="rank-header">
+    <div>
+      <div class="exec-kicker">Panel de soporte a decisiones</div>
+      <h1>Ranking de Prioridad por Barra</h1>
+      <p><strong>Pregunta de decisión:</strong> ¿Qué barras deberían revisarse primero?</p>
+    </div>
+    <div class="rank-caveat">
+      <span class="exec-icon exec-icon-shield" aria-hidden="true"></span>
+      <div>
+        <strong>Mayor posición = mayor prioridad de revisión.</strong>
+        <span>No significa que la barra sea “mala”. No prueba congestión física ni predice precios.</span>
+      </div>
+    </div>
+  </div>
+</div>
+"""
+    )
+    summary_slot = st.empty()
+
+    filter_top = st.columns([0.8, 1.25, 1.15, 1.1, 1])
+    with filter_top[0]:
+        st.html(
+            """
+<div class="rank-filter-title">
+  <span class="exec-icon exec-icon-filter" aria-hidden="true"></span>
+  <strong>Filtros de revisión</strong>
+</div>
+"""
+        )
+    with filter_top[4]:
+        reset_filters = st.button("Limpiar filtros", key="ranking_clear_filters", use_container_width=True)
+    if reset_filters:
+        st.session_state["ranking_priority"] = []
+        st.session_state["ranking_robustness"] = []
+        st.session_state["ranking_tension"] = []
 
     filter_cols = st.columns([1.25, 1.05, 1.05])
     with filter_cols[0]:
@@ -359,24 +397,171 @@ def render_ranking() -> None:
         filtered = filtered[filtered["nivel_tension_kv"].isin(selected_tension)]
     filtered = filtered.sort_values("decision_priority_score", ascending=False)
 
-    cols = st.columns(4)
-    with cols[0]:
-        metric_card("Barras filtradas", f"{len(filtered):,.0f}", "universo visible", kind="info")
-    with cols[1]:
-        metric_card("Cola de revisión", f"{filtered['due_diligence_priority'].isin(['Priority A', 'Priority B']).sum():,.0f}", "revisión inmediata/selectiva", kind="warning")
-    with cols[2]:
-        metric_card("Seguimiento mensual", f"{(filtered['due_diligence_priority'] == 'Watchlist').sum():,.0f}", "casos episódicos", kind="info")
-    with cols[3]:
-        metric_card("Contexto revisado", f"{filtered['topology_context_asset'].astype(str).str.strip().ne('').sum():,.0f}", "activo/conexión trazable", kind="good")
+    def _count_priority(value: str) -> int:
+        return int((filtered["due_diligence_priority"] == value).sum()) if not filtered.empty else 0
 
-    section_header("Cómo funcionan las categorías")
-    priority_system_legend()
-    section_header("Cola de revisión por barra")
+    robust_col = "robustness_flag_es" if "robustness_flag_es" in filtered.columns else "robustness_flag"
+    robust_high = int(filtered[robust_col].astype(str).str.contains("alta|high", case=False, na=False).sum()) if robust_col in filtered else 0
+    queue_count = int(filtered["due_diligence_priority"].isin(["Priority A", "Priority B"]).sum()) if not filtered.empty else 0
+    watch_count = _count_priority("Watchlist")
+    immediate_count = _count_priority("Priority A")
+    top_barras = filtered["barra"].head(3).tolist()
+    while len(top_barras) < 3:
+        top_barras.append("Sin resultado")
+    next_action = (
+        f"Abrir caso de estudio de {top_barras[0]} para contrastar contrato, demanda industrial, contexto y recurrencia."
+        if not filtered.empty
+        else "Amplía los filtros para recuperar barras candidatas de revisión."
+    )
+    with summary_slot.container():
+        st.html(
+            f"""
+<div class="rank-summary-card">
+  <div class="rank-summary-left">
+    <div class="rank-summary-icon"><span class="exec-icon exec-icon-target" aria-hidden="true"></span></div>
+    <div class="rank-summary-kpis">
+      <div class="rank-summary-title">Con los filtros actuales:</div>
+      <div class="rank-kpi"><strong>{len(filtered):,.0f}</strong><span>barras visibles</span></div>
+      <div class="rank-kpi"><strong>{queue_count:,.0f}</strong><span>en cola principal<br>(inmediata / selectiva)</span></div>
+      <div class="rank-kpi"><strong>{watch_count:,.0f}</strong><span>en seguimiento mensual<br>(casos episódicos)</span></div>
+      <div class="rank-kpi"><strong>{robust_high:,.0f}</strong><span>señales con<br>robustez alta</span></div>
+      <div class="rank-kpi"><strong>{immediate_count:,.0f}</strong><span>en revisión inmediata</span></div>
+    </div>
+  </div>
+  <div class="rank-start-box">
+    <strong>La revisión empieza por:</strong>
+    <ol>
+      <li>{escape(str(top_barras[0]))}</li>
+      <li>{escape(str(top_barras[1]))}</li>
+      <li>{escape(str(top_barras[2]))}</li>
+    </ol>
+  </div>
+  <div class="rank-next-box">
+    <span class="exec-icon exec-icon-case" aria-hidden="true"></span>
+    <div><strong>Siguiente paso recomendado:</strong><p>{escape(next_action)}</p></div>
+  </div>
+</div>
+"""
+        )
+
+    st.html(
+        """
+<div class="rank-taxonomy">
+  <div class="rank-tax-item red"><strong>Revisión inmediata</strong><span>Primera cola de due diligence. Combina señal alta, recurrencia, robustez y soporte de contexto.</span></div>
+  <div class="rank-tax-item amber"><strong>Revisión selectiva</strong><span>Candidata relevante. Gana prioridad cuando sector, contrato, ubicación o contexto industrial aumentan exposición.</span></div>
+  <div class="rank-tax-item teal"><strong>Seguimiento mensual</strong><span>Caso episódico o sensible. Se vigila para distinguir persistencia, deterioro reciente o eventos puntuales.</span></div>
+  <div class="rank-tax-item steel"><strong>Contexto base</strong><span>Permanece como referencia del universo o necesita mejor contexto antes de una lectura fuerte.</span></div>
+  <div class="rank-tax-item purple"><strong>Requiere contexto adicional</strong><span>No exige revisión inmediata; completar evidencia antes de interpretar.</span></div>
+</div>
+"""
+    )
+
+    st.html("<h2 class='rank-section-title'>Cola priorizada de revisión</h2>")
     if filtered.empty:
         action_panel("Sin resultados para los filtros activos", "Amplía prioridad, evidencia, robustez o tensión para recuperar barras candidatas.")
     else:
-        priority_table(filtered)
+        page_tools = st.columns([1, 1, 4, 1])
+        with page_tools[0]:
+            rows_per_page = st.selectbox("Filas por página", [10, 25, 50, 100], index=0, key="ranking_rows")
+        total_pages = max(1, int((len(filtered) - 1) // rows_per_page) + 1)
+        with page_tools[1]:
+            page_number = st.number_input("Página", min_value=1, max_value=total_pages, value=1, step=1, key="ranking_page")
+        start = (page_number - 1) * rows_per_page
+        end = start + rows_per_page
+        page_df = filtered.iloc[start:end].copy()
+
+        action_short = {
+            "Priority A": "Abrir revisión estructurada",
+            "Priority B": "Revisar después de inmediata",
+            "Watchlist": "Monitorear recurrencia",
+            "Monitor": "Mantener como referencia",
+            "Low information": "Completar contexto",
+        }
+        reason_short = {
+            "Priority A": "Alta prioridad operativa + robustez alta + señal recurrente",
+            "Priority B": "Prioridad operativa elevada",
+            "Watchlist": "Caso episódico / sensible",
+            "Monitor": "Contexto base del universo",
+            "Low information": "Requiere más contexto",
+        }
+        table = page_df.assign(
+            **{
+                "#": range(start + 1, start + 1 + len(page_df)),
+                "Score de revisión": page_df["decision_priority_score"].round(2),
+                "Categoría de revisión": page_df["due_diligence_priority_es"],
+                "Acción recomendada": page_df["due_diligence_priority"].map(action_short).fillna(page_df["recommended_action"]),
+                "¿Por qué aparece?": page_df["due_diligence_priority"].map(reason_short).fillna(page_df["priority_reason"]),
+                "Robustez": page_df[robust_col],
+                "Estrés nodal prom.": page_df["avg_icpi"].round(2),
+                "Prioridad operativa prom.": page_df["avg_oanri"].round(2),
+                "Tensión kV": page_df["nivel_tension_kv"].round(1),
+                "Soporte de contexto": page_df["evidence_grade"].map(lambda value: "Revisado" if str(value) == "A" else str(value)),
+            }
+        )[
+            [
+                "#",
+                "barra",
+                "Score de revisión",
+                "Categoría de revisión",
+                "Acción recomendada",
+                "¿Por qué aparece?",
+                "Robustez",
+                "Estrés nodal prom.",
+                "Prioridad operativa prom.",
+                "Tensión kV",
+                "Soporte de contexto",
+            ]
+        ].rename(columns={"barra": "Barra"})
+
+        def _rank_style(value: object) -> str:
+            text = str(value)
+            if text == "Revisión inmediata":
+                return "background-color: #fde8e6; color: #9d1f17; font-weight: 800; border-radius: 6px"
+            if text == "Revisión selectiva":
+                return "background-color: #fff0cf; color: #a85a00; font-weight: 800; border-radius: 6px"
+            if text == "Seguimiento mensual":
+                return "background-color: #dff4f6; color: #087a82; font-weight: 800; border-radius: 6px"
+            if text == "Contexto base":
+                return "background-color: #eef2f6; color: #4f5d6f; font-weight: 800; border-radius: 6px"
+            if text == "Requiere contexto adicional":
+                return "background-color: #f2e8f8; color: #7e3fa1; font-weight: 800; border-radius: 6px"
+            if "alta" in text.lower():
+                return "color: #1f8a5b; font-weight: 800"
+            if "moderada" in text.lower():
+                return "color: #c47a16; font-weight: 800"
+            if text == "Revisado":
+                return "color: #1f8a5b; font-weight: 800"
+            return ""
+
+        st.dataframe(
+            table.style.map(_rank_style).format(precision=2),
+            width="stretch",
+            hide_index=True,
+            height=430,
+            column_config={
+                "#": st.column_config.NumberColumn("#", width="small"),
+                "Barra": st.column_config.TextColumn("Barra", width="medium"),
+                "Score de revisión": st.column_config.ProgressColumn("Score de revisión", min_value=0, max_value=100, format="%.2f", width="medium"),
+                "Categoría de revisión": st.column_config.TextColumn("Categoría de revisión", width="medium"),
+                "Acción recomendada": st.column_config.TextColumn("Acción recomendada", width="medium"),
+                "¿Por qué aparece?": st.column_config.TextColumn("¿Por qué aparece?", width="large"),
+                "Robustez": st.column_config.TextColumn("Robustez", width="small"),
+                "Estrés nodal prom.": st.column_config.NumberColumn("Estrés nodal prom.", format="%.2f", width="small"),
+                "Prioridad operativa prom.": st.column_config.NumberColumn("Prioridad operativa prom.", format="%.2f", width="small"),
+                "Tensión kV": st.column_config.NumberColumn("Tensión kV", format="%.1f", width="small"),
+                "Soporte de contexto": st.column_config.TextColumn("Soporte de contexto", width="small"),
+            },
+        )
+        st.caption(f"Mostrando {start + 1:,} a {min(end, len(filtered)):,} de {len(filtered):,} barras filtradas.")
         st.download_button("Descargar lista filtrada", filtered.to_csv(index=False).encode("utf-8"), file_name="sein_barra_due_diligence_worklist.csv", mime="text/csv")
+    st.html(
+        """
+<div class="rank-bottom-notes">
+  <div><span class="exec-icon exec-icon-shield" aria-hidden="true"></span><strong>Nota metodológica:</strong><p>Esta priorización combina señales de precio, recurrencia, robustez y contexto del sistema. No sustituye análisis técnico, contractual u operativo.</p></div>
+  <div><span class="exec-icon exec-icon-case" aria-hidden="true"></span><strong>Uso recomendado:</strong><p>Forme una lista corta con los filtros, revise los casos y valide con equipos técnicos y contractuales antes de cualquier decisión.</p></div>
+</div>
+"""
+    )
 
 
 def render_icpi_oanri() -> None:
