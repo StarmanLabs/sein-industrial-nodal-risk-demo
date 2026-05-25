@@ -270,35 +270,40 @@ def render_resumen() -> None:
       </svg>
     </div>
   </div>
-  <div class="exec-explain-row">
-    <div class="exec-explain-card orange">
-      <div class="exec-explain-icon">{_icon("target")}</div>
-      <h3>¿Qué es la prioridad operativa?</h3>
-      <p>Combina la señal de la barra con el contexto mensual del sistema para ordenar dónde revisar primero.</p>
-      <strong>Más alto = mayor prioridad de revisión.</strong>
+  <div class="exec-mid-grid">
+    <div class="exec-explain-stack">
+      <div class="exec-explain-card orange">
+        <div class="exec-explain-icon">{_icon("target")}</div>
+        <h3>¿Qué es la prioridad operativa?</h3>
+        <p>Combina la señal de la barra con el contexto del sistema.</p>
+        <p>Responde: ¿dónde la señal es relevante en meses de mayor presión?</p>
+        <strong>Más alto = mayor prioridad para revisar.</strong>
+      </div>
+      <div class="exec-explain-card teal">
+        <div class="exec-explain-icon">{_icon("pulse")}</div>
+        <h3>¿Qué es el estrés nodal?</h3>
+        <p>Mide qué tan intensa, volátil o extrema fue la señal de precio marginal de la barra frente a las demás.</p>
+        <strong>Más alto = señal de precio más intensa.</strong>
+      </div>
     </div>
-    <div class="exec-explain-card teal">
-      <div class="exec-explain-icon">{_icon("pulse")}</div>
-      <h3>¿Qué es el estrés nodal?</h3>
-      <p>Mide qué tan intensa, volátil o extrema fue la señal de precio marginal de una barra frente al universo comparable.</p>
-      <strong>Más alto = señal nodal más intensa.</strong>
+    <div class="exec-rank-zone">
+      <div class="exec-rank-grid">
+        <div class="exec-rank-card orange">
+          <div class="exec-rank-title">{_icon("target")}<span>Top 10 por prioridad operativa</span><em>Puntaje promedio</em></div>
+          <div class="exec-rank-header"><span>#</span><span>Barra</span><span></span><span>Puntaje</span></div>
+          {top_oanri_rows}
+        </div>
+        <div class="exec-rank-card teal">
+          <div class="exec-rank-title">{_icon("pulse")}<span>Top 10 por estrés nodal</span><em>Puntaje promedio</em></div>
+          <div class="exec-rank-header"><span>#</span><span>Barra</span><span></span><span>Puntaje</span></div>
+          {top_icpi_rows}
+        </div>
+      </div>
+      <div class="exec-overlap-note">
+        <div>{_icon("link")} <strong>Coincidencias relevantes en ambos rankings:</strong> {shared_html}</div>
+        <span>→ Prioridad preferente de revisión.</span>
+      </div>
     </div>
-  </div>
-  <div class="exec-rank-grid">
-    <div class="exec-rank-card orange">
-      <div class="exec-rank-title">{_icon("target")}<span>Top 10 por prioridad operativa</span><em>Puntaje promedio</em></div>
-      <div class="exec-rank-header"><span>#</span><span>Barra</span><span></span><span>Puntaje</span></div>
-      {top_oanri_rows}
-    </div>
-    <div class="exec-rank-card teal">
-      <div class="exec-rank-title">{_icon("pulse")}<span>Top 10 por estrés nodal</span><em>Puntaje promedio</em></div>
-      <div class="exec-rank-header"><span>#</span><span>Barra</span><span></span><span>Puntaje</span></div>
-      {top_icpi_rows}
-    </div>
-  </div>
-  <div class="exec-overlap-note">
-    <div>{_icon("link")} <strong>Coincidencias relevantes en ambos rankings:</strong> {shared_html}</div>
-    <span>→ Prioridad preferente de revisión.</span>
   </div>
 </div>
 """,

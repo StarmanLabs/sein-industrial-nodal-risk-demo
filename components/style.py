@@ -1618,16 +1618,9 @@ h2, h3 {
 
 .exec-mid-grid {
   display: grid;
-  grid-template-columns: minmax(220px, 0.58fr) minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-columns: minmax(230px, 0.48fr) minmax(0, 2fr);
   gap: 0.65rem;
   align-items: stretch;
-}
-
-.exec-explain-row {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.65rem;
-  margin-bottom: 0.65rem;
 }
 
 .exec-rank-grid {
@@ -1635,6 +1628,12 @@ h2, h3 {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.65rem;
   align-items: stretch;
+}
+
+.exec-rank-zone {
+  display: grid;
+  grid-template-rows: auto auto;
+  gap: 0.65rem;
 }
 
 .exec-explain-stack {
@@ -1652,18 +1651,14 @@ h2, h3 {
 }
 
 .exec-explain-card {
-  min-height: 118px;
-  display: grid;
-  grid-template-columns: 34px minmax(0, 1fr);
-  column-gap: 0.65rem;
-  align-content: start;
+  min-height: 158px;
+  display: block;
 }
 
 .exec-explain-icon {
   width: 26px;
   height: 26px;
-  margin-top: 0.1rem;
-  grid-row: 1 / span 3;
+  margin: 0 0 0.45rem 0;
 }
 
 .exec-explain-card.orange .exec-explain-icon,
@@ -1682,7 +1677,7 @@ h2, h3 {
   text-transform: uppercase;
   line-height: 1.28;
   font-weight: 860;
-  margin: 0 0 0.35rem 0;
+  margin: 0 0 0.55rem 0;
 }
 
 .exec-explain-card p,
@@ -1690,7 +1685,7 @@ h2, h3 {
   display: block;
   font-size: 0.79rem;
   line-height: 1.45;
-  margin: 0 0 0.35rem 0;
+  margin: 0 0 0.5rem 0;
 }
 
 .exec-explain-card p {
@@ -1796,7 +1791,7 @@ h2, h3 {
   background: #fbfdfe;
   color: #26384d;
   padding: 0.7rem 0.85rem;
-  margin: 0.65rem 0 0.8rem 0;
+  margin: 0;
   font-size: 0.82rem;
 }
 
@@ -1989,7 +1984,6 @@ div[data-testid="stMetric"] {
   .exec-header,
   .exec-main-finding,
   .exec-mid-grid,
-  .exec-explain-row,
   .exec-rank-grid {
     grid-template-columns: 1fr;
   }
@@ -2036,7 +2030,6 @@ div[data-testid="stMetric"] {
   .exec-kpi-band,
   .exec-main-finding,
   .exec-mid-grid,
-  .exec-explain-row,
   .exec-rank-grid {
     grid-template-columns: 1fr;
   }
