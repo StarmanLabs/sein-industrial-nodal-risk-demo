@@ -40,24 +40,24 @@ with cols[1]:
     metric_card("Meses analizados", f"{panel['month'].nunique() if not panel.empty else 0}", "panel histórico")
 with cols[2]:
     metric_card(
-        "Prioridad A",
+        "Revisión inmediata",
         f"{(profiles['due_diligence_priority'] == 'Priority A').sum():,.0f}",
         "primera cola",
         kind="danger",
     )
 with cols[3]:
     metric_card(
-        "Prioridad B",
+        "Revisión selectiva",
         f"{(profiles['due_diligence_priority'] == 'Priority B').sum():,.0f}",
         "segunda revisión",
         kind="warning",
     )
 with cols[4]:
     metric_card(
-        "Baja información",
-        f"{(profiles['due_diligence_priority'] == 'Low information').sum():,.0f}",
-        "reforzar contexto",
-        kind="neutral",
+        "Seguimiento mensual",
+        f"{(profiles['due_diligence_priority'] == 'Watchlist').sum():,.0f}",
+        "monitoreo activo",
+        kind="info",
     )
 
 priority_ab = profiles[profiles["due_diligence_priority"].isin(["Priority A", "Priority B"])]
@@ -68,7 +68,7 @@ insight_grid(
     [
         (
             "Hallazgo ejecutivo",
-            f"{len(priority_ab):,.0f} barras entran a la cola A/B. Lideran {top_oanri['barra']} por prioridad operativa y {top_icpi['barra']} por estrés nodal.",
+            f"{len(priority_ab):,.0f} barras entran a la cola de revisión. Lideran {top_oanri['barra']} por prioridad operativa y {top_icpi['barra']} por estrés nodal.",
             "decision",
         ),
         (
@@ -78,7 +78,7 @@ insight_grid(
         ),
         (
             "Siguiente acción",
-            "Abrir Prioridad A, contrastar exposición industrial y revisar evidencia topológica antes de bajar a casos.",
+            "Abrir revisión inmediata, contrastar exposición industrial y revisar contexto topológico antes de bajar a casos.",
             "action",
         ),
         (
@@ -113,6 +113,6 @@ if not regime.empty:
     st.plotly_chart(system_regime_line(regime), use_container_width=True)
 
 action_panel(
-    "Executive takeaway",
-    "Usa esta vista como entrada ejecutiva: identifica las barras que concentran señal, valida si aparecen en Prioridad A/B y luego baja al caso específico para revisar contrato, demanda industrial, contexto topológico y recurrencia mensual.",
+    "Lectura ejecutiva",
+    "Usa esta vista como entrada ejecutiva: identifica las barras que concentran señal, valida si aparecen en la cola de revisión y luego baja al caso específico para revisar contrato, demanda industrial, contexto topológico y recurrencia mensual.",
 )

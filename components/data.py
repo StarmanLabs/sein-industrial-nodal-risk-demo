@@ -10,21 +10,29 @@ ROOT = Path(__file__).resolve().parents[1]
 PUBLIC_DATA = ROOT / "data" / "public_demo"
 
 PRIORITY_ES = {
-    "Priority A": "Prioridad A",
-    "Priority B": "Prioridad B",
-    "Watchlist": "Watchlist",
-    "Monitor": "Monitorear",
-    "Low information": "Baja informacion",
+    "Priority A": "Revisión inmediata",
+    "Priority B": "Revisión selectiva",
+    "Watchlist": "Seguimiento mensual",
+    "Monitor": "Contexto base",
+    "Low information": "Requiere contexto adicional",
 }
 
 PRIORITY_EN = {
     "Prioridad A": "Priority A",
     "Prioridad B": "Priority B",
+    "Revisión inmediata": "Priority A",
+    "Revision inmediata": "Priority A",
+    "Revisión selectiva": "Priority B",
+    "Revision selectiva": "Priority B",
+    "Seguimiento mensual": "Watchlist",
     "Seguimiento": "Watchlist",
     "Watchlist": "Watchlist",
     "Monitorear": "Monitor",
+    "Contexto base": "Monitor",
+    "Requiere contexto adicional": "Low information",
     "Información limitada": "Low information",
     "Baja informacion": "Low information",
+    "Baja información": "Low information",
     "Low information": "Low information",
 }
 
@@ -124,9 +132,11 @@ def load_product_layer() -> pd.DataFrame:
         out["rank_icpi"] = out["ranking_estres_nodal"]
         out["rank_oanri"] = out["ranking_prioridad_operativa"]
         out["decision_priority_score"] = out["score_revision"]
-        out["due_diligence_priority_es"] = out["prioridad"]
         out["due_diligence_priority"] = out["prioridad"].map(
             lambda value: PRIORITY_EN.get(str(value), str(value))
+        )
+        out["due_diligence_priority_es"] = out["due_diligence_priority"].map(
+            lambda value: PRIORITY_ES.get(str(value), str(value))
         )
         out["robustness_flag_es"] = out["robustez"]
         out["robustness_flag"] = out["robustez"]

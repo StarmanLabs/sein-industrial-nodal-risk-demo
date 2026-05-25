@@ -2,11 +2,11 @@
 
 ## Case Type
 
-Watchlist case used to explain episodic signals.
+`Seguimiento mensual` case used to explain episodic signals.
 
 ## Executive Reading
 
-`PUERTO BRAVO 500` is useful as a public methodology example because it shows why the product separates immediate due-diligence priority from watchlist behavior.
+`PUERTO BRAVO 500` is useful as a public methodology example because it shows why the product separates first-queue due diligence from monthly-followup behavior.
 
 The barra has relevant months, but the signal is not strong enough to use as a headline case. Its main value is to show how episodic signals should be monitored without overstating the conclusion.
 
@@ -15,36 +15,36 @@ The barra has relevant months, but the signal is not strong enough to use as a h
 | Field | Value |
 |---|---|
 | Barra | PUERTO BRAVO 500 |
-| Priority tier | Watchlist |
-| Priority score | 55.05 |
-| Nodal Price Stress Score average | 54.77 |
-| System-Adjusted Nodal Risk Score average | 49.74 |
-| Nodal Price Stress rank | 88 |
-| System-Adjusted Risk rank | 95 |
-| Priority months | 0 |
-| Watchlist months | 8 |
+| Review category | Seguimiento mensual |
+| Score de revision | 55.05 |
+| Estres nodal average | 54.77 |
+| Prioridad operativa average | 49.74 |
+| Estres nodal rank | 88 |
+| Prioridad operativa rank | 95 |
+| High-priority months | 0 |
+| Monthly-followup months | 8 |
 | Persistence | Monitor |
-| Evidence grade | A |
-| Robustness | Not covered by sensitivity top-list |
+| Soporte de contexto | A |
+| Robustez de senal | Not covered by sensitivity top-list |
 | Dominant driver | Price level |
 
 ## Highest Signal Months
 
-| Month | Nodal Price Stress Score | System-Adjusted Nodal Risk Score | Monthly rank | Decision tier | Primary driver | System-regime score |
+| Month | Estres nodal | Prioridad operativa | Monthly rank | Monthly category | Primary driver | System-regime score |
 |---|---:|---:|---:|---|---|---:|
-| 2023-05 | 60.35 | 78.34 | 65 | Watchlist | Stress premium | 0.97 |
-| 2023-11 | 60.37 | 75.65 | 70 | Watchlist | Stress premium | 0.92 |
-| 2023-10 | 61.29 | 70.67 | 63 | Watchlist | Price level | 0.78 |
-| 2023-04 | 60.18 | 70.37 | 69 | Watchlist | Price level | 0.83 |
-| 2023-08 | 51.13 | 70.31 | 89 | Watchlist | Critical windows | 1.00 |
-| 2024-10 | 56.48 | 68.50 | 78 | Watchlist | Stress premium | 0.81 |
+| 2023-05 | 60.35 | 78.34 | 65 | Seguimiento mensual | Stress premium | 0.97 |
+| 2023-11 | 60.37 | 75.65 | 70 | Seguimiento mensual | Stress premium | 0.92 |
+| 2023-10 | 61.29 | 70.67 | 63 | Seguimiento mensual | Price level | 0.78 |
+| 2023-04 | 60.18 | 70.37 | 69 | Seguimiento mensual | Price level | 0.83 |
+| 2023-08 | 51.13 | 70.31 | 89 | Seguimiento mensual | Critical windows | 1.00 |
+| 2024-10 | 56.48 | 68.50 | 78 | Seguimiento mensual | Stress premium | 0.81 |
 
 ## How To Use This Case
 
 This case should be used to explain monthly monitoring logic:
 
-- watchlist cases can still matter under specific contract or sector assumptions;
-- episodic signals require date-aware interpretation;
+- episodic cases can still matter under specific contract or sector assumptions;
+- monthly signals require date-aware interpretation;
 - lower robustness coverage should reduce claim strength;
 - monitoring is a decision, not a weak result.
 

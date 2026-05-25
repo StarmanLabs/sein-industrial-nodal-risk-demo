@@ -30,6 +30,11 @@ TEXT_REPLACEMENTS = {
     "stress_premium": "prima de estrés",
     "volatility": "volatilidad",
     "Baja informacion": "Baja información",
+    "Priority A": "Revisión inmediata",
+    "Priority B": "Revisión selectiva",
+    "Watchlist": "Seguimiento mensual",
+    "Monitor": "Contexto base",
+    "Low information": "Requiere contexto adicional",
     "Estres episodico": "Estrés episódico",
     "Episodico": "Episódico",
     "Senal": "Señal",
@@ -271,23 +276,23 @@ def priority_system_legend() -> None:
     insight_grid(
         [
             (
-                "Prioridad A",
-                "Llegó aquí porque combina señal estrés nodal/prioridad operativa alta, presencia repetida en meses relevantes, robustez fuerte y evidencia revisada. Es la primera cola de revisión.",
+                "Revisión inmediata",
+                "Primera cola de due diligence: combina señal alta, recurrencia, robustez y soporte de contexto suficiente para iniciar revisión experta.",
                 "decision",
             ),
             (
-                "Prioridad B",
-                "Tiene señal relevante, pero menor intensidad, menor recurrencia o menor soporte que A. Se revisa después de A o si el sector/contrato aumenta su importancia.",
+                "Revisión selectiva",
+                "Candidata relevante. Gana prioridad cuando el sector, contrato, ubicación o contexto industrial aumentan exposición.",
                 "evidence",
             ),
             (
-                "Watchlist",
-                "La barra aparece en meses específicos o bajo ciertos escenarios. No se descarta: se vigila porque puede volverse importante según contrato, sector o mes.",
+                "Seguimiento mensual",
+                "Caso episódico o sensible a escenario. Se vigila para distinguir persistencia, deterioro reciente o eventos puntuales.",
                 "action",
             ),
             (
-                "Monitorear / baja información",
-                "Permanece como referencia del universo. No exige revisión inmediata, salvo que aparezca nueva evidencia, nueva demanda industrial o cambio de comportamiento mensual.",
+                "Contexto base / requiere contexto adicional",
+                "Permanece como referencia del universo o necesita mejor contexto antes de una lectura fuerte. No exige revisión inmediata.",
                 "caveat",
             ),
         ]

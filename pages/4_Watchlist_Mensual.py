@@ -32,21 +32,21 @@ def classify_pattern(rows) -> str:
     if priority_months / total >= 0.35:
         return "Señal persistente: aparece de forma recurrente en meses de prioridad y merece seguimiento mensual estructurado."
     if priority_months + watchlist_months >= 4:
-        return "Señal episódica recurrente: no domina todos los meses, pero reaparece lo suficiente para mantenerla en watchlist."
+        return "Señal episódica recurrente: no domina todos los meses, pero reaparece lo suficiente para mantenerla en seguimiento mensual."
     if priority_months > 0:
         return "Episodio puntual relevante: conviene revisar el mes específico y contrastarlo con contrato, demanda y contexto operativo."
     return "Señal baja o intermitente: útil como referencia de contexto dentro del universo analítico."
 
 
-st.set_page_config(page_title="Watchlist Mensual", layout="wide")
+st.set_page_config(page_title="Seguimiento Mensual", layout="wide")
 product_sidebar()
-page_header("Watchlist Mensual", "¿Cuándo aparecen episodios de estrés y son persistentes o episódicos?")
+page_header("Seguimiento Mensual", "¿Cuándo aparecen episodios de estrés y son persistentes o episódicos?")
 
 watchlist = load_watchlist()
 panel = load_monthly_panel()
 profiles = load_product_layer()
 if watchlist.empty:
-    st.error("La watchlist mensual no está disponible.")
+    st.error("La capa de seguimiento mensual no está disponible.")
     st.stop()
 
 section_header(
@@ -74,9 +74,9 @@ cols = st.columns(4)
 with cols[0]:
     metric_card("Barras en mapa", f"{heatmap_data['barra'].nunique():,.0f}", "top por prioridad", kind="info")
 with cols[1]:
-    metric_card("Meses watchlist", f"{watchlist['month'].nunique():,.0f}", "cobertura mensual")
+    metric_card("Meses en seguimiento", f"{watchlist['month'].nunique():,.0f}", "cobertura mensual")
 with cols[2]:
-    metric_card("Filas top 20", f"{len(watchlist):,.0f}", "barra-mes")
+    metric_card("Observaciones top", f"{len(watchlist):,.0f}", "barra-mes")
 with cols[3]:
     metric_card("Máx. prioridad operativa", f"{watchlist['Prioridad operativa'].max():.1f}", "episodio más alto", kind="warning")
 
@@ -106,7 +106,7 @@ insight_grid(
 )
 
 section_header(
-    "Mapa mensual de watchlist",
+    "Mapa mensual de seguimiento",
     "Léelo de izquierda a derecha. Si una barra mantiene colores fuertes en varios meses, no es ruido visual: es una candidata para seguimiento mensual.",
 )
 st.plotly_chart(watchlist_heatmap(heatmap_data, order=ordered_barras), use_container_width=True)

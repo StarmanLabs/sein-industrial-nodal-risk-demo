@@ -1,25 +1,29 @@
 # Dashboard Walkthrough
 
-## 1. Executive Overview
+## 1. Inicio
 
-Shows the scale of the analytical panel, strongest nodal price-stress candidates, and system-regime context.
+Explains what the product does, why it matters, the public demo scope, and how to start the review path.
 
-## 2. Barra Priority Ranking
+## 2. Resumen Ejecutivo
 
-Turns analytical indicators into a due-diligence worklist with priority, evidence grade, caveat, and recommended action.
+Shows where the strongest due-diligence signals are concentrated across the 217-barra universe.
 
-## 3. Nodal Stress Signal Map
+## 3. Ranking de Prioridad
 
-Compares relative nodal price stress with system-regime adjusted prioritization.
+Turns analytical indicators into a decision queue: which barras should be reviewed first.
 
-## 4. Monthly Watchlist
+## 4. Mapa de Señales
 
-Shows when stress episodes appear and whether they are persistent or episodic.
+Compares Estrés nodal with Prioridad operativa to identify barras that combine local price-stress signal and system-regime relevance.
 
-## 5. Industrial Exposure Scenario
+## 5. Seguimiento Mensual
 
-Reviews sector and contract archetypes under explicit exposure assumptions.
+Shows when stress episodes appear and whether the signal is persistent, episodic or recent.
 
-## 6. Barra Case Study
+## 6. Exposición Industrial
 
-Explains why a selected barra deserves attention and what should be reviewed next.
+Reviews sector-barra-contract scenarios under explicit assumptions. It is a screening simulator, not an invoice forecast.
+
+## 7. Caso de Estudio
+
+Explains why a selected barra deserves attention, what supports the interpretation, and what should be reviewed next.

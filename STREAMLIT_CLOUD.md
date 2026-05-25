@@ -68,7 +68,7 @@ local cache folders
 After the Streamlit app is live, check:
 
 - the app loads without errors;
-- the Executive Overview appears first;
+- Inicio appears first and explains the decision-support scope clearly;
 - the claim boundary is visible near the top;
 - charts render correctly;
 - `data/public_demo/` is the only data source;

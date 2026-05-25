@@ -2,7 +2,7 @@
 
 Barra: PLANTAETANOL 60
 
-Prioridad: Prioridad A
+Categoría de revisión: Revisión inmediata
 
 Estrés nodal: 77.44
 
@@ -12,7 +12,7 @@ Score de revisión: 75.71
 
 Driver principal: Nivel de precio
 
-Contexto topológico: S.E.PLANTA ETANOL
+Contexto topológico: S.E. PLANTA ETANOL
 
 Acción sugerida: Abrir revisión estructurada: exposición contractual, contexto topológico, indicadores de confiabilidad y supuestos de demanda industrial cercana.
 

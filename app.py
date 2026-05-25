@@ -181,20 +181,20 @@ def render_resumen() -> None:
     with cols[1]:
         metric_card("Meses analizados", f"{panel['month'].nunique() if not panel.empty else 0}", "panel histórico")
     with cols[2]:
-        metric_card("Prioridad A", f"{(profiles['due_diligence_priority'] == 'Priority A').sum():,.0f}", "primera cola", kind="danger")
+        metric_card("Revisión inmediata", f"{(profiles['due_diligence_priority'] == 'Priority A').sum():,.0f}", "primera cola", kind="danger")
     with cols[3]:
-        metric_card("Prioridad B", f"{(profiles['due_diligence_priority'] == 'Priority B').sum():,.0f}", "segunda revisión", kind="warning")
+        metric_card("Revisión selectiva", f"{(profiles['due_diligence_priority'] == 'Priority B').sum():,.0f}", "segunda cola", kind="warning")
     with cols[4]:
-        metric_card("Baja información", f"{(profiles['due_diligence_priority'] == 'Low information').sum():,.0f}", "reforzar contexto", kind="neutral")
+        metric_card("Seguimiento mensual", f"{(profiles['due_diligence_priority'] == 'Watchlist').sum():,.0f}", "monitoreo activo", kind="info")
 
     priority_ab = profiles[profiles["due_diligence_priority"].isin(["Priority A", "Priority B"])]
     top_oanri = profiles.sort_values("rank_oanri", na_position="last").head(1).iloc[0]
     top_icpi = profiles.sort_values("rank_icpi", na_position="last").head(1).iloc[0]
     insight_grid(
         [
-            ("Hallazgo ejecutivo", f"{len(priority_ab):,.0f} barras entran a la cola A/B. Lideran {top_oanri['barra']} por prioridad operativa y {top_icpi['barra']} por estrés nodal.", "decision"),
+            ("Hallazgo ejecutivo", f"{len(priority_ab):,.0f} barras entran a la cola de revisión. Lideran {top_oanri['barra']} por prioridad operativa y {top_icpi['barra']} por estrés nodal.", "decision"),
             ("Por qué importa", "Estrés nodal captura señal relativa por barra; prioridad operativa añade lectura de régimen del sistema para priorizar revisión.", "evidence"),
-            ("Siguiente acción", "Abrir Prioridad A, contrastar exposición industrial y revisar evidencia topológica antes de bajar a casos.", "action"),
+            ("Siguiente acción", "Abrir revisión inmediata, contrastar exposición industrial y revisar contexto topológico antes de bajar a casos.", "action"),
             ("Lectura correcta", "El ranking ordena una cola de due diligence: sirve para decidir dónde mirar primero y con qué hipótesis.", "caveat"),
         ]
     )
@@ -208,7 +208,7 @@ def render_resumen() -> None:
     if not regime.empty:
         section_header("Régimen operativo mensual")
         st.plotly_chart(system_regime_line(regime), use_container_width=True)
-    action_panel("Executive takeaway", "Usa esta vista como entrada ejecutiva: identifica barras que concentran señal y baja al caso específico para revisar contrato, demanda industrial, contexto topológico y recurrencia mensual.")
+    action_panel("Lectura ejecutiva", "Usa esta vista como entrada: identifica barras que concentran señal y baja al caso específico para revisar contrato, demanda industrial, contexto topológico y recurrencia mensual.")
 
 
 def render_ranking() -> None:
@@ -240,15 +240,15 @@ def render_ranking() -> None:
     with cols[0]:
         metric_card("Barras filtradas", f"{len(filtered):,.0f}", "universo visible", kind="info")
     with cols[1]:
-        metric_card("Prioridad A/B", f"{filtered['due_diligence_priority'].isin(['Priority A', 'Priority B']).sum():,.0f}", "cola principal", kind="warning")
+        metric_card("Cola de revisión", f"{filtered['due_diligence_priority'].isin(['Priority A', 'Priority B']).sum():,.0f}", "revisión inmediata/selectiva", kind="warning")
     with cols[2]:
-        metric_card("Evidencia A", f"{filtered['evidence_grade'].astype(str).str.upper().eq('A').sum():,.0f}", "soporte revisado", kind="good")
+        metric_card("Seguimiento mensual", f"{(filtered['due_diligence_priority'] == 'Watchlist').sum():,.0f}", "casos episódicos", kind="info")
     with cols[3]:
-        metric_card("Contexto actual", f"{filtered['topology_context_asset'].astype(str).str.strip().ne('').sum():,.0f}", "activo/conexión trazable", kind="good")
+        metric_card("Contexto revisado", f"{filtered['topology_context_asset'].astype(str).str.strip().ne('').sum():,.0f}", "activo/conexión trazable", kind="good")
 
     section_header("Cómo funcionan las categorías")
     priority_system_legend()
-    section_header("Decision queue por barra")
+    section_header("Cola de revisión por barra")
     if filtered.empty:
         action_panel("Sin resultados para los filtros activos", "Amplía prioridad, evidencia, robustez o tensión para recuperar barras candidatas.")
     else:
@@ -267,26 +267,26 @@ def render_icpi_oanri() -> None:
     valid_months = panel["month"].dropna() if not panel.empty else []
     start_month = valid_months.min().strftime("%Y-%m") if len(valid_months) else "no disponible"
     end_month = valid_months.max().strftime("%Y-%m") if len(valid_months) else "no disponible"
-    priority_ab = int(df["due_diligence_priority"].isin(["Priority A", "Priority B"]).sum())
-    evidence_a = int(df["evidence_grade"].astype(str).str.upper().eq("A").sum())
+    review_queue = int(df["due_diligence_priority"].isin(["Priority A", "Priority B"]).sum())
+    monthly_followup = int((df["due_diligence_priority"] == "Watchlist").sum())
     context_summary_panel(
         "Mapa de decisión: señal local vs prioridad ajustada",
         f"Panel COES mensual {start_month} a {end_month}. Cada punto es una barra; la posición muestra estrés nodal y prioridad operativa promedio, el color muestra prioridad y el tamaño resume el score.",
         [
             ("Barras SEIN", f"{df['barra'].nunique():,.0f}", "muestra pública"),
-            ("Prioridad A/B", f"{priority_ab:,.0f}", f"{priority_ab / max(len(df), 1):.0%} del universo"),
+            ("Cola de revisión", f"{review_queue:,.0f}", f"{review_queue / max(len(df), 1):.0%} del universo"),
             ("Mediana estrés nodal", f"{float(df['avg_icpi'].median()):,.1f}", "línea vertical"),
-            ("Evidencia A", f"{evidence_a:,.0f}", "identidad y contexto cerrados"),
+            ("Seguimiento mensual", f"{monthly_followup:,.0f}", "casos episódicos"),
         ],
     )
     st.plotly_chart(icpi_oanri_scatter(df), use_container_width=True)
     section_header("Cómo leer los cuadrantes")
     decision_matrix(
         [
-            ("Estrés alto + prioridad alta", "Candidata fuerte. La señal local y la lectura operativa apuntan en la misma dirección.", "high"),
+            ("Estrés alto + prioridad alta", "Candidata de revisión inmediata. La señal local y la lectura operativa apuntan en la misma dirección.", "high"),
             ("Estrés alto + prioridad menor", "Señal local relevante. Revisar persistencia, meses extremos, contrato y evidencia topológica.", "local"),
             ("Estrés menor + prioridad alta", "Sensibilidad a régimen. Revisar si la prioridad aparece en meses de presión sistémica.", "system"),
-            ("Estrés menor + prioridad menor", "Monitoreo base. Útil para contexto y comparación dentro del universo completo.", "monitor"),
+            ("Estrés menor + prioridad menor", "Contexto base. Útil para comparación dentro del universo completo.", "monitor"),
         ]
     )
     section_header("Candidatas principales")
@@ -302,19 +302,19 @@ def classify_pattern(rows) -> str:
     if priority_months / total >= 0.35:
         return "Señal persistente: aparece de forma recurrente en meses de prioridad y merece seguimiento mensual estructurado."
     if priority_months + watchlist_months >= 4:
-        return "Señal episódica recurrente: reaparece lo suficiente para mantenerla en watchlist."
+        return "Señal episódica recurrente: reaparece lo suficiente para mantenerla en seguimiento mensual."
     if priority_months > 0:
         return "Episodio puntual relevante: conviene revisar el mes específico y contrastarlo con contrato, demanda y contexto operativo."
     return "Señal baja o intermitente: útil como referencia de contexto dentro del universo analítico."
 
 
 def render_watchlist() -> None:
-    page_header("Watchlist Mensual", "¿Cuándo aparecen episodios de estrés y son persistentes o episódicos?")
+    page_header("Seguimiento Mensual", "¿Cuándo aparecen episodios de estrés y son persistentes o episódicos?")
     watchlist = load_watchlist()
     panel = load_monthly_panel()
     profiles = load_product_layer()
     if watchlist.empty:
-        st.error("La watchlist mensual no está disponible.")
+        st.error("La capa de seguimiento mensual no está disponible.")
         st.stop()
 
     filter_cols = st.columns([1.1, 1.2])
@@ -330,13 +330,13 @@ def render_watchlist() -> None:
     with cols[0]:
         metric_card("Barras en mapa", f"{heatmap_data['barra'].nunique():,.0f}", "top por prioridad", kind="info")
     with cols[1]:
-        metric_card("Meses watchlist", f"{watchlist['month'].nunique():,.0f}", "cobertura mensual")
+        metric_card("Meses en seguimiento", f"{watchlist['month'].nunique():,.0f}", "cobertura mensual")
     with cols[2]:
-        metric_card("Filas top", f"{len(watchlist):,.0f}", "barra-mes")
+        metric_card("Observaciones top", f"{len(watchlist):,.0f}", "barra-mes")
     with cols[3]:
         metric_card("Máx. prioridad operativa", f"{watchlist['Prioridad operativa'].max():.1f}", "episodio más alto", kind="warning")
 
-    section_header("Mapa mensual de watchlist", "Color más intenso significa prioridad operativa mensual más alta. Filas repetidamente intensas sugieren persistencia; bloques aislados sugieren episodios puntuales.")
+    section_header("Mapa mensual de seguimiento", "Color más intenso significa prioridad operativa mensual más alta. Filas repetidamente intensas sugieren persistencia; bloques aislados sugieren episodios puntuales.")
     st.plotly_chart(watchlist_heatmap(heatmap_data, order=ordered_barras), use_container_width=True)
     section_header("Lectura por barra")
     selected_barra = barra_selector(heatmap_data, key="watchlist_barra")
@@ -350,7 +350,7 @@ def render_watchlist() -> None:
 
 
 def render_exposicion() -> None:
-    page_header("Escenario de Exposición Industrial", "¿Qué combinaciones sector-barra merecen mayor prioridad bajo supuestos explícitos?")
+    page_header("Exposición Industrial", "¿Qué combinaciones sector-barra-contrato merecen revisión bajo supuestos explícitos?")
     sector_df = load_sector_profiles()
     contract_df = load_contract_scenarios()
     sample = load_simulator_sample()
@@ -386,13 +386,13 @@ def render_exposicion() -> None:
     leader_text = f"Bajo {sector_label} y {contract_label}, {leader['barra']} lidera el escenario con score {leader['profile_priority_score']:.1f}." if leader is not None else "No hay combinaciones para el filtro activo."
     insight_grid(
         [
-            ("Decision question", "¿Qué combinación sector-barra debe revisarse primero bajo supuestos explícitos de exposición?", "decision"),
-            ("Main insight", leader_text, "evidence"),
-            ("Recommended action", "Revisar cobertura contractual, participación spot, demanda mensual y sensibilidad operativa del sector seleccionado.", "action"),
+            ("Pregunta de decisión", "¿Qué combinación sector-barra debe revisarse primero bajo supuestos explícitos de exposición?", "decision"),
+            ("Hallazgo principal", leader_text, "evidence"),
+            ("Acción recomendada", "Revisar cobertura contractual, participación spot, demanda mensual y sensibilidad operativa del sector seleccionado.", "action"),
             ("Caveat metodológico", "Los escenarios son salidas de screening basadas en supuestos; se interpretan como cola de revisión, no como forecast de factura.", "caveat"),
         ]
     )
-    section_header("Ranking sector-barra", "Under explicit exposure assumptions, this sector-barra combination deserves higher due-diligence priority.")
+    section_header("Ranking sector-barra", "Bajo supuestos explícitos de exposición, esta combinación sector-barra merece mayor prioridad de due diligence.")
     st.plotly_chart(sector_exposure_bar_chart(filtered), use_container_width=True)
     compact_table(filtered.head(50), ["sector", "contract_type", "barra", "avg_industrial_exposure_score", "p90_industrial_exposure_score", "priority_months", "watchlist_months", "robustness_inclusion_share", "dominant_driver", "profile_priority_score"])
     if not contract_df.empty:
@@ -401,7 +401,7 @@ def render_exposicion() -> None:
         st.plotly_chart(contract_comparison_chart(selected_contract_df), use_container_width=True)
     if not sample.empty:
         st.download_button("Descargar muestra del simulador", sample.head(500).to_csv(index=False).encode("utf-8"), file_name="industrial_exposure_sample.csv", mime="text/csv")
-    action_panel("Lectura del escenario", "Una combinación con mayor score merece más atención porque reúne señal nodal, prioridad mensual, participación spot, consumo y supuestos sectoriales. Industrial exposure scenarios are assumption-based screening outputs. They should not be interpreted as invoice forecasts or project-finance valuations.")
+    action_panel("Lectura del escenario", "Una combinación con mayor score merece más atención porque reúne señal nodal, prioridad mensual, participación spot, consumo y supuestos sectoriales. Es un screening bajo supuestos explícitos: no debe interpretarse como forecast de factura ni valorización financiera.")
 
 
 def render_caso() -> None:
@@ -425,7 +425,7 @@ def render_caso() -> None:
 
     cols = st.columns(5)
     with cols[0]:
-        metric_card("Prioridad", priority_label, "decisión sugerida", kind="warning")
+        metric_card("Categoría", priority_label, "decisión sugerida", kind="warning")
     with cols[1]:
         metric_card("Score", f"{row['decision_priority_score']:.1f}", "0-100 relativo", kind="warning")
     with cols[2]:
@@ -433,9 +433,9 @@ def render_caso() -> None:
     with cols[3]:
         metric_card("Rank prioridad", f"{row['rank_oanri']:.0f}", "1 = mayor prioridad", kind="info")
     with cols[4]:
-        metric_card("Evidencia", row["evidence_grade"], "soporte revisado", kind="good")
+        metric_card("Soporte", row["evidence_grade"], "contexto revisado", kind="good")
 
-    decision_summary_card(priority_label, f"{row['decision_priority_score']:.1f}/100", row["priority_reason"], row["recommended_action"], f"Evidencia {row['evidence_grade']}; {humanize_analytical_text(row.get('robustness_flag_es', row['robustness_flag']))}.")
+    decision_summary_card(priority_label, f"{row['decision_priority_score']:.1f}/100", row["priority_reason"], row["recommended_action"], f"Soporte de contexto {row['evidence_grade']}; {humanize_analytical_text(row.get('robustness_flag_es', row['robustness_flag']))}.")
     section_header("Contexto actual de la barra")
     price_window = f"{_clean(row.get('coes_price_key_first_month'), 'sin inicio')} a {_clean(row.get('coes_price_key_last_month'), 'sin fin')}"
     insight_grid(
@@ -471,7 +471,7 @@ PAGES = {
     "Resumen Ejecutivo": render_resumen,
     "Ranking de Prioridad": render_ranking,
     "Mapa de Señales": render_icpi_oanri,
-    "Watchlist Mensual": render_watchlist,
+    "Seguimiento Mensual": render_watchlist,
     "Exposición Industrial": render_exposicion,
     "Caso de Estudio": render_caso,
 }

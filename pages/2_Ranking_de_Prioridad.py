@@ -68,21 +68,21 @@ with cols[0]:
     metric_card("Barras filtradas", f"{len(filtered):,.0f}", "universo visible", kind="info")
 with cols[1]:
     metric_card(
-        "Prioridad A/B",
+        "Cola de revisión",
         f"{priority_ab_count:,.0f}",
-        "cola principal",
+        "revisión inmediata/selectiva",
         kind="warning",
     )
 with cols[2]:
     metric_card(
-        "Evidencia A",
-        f"{evidence_a_count:,.0f}",
-        "mapeo cerrado sin forzar",
-        kind="good",
+        "Seguimiento mensual",
+        f"{(filtered['due_diligence_priority'] == 'Watchlist').sum():,.0f}",
+        "casos episódicos",
+        kind="info",
     )
 with cols[3]:
     metric_card(
-        "Contexto actual",
+        "Contexto revisado",
         f"{context_count:,.0f}",
         "activo/conexión trazable",
         kind="good",
@@ -91,23 +91,23 @@ with cols[3]:
 insight_grid(
     [
         (
-            "Decision question",
+            "Pregunta de decisión",
             "¿Qué barras merecen el primer bloque de tiempo experto para revisión industrial?",
             "decision",
         ),
         (
-            "Main insight",
-            "La cola combina señal estrés nodal/prioridad operativa, recurrencia mensual, robustez y evidencia A de activo, conexión, subestación, central o corredor.",
+            "Hallazgo principal",
+            "La cola combina estrés nodal, prioridad operativa, recurrencia mensual, robustez y soporte de contexto de activo, conexión, subestación, central o corredor.",
             "evidence",
         ),
         (
-            "Recommended action",
+            "Acción recomendada",
             "Usar la columna de acción recomendada como agenda: contrato, demanda, topología, confiabilidad y exposición.",
             "action",
         ),
         (
             "Interpretación",
-            "Evidencia A significa que la identidad y el contexto de la barra son publicables para screening; la prioridad decide dónde mirar primero.",
+            "El soporte de contexto indica que la barra es publicable para screening; la categoría de revisión decide dónde mirar primero.",
             "caveat",
         ),
     ]
@@ -117,7 +117,7 @@ section_header("Cómo funcionan las categorías")
 priority_system_legend()
 
 section_header(
-    "Decision queue por barra",
+    "Cola de revisión por barra",
     "Tabla priorizada para convertir el ranking en una agenda concreta de análisis con contexto técnico/económico de cada barra.",
 )
 if filtered.empty:
@@ -136,5 +136,5 @@ else:
 
 action_panel(
     "Siguiente paso sugerido",
-    "Toma las primeras barras filtradas y ábrelas en Caso de Estudio. Si la barra también aparece en Exposición Industrial o Watchlist Mensual, gana prioridad para revisión de contrato y demanda.",
+    "Toma las primeras barras filtradas y ábrelas en Caso de Estudio. Si la barra también aparece en Exposición Industrial o Seguimiento Mensual, gana prioridad para revisión de contrato y demanda.",
 )

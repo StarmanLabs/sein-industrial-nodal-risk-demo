@@ -1,16 +1,23 @@
 # Public Demo Case Selection
 
-Recommended public cases for the controlled portfolio demo:
+Recommended public cases for the controlled portfolio demo.
 
-| barra | final_public_role | story_use | due_diligence_priority | decision_priority_score | robustness_flag | outlier_pattern | topology_context_asset |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| PLANTAETANOL 60 | featured_hero | Lead portfolio case | Priority A | 75.71272497765369 | High robustness | persistent_price_stress_outlier | S.E.PLANTA ETANOL |
-| ZORRITOS 220 | featured_hero | Transmission-context case | Priority A | 75.38885865262017 | High robustness | persistent_price_stress_outlier | ZORRITOS |
-| TINTAYA EXISTENTE 138 | sector_case_with_caveat | Mining/industrial relevance case | Priority B | 73.6374575898038 | High robustness | critical_window_or_stress_premium_outlier | TINTAYA |
-| GE1 33 | sector_case_with_caveat | Refinery/industrial energy case | Priority B | 73.22207163530145 | High robustness | persistent_price_stress_outlier | S.E. GE1 / C.T. REFINERIA TALARA |
-| VALLE DEL CHIRA 220 | methodology_example | Episodic-vs-persistent teaching case | Priority B | 68.70787038510932 | High robustness | episodic_outlier | VALLE DEL CHIRA |
-| JAEN 138 | methodology_example | Alias/context caution case | Priority B | 66.04612413911892 | Moderate robustness | episodic_outlier | NUEVA JAEN |
-| HUAYLLACHO 15 | reserve_candidate | Reserve local-generation case | Priority A | 75.3511303187224 | High robustness | persistent_price_stress_outlier | C.H. HUAYLLACHO |
-| NCTUMBES60 | reserve_candidate | Reserve current-context case | Priority A | 75.32410526221629 | High robustness | persistent_price_stress_outlier | NUEVA TUMBES |
+These examples are selected to communicate how the product turns marginal-price signals into a decision queue. They are not final risk conclusions, engineering diagnoses or commercial recommendations.
 
-These cases are selected for storytelling and demonstration. They are not final risk conclusions.
+| Barra | Public role | Story use | Review category | Score de revision | Robustez de senal | Signal pattern | Context asset |
+| --- | --- | --- | --- | ---: | --- | --- | --- |
+| PLANTAETANOL 60 | Featured case | Lead portfolio case | Revision inmediata | 75.71 | Robustez alta | Persistent price-stress outlier | S.E. PLANTA ETANOL |
+| ZORRITOS 220 | Featured case | Transmission-context case | Revision inmediata | 75.39 | Robustez alta | Persistent price-stress outlier | ZORRITOS |
+| TINTAYA EXISTENTE 138 | Sector case | Mining/industrial relevance case | Revision selectiva | 73.64 | Robustez alta | Critical-window or stress-premium outlier | TINTAYA |
+| GE1 33 | Sector case | Refinery/industrial energy case | Revision selectiva | 73.22 | Robustez alta | Persistent price-stress outlier | S.E. GE1 / C.T. REFINERIA TALARA |
+| VALLE DEL CHIRA 220 | Methodology example | Episodic-vs-persistent teaching case | Revision selectiva | 68.71 | Robustez alta | Episodic outlier | VALLE DEL CHIRA |
+| JAEN 138 | Methodology example | Alias/context caution case | Revision selectiva | 66.05 | Robustez moderada | Episodic outlier | NUEVA JAEN |
+| HUAYLLACHO 15 | Reserve candidate | Local-generation context case | Revision inmediata | 75.35 | Robustez alta | Persistent price-stress outlier | C.H. HUAYLLACHO |
+| NCTUMBES60 | Reserve candidate | Current-context case | Revision inmediata | 75.32 | Robustez alta | Persistent price-stress outlier | NUEVA TUMBES |
+
+Public label guide:
+
+- `Revision inmediata`: first review queue for the strongest public demo cases.
+- `Revision selectiva`: relevant candidates that need sector, contract or context filtering.
+- `Seguimiento mensual`: episodic cases that matter mainly through monthly behavior.
+- `Contexto base`: reference universe for comparison and future monitoring.

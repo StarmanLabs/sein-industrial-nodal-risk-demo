@@ -9,6 +9,11 @@ COLOR_SEQUENCE = ["#173b57", "#138a8a", "#d9902f", "#c5524a", "#6b778c"]
 STRESS_SCALE = ["#f8fafc", "#dbeaf0", "#98c3cf", "#2f6f9f", "#173b57"]
 HEAT_SCALE = ["#fff7ed", "#fed7aa", "#fb923c", "#dc5f2e", "#9f2f2a"]
 PRIORITY_COLORS = {
+    "Revisión inmediata": "#b23a2e",
+    "Revisión selectiva": "#c47a16",
+    "Seguimiento mensual": "#168c8c",
+    "Contexto base": "#64748b",
+    "Requiere contexto adicional": "#9aa4b2",
     "Prioridad A": "#c5524a",
     "Prioridad B": "#d9902f",
     "Watchlist": "#2f6f9f",
@@ -128,6 +133,11 @@ def icpi_oanri_scatter(df: pd.DataFrame):
             {
                 "Baja informacion": "Baja información",
                 "Low information": "Baja información",
+                "Prioridad A": "Revisión inmediata",
+                "Prioridad B": "Revisión selectiva",
+                "Watchlist": "Seguimiento mensual",
+                "Monitorear": "Contexto base",
+                "Monitor": "Contexto base",
             }
         )
     hover_cols = [
@@ -151,16 +161,16 @@ def icpi_oanri_scatter(df: pd.DataFrame):
         size="decision_priority_score",
         hover_name="barra",
         hover_data=hover_cols,
-        title="Mapa de señal Mapa de Señales: cola de due diligence por barra",
+        title="Mapa de señales: cola de revisión por barra",
         color_discrete_map=PRIORITY_COLORS,
         labels={
             "avg_icpi": "Estrés nodal promedio",
             "avg_oanri": "Prioridad operativa promedio",
-            color_col: "Prioridad",
-            "decision_priority_score": "Score de prioridad",
+            color_col: "Categoría de revisión",
+            "decision_priority_score": "Score de revisión",
             "rank_icpi": "Ranking estrés nodal",
             "rank_oanri": "Ranking prioridad operativa",
-            "evidence_grade": "Grado de evidencia",
+            "evidence_grade": "Soporte de contexto",
             "robustness_flag": "Robustez",
             "robustness_flag_es": "Robustez",
             "persistence_category": "Persistencia",
@@ -186,10 +196,10 @@ def icpi_oanri_scatter(df: pd.DataFrame):
         annotation_position="bottom left",
     )
     quadrant_annotations = [
-        (0.98, 0.96, "Priorizar<br>due diligence", "#8e2f2a"),
+        (0.98, 0.96, "Revisar<br>primero", "#8e2f2a"),
         (0.03, 0.96, "Sensibilidad<br>a régimen", "#245a73"),
         (0.98, 0.08, "Señal local<br>a revisar", "#8a5a14"),
-        (0.03, 0.08, "Monitoreo<br>base", "#4f5d6f"),
+        (0.03, 0.08, "Contexto<br>base", "#4f5d6f"),
     ]
     for x_pos, y_pos, text, color in quadrant_annotations:
         fig.add_annotation(
@@ -357,7 +367,7 @@ def watchlist_heatmap(df: pd.DataFrame, order: list[str] | None = None):
         data,
         aspect="auto",
         color_continuous_scale=HEAT_SCALE,
-        title="Mapa de calor mensual de watchlist - prioridad operativa",
+        title="Mapa de calor mensual de seguimiento - prioridad operativa",
         labels={"color": "Prioridad operativa"},
     )
     fig.update_xaxes(title="Mes", type="category")

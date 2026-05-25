@@ -41,10 +41,10 @@ if not barra:
 row = profiles[profiles["barra"] == barra].iloc[0]
 priority_label = row.get("due_diligence_priority_es", row["due_diligence_priority"])
 priority_kind = {
-    "Prioridad A": "priority-a",
-    "Prioridad B": "priority-b",
-    "Watchlist": "info",
-    "Monitorear": "neutral",
+    "Revisión inmediata": "priority-a",
+    "Revisión selectiva": "priority-b",
+    "Seguimiento mensual": "info",
+    "Contexto base": "neutral",
 }.get(str(priority_label), "neutral")
 
 
@@ -57,7 +57,7 @@ def _clean(value: object, fallback: str = "No disponible en la capa producto") -
 
 cols = st.columns(5)
 with cols[0]:
-    metric_card("Prioridad", priority_label, "decisión sugerida", kind=priority_kind)
+    metric_card("Categoría", priority_label, "decisión sugerida", kind=priority_kind)
 with cols[1]:
     metric_card("Score", f"{row['decision_priority_score']:.1f}", "0-100 relativo", kind="warning")
 with cols[2]:
@@ -65,7 +65,7 @@ with cols[2]:
 with cols[3]:
     metric_card("Rank prioridad operativa", f"{row['rank_oanri']:.0f}", "1 = mayor prioridad", kind="info")
 with cols[4]:
-    metric_card("Evidencia", row["evidence_grade"], "soporte revisado", kind="good")
+    metric_card("Soporte", row["evidence_grade"], "contexto revisado", kind="good")
 
 decision_summary_card(
     priority_label,
@@ -73,14 +73,14 @@ decision_summary_card(
     row["priority_reason"],
     row["recommended_action"],
     (
-        f"Evidencia {row['evidence_grade']}; "
+        f"Soporte de contexto {row['evidence_grade']}; "
         f"{humanize_analytical_text(row.get('robustness_flag_es', row['robustness_flag']))}."
     ),
 )
 
 section_header(
     "Contexto actual de la barra",
-    "La evidencia A no reemplaza un estudio eléctrico: cierra identidad, tensión y contexto útil para decidir qué revisar hoy.",
+    "El soporte de contexto no reemplaza un estudio eléctrico: orienta identidad, tensión y contexto útil para decidir qué revisar hoy.",
 )
 price_window = (
     f"{_clean(row.get('coes_price_key_first_month'), 'sin inicio')} a "
@@ -123,17 +123,17 @@ if _clean(row.get("external_evidence_summary"), ""):
 insight_grid(
     [
         (
-            "Why it appears here",
+            "Por qué aparece aquí",
             humanize_analytical_text(row["priority_reason"]),
             "decision",
         ),
         (
-            "Support quality",
-            f"Evidencia {row['evidence_grade']} y {humanize_analytical_text(row.get('robustness_flag_es', row['robustness_flag']))}.",
+            "Calidad de soporte",
+            f"Soporte de contexto {row['evidence_grade']} y {humanize_analytical_text(row.get('robustness_flag_es', row['robustness_flag']))}.",
             "evidence",
         ),
         (
-            "What to do next",
+            "Qué revisar después",
             humanize_analytical_text(row["recommended_action"]),
             "action",
         ),

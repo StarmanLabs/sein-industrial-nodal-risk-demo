@@ -21,34 +21,34 @@ COLUMN_LABELS = {
     "episodic_stress_category_es": "Estrés episódico",
     "robustness_flag": "Robustez",
     "robustness_flag_es": "Robustez",
-    "evidence_grade": "Soporte revisado",
-    "due_diligence_priority": "Prioridad",
-    "due_diligence_priority_es": "Prioridad",
+    "evidence_grade": "Soporte de contexto",
+    "due_diligence_priority": "Categoría de revisión",
+    "due_diligence_priority_es": "Categoría de revisión",
     "recommended_action": "Acción recomendada",
-    "decision_priority_score": "Score prioridad",
+    "decision_priority_score": "Score de revisión",
     "month": "Mes",
     "Estrés nodal": "estrés nodal",
     "Prioridad operativa": "prioridad operativa",
     "avg_icpi": "estrés nodal prom.",
     "avg_oanri": "prioridad operativa prom.",
     "ranking_mensual_v10": "Ranking prioridad operativa mensual",
-    "decision_tier": "Tier decisión",
+    "decision_tier": "Categoría mensual",
     "primary_driver": "Driver principal",
     "sector": "Sector",
     "contract_type": "Contrato",
     "avg_industrial_exposure_score": "Score exposición prom.",
     "p90_industrial_exposure_score": "Score exposición p90",
-    "priority_months": "Meses prioridad",
-    "watchlist_months": "Meses watchlist",
+    "priority_months": "Meses revisión inmediata",
+    "watchlist_months": "Meses seguimiento",
     "robustness_inclusion_share": "Inclusión robustez",
-    "profile_priority_score": "Score prioridad",
+    "profile_priority_score": "Score de revisión",
     "unique_barras": "Barras únicas",
     "monthly_mwh": "MWh mensual",
     "spot_share": "Participación spot",
     "avg_exposure_score": "Score exposición prom.",
     "p90_exposure_score": "Score exposición p90",
-    "priority_rows": "Filas prioridad",
-    "watchlist_rows": "Filas watchlist",
+    "priority_rows": "Filas revisión inmediata",
+    "watchlist_rows": "Filas seguimiento",
 }
 
 VALUE_LABELS = {
@@ -67,9 +67,9 @@ VALUE_LABELS = {
         "indexed_50pct_spot": "Indexado: 50% spot",
     },
     "decision_tier": {
-        "Priority due diligence": "Prioridad de due diligence",
-        "Watchlist": "Watchlist",
-        "Monitor": "Monitorear",
+        "Priority due diligence": "Revisión inmediata",
+        "Watchlist": "Seguimiento mensual",
+        "Monitor": "Contexto base",
         "Lower relative exposure": "Menor exposición relativa",
     },
     "primary_driver": {
@@ -78,13 +78,21 @@ VALUE_LABELS = {
         "volatility": "Volatilidad",
     },
     "evidence_grade": {
-        "A": "Revisada fuerte",
-        "B": "Revisada útil",
+        "A": "Contexto revisado",
+        "B": "Contexto útil",
     },
 }
 
 DISPLAY_TEXT_REPLACEMENTS = {
     "Baja informacion": "Baja información",
+    "Prioridad A": "Revisión inmediata",
+    "Prioridad B": "Revisión selectiva",
+    "Priority A": "Revisión inmediata",
+    "Priority B": "Revisión selectiva",
+    "Watchlist": "Seguimiento mensual",
+    "Monitorear": "Contexto base",
+    "Monitor": "Contexto base",
+    "Low information": "Requiere contexto adicional",
     "Estres episodico": "Estrés episódico",
     "Episodico": "Episódico",
     "Senal": "Señal",
@@ -134,11 +142,11 @@ def present(df: pd.DataFrame) -> pd.DataFrame:
 
 def _style_table(df: pd.DataFrame):
     priority_colors = {
-        "Prioridad A": "background-color: #fde8e6; color: #8e2f2a; font-weight: 700",
-        "Prioridad B": "background-color: #fff1d7; color: #8a5a14; font-weight: 700",
-        "Watchlist": "background-color: #e5f2f7; color: #245a73; font-weight: 700",
-        "Monitorear": "background-color: #eef2f6; color: #4f5d6f; font-weight: 700",
-        "Baja información": "background-color: #f1f3f5; color: #6b7280; font-weight: 700",
+        "Revisión inmediata": "background-color: #fde8e6; color: #8e2f2a; font-weight: 700",
+        "Revisión selectiva": "background-color: #fff1d7; color: #8a5a14; font-weight: 700",
+        "Seguimiento mensual": "background-color: #e5f2f7; color: #245a73; font-weight: 700",
+        "Contexto base": "background-color: #eef2f6; color: #4f5d6f; font-weight: 700",
+        "Requiere contexto adicional": "background-color: #f1f3f5; color: #6b7280; font-weight: 700",
     }
     robustness_colors = {
         "Robustez alta": "color: #287c67; font-weight: 700",
@@ -152,9 +160,9 @@ def _style_table(df: pd.DataFrame):
             return priority_colors[text]
         if text in robustness_colors:
             return robustness_colors[text]
-        if text in {"A", "Revisada fuerte"}:
+        if text in {"A", "Contexto revisado"}:
             return "color: #287c67; font-weight: 700"
-        if text in {"B", "Revisada útil"}:
+        if text in {"B", "Contexto útil"}:
             return "color: #d9902f; font-weight: 700"
         return ""
 

@@ -50,9 +50,9 @@ if not panel.empty and "month" in panel.columns:
         end_month = valid_months.max().strftime("%Y-%m")
         month_count = int(valid_months.nunique())
 
-priority_ab = int(df["due_diligence_priority"].isin(["Priority A", "Priority B"]).sum())
-evidence_a = int(df["evidence_grade"].astype(str).str.upper().eq("A").sum())
-high_priority_share = priority_ab / max(len(df), 1)
+review_queue = int(df["due_diligence_priority"].isin(["Priority A", "Priority B"]).sum())
+monthly_followup = int((df["due_diligence_priority"] == "Watchlist").sum())
+high_priority_share = review_queue / max(len(df), 1)
 
 context_summary_panel(
     "Mapa de decisión: señal local vs prioridad ajustada",
@@ -63,27 +63,27 @@ context_summary_panel(
     ),
     [
         ("Barras SEIN", f"{df['barra'].nunique():,.0f}", "unidad de análisis"),
-        ("Prioridad A/B", f"{priority_ab:,.0f}", f"{high_priority_share:.0%} del universo"),
+        ("Cola de revisión", f"{review_queue:,.0f}", f"{high_priority_share:.0%} del universo"),
         ("Mediana estrés nodal", _fmt_number(float(df["avg_icpi"].median())), "línea vertical"),
-        ("Evidencia A", f"{evidence_a:,.0f}", "identidad y contexto cerrados"),
+        ("Seguimiento mensual", f"{monthly_followup:,.0f}", "casos episódicos"),
     ],
 )
 
 insight_grid(
     [
         (
-            "Decision question",
+            "Pregunta de decisión",
             "¿Qué barras combinan señal local alta con relevancia operativa ajustada?",
             "decision",
         ),
         (
-            "Main insight",
+            "Hallazgo principal",
             "El cuadrante superior derecho concentra las candidatas más fuertes para due diligence estructurada.",
             "evidence",
         ),
         (
-            "Recommended action",
-            "Empezar por el cuadrante superior derecho y contrastar con caso de barra, watchlist y exposición industrial.",
+            "Acción recomendada",
+            "Empezar por el cuadrante superior derecho y contrastar con caso de barra, seguimiento mensual y exposición industrial.",
             "action",
         ),
         (
@@ -105,7 +105,7 @@ decision_matrix(
     [
         (
             "estrés nodal alto + prioridad operativa alto",
-            "Candidata fuerte. La señal local y la lectura ajustada por sistema apuntan en la misma dirección.",
+            "Candidata de revisión inmediata. La señal local y la lectura ajustada por sistema apuntan en la misma dirección.",
             "high",
         ),
         (
@@ -120,7 +120,7 @@ decision_matrix(
         ),
         (
             "estrés nodal menor + prioridad operativa menor",
-            "Monitoreo base. Útil para contexto y comparación dentro del universo completo.",
+            "Contexto base. Útil para comparación dentro del universo completo.",
             "monitor",
         ),
     ]
@@ -148,6 +148,6 @@ compact_table(
 )
 
 action_panel(
-    "What to do next",
-    "Selecciona una barra del cuadrante superior derecho, revisa si su señal es persistente en Watchlist Mensual y luego evalúa si algún sector/contrato aumenta su prioridad en Exposición Industrial.",
+    "Qué hacer después",
+    "Selecciona una barra del cuadrante superior derecho, revisa si su señal es persistente en Seguimiento Mensual y luego evalúa si algún sector/contrato aumenta su prioridad en Exposición Industrial.",
 )

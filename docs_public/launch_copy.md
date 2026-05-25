@@ -67,11 +67,12 @@ This project combines analytics engineering, energy-economics reasoning, statist
 
 Use screenshots in this order:
 
-1. Executive Overview.
-2. System-Adjusted Risk map.
-3. Industrial Exposure Screening.
-4. Evidence and Topology Context.
-5. Methodology and Audit.
+1. Inicio.
+2. Resumen Ejecutivo.
+3. Mapa de Señales.
+4. Ranking de Prioridad.
+5. Exposición Industrial.
+6. Caso de Estudio.
 
 ## Public Caveat
 
