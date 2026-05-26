@@ -2202,6 +2202,17 @@ h2, h3 {
   font-weight: 850;
 }
 
+.rank-table-guidance {
+  color: #314258;
+  font-size: 0.84rem;
+  line-height: 1.42;
+  margin: -0.1rem 0 0.75rem 0;
+}
+
+.rank-table-guidance strong {
+  color: var(--sein-ink);
+}
+
 .rank-bottom-notes {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

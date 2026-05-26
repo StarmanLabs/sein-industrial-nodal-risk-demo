@@ -2,6 +2,7 @@
 
 from html import escape
 
+import pandas as pd
 import streamlit as st
 
 from components import narrative_cards as narrative
@@ -665,6 +666,17 @@ def render_ranking() -> None:
   font-weight: 850 !important;
 }
 
+.rank-table-guidance {
+  color: #314258 !important;
+  font-size: 0.84rem !important;
+  line-height: 1.42 !important;
+  margin: -0.1rem 0 0.75rem 0 !important;
+}
+
+.rank-table-guidance strong {
+  color: #102033 !important;
+}
+
 .rank-bottom-notes {
   display: grid !important;
   grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
@@ -880,6 +892,12 @@ div[data-testid="stDataFrame"] {
     )
 
     st.markdown("<h2 class='rank-section-title'>Cola priorizada de revisión</h2>", unsafe_allow_html=True)
+    st.markdown(
+        """
+<p class="rank-table-guidance"><strong>Las primeras filas no son “peores barras”:</strong> son los casos con más razones analíticas para iniciar revisión experta. Soporte contextual revisado disponible para las barras del demo público.</p>
+""",
+        unsafe_allow_html=True,
+    )
     if filtered.empty:
         action_panel("Sin resultados para los filtros activos", "Amplía prioridad, evidencia, robustez o tensión para recuperar barras candidatas.")
     else:
@@ -897,28 +915,37 @@ div[data-testid="stDataFrame"] {
             "Priority A": "Abrir revisión estructurada",
             "Priority B": "Revisar después de inmediata",
             "Watchlist": "Monitorear recurrencia",
-            "Monitor": "Mantener como referencia",
-            "Low information": "Completar contexto",
+            "Monitor": "Mantener como contexto",
+            "Low information": "Completar evidencia",
         }
-        reason_short = {
-            "Priority A": "Alta prioridad operativa + robustez alta + señal recurrente",
-            "Priority B": "Prioridad operativa elevada",
-            "Watchlist": "Caso episódico / sensible",
-            "Monitor": "Contexto base del universo",
-            "Low information": "Requiere más contexto",
-        }
+
+        def _executive_reason(row: pd.Series) -> str:
+            priority = str(row.get("due_diligence_priority", ""))
+            if priority == "Priority A":
+                return "Alta prioridad operativa + robustez alta + señal recurrente"
+            if priority == "Priority B":
+                if float(row.get("avg_icpi", 0) or 0) >= float(row.get("avg_oanri", 0) or 0):
+                    return "Estrés nodal elevado + contexto relevante"
+                return "Prioridad operativa elevada"
+            if priority == "Watchlist":
+                return "Caso episódico / sensible"
+            if priority == "Monitor":
+                return "Contexto base del universo"
+            if priority == "Low information":
+                return "Contexto adicional requerido"
+            return str(row.get("priority_reason", "Revisión contextual sugerida"))
+
         table = page_df.assign(
             **{
                 "#": range(start + 1, start + 1 + len(page_df)),
                 "Score de revisión": page_df["decision_priority_score"].round(2),
                 "Categoría de revisión": page_df["due_diligence_priority_es"],
                 "Acción recomendada": page_df["due_diligence_priority"].map(action_short).fillna(page_df["recommended_action"]),
-                "¿Por qué aparece?": page_df["due_diligence_priority"].map(reason_short).fillna(page_df["priority_reason"]),
+                "¿Por qué aparece?": page_df.apply(_executive_reason, axis=1),
                 "Robustez": page_df[robust_col],
                 "Estrés nodal prom.": page_df["avg_icpi"].round(2),
                 "Prioridad operativa prom.": page_df["avg_oanri"].round(2),
                 "Tensión kV": page_df["nivel_tension_kv"].round(1),
-                "Soporte de contexto": page_df["evidence_grade"].map(lambda value: "Revisado" if str(value) == "A" else str(value)),
             }
         )[
             [
@@ -932,7 +959,6 @@ div[data-testid="stDataFrame"] {
                 "Estrés nodal prom.",
                 "Prioridad operativa prom.",
                 "Tensión kV",
-                "Soporte de contexto",
             ]
         ].rename(columns={"barra": "Barra"})
 
@@ -952,8 +978,8 @@ div[data-testid="stDataFrame"] {
                 return "color: #1f8a5b; font-weight: 800"
             if "moderada" in text.lower():
                 return "color: #c47a16; font-weight: 800"
-            if text == "Revisado":
-                return "color: #1f8a5b; font-weight: 800"
+            if "baja" in text.lower() or "fuera" in text.lower():
+                return "color: #64748b; font-weight: 800"
             return ""
 
         st.dataframe(
@@ -972,7 +998,6 @@ div[data-testid="stDataFrame"] {
                 "Estrés nodal prom.": st.column_config.NumberColumn("Estrés nodal prom.", format="%.2f", width="small"),
                 "Prioridad operativa prom.": st.column_config.NumberColumn("Prioridad operativa prom.", format="%.2f", width="small"),
                 "Tensión kV": st.column_config.NumberColumn("Tensión kV", format="%.1f", width="small"),
-                "Soporte de contexto": st.column_config.TextColumn("Soporte de contexto", width="small"),
             },
         )
         st.caption(f"Mostrando {start + 1:,} a {min(end, len(filtered)):,} de {len(filtered):,} barras filtradas.")

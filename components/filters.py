@@ -54,6 +54,7 @@ def priority_filter(df: pd.DataFrame, key: str = "priority") -> list[str]:
             "Categoría de revisión",
             options["display_label"].tolist(),
             default=options["display_label"].tolist(),
+            placeholder="Seleccionar categorías",
             key=key,
         )
         return options[options["display_label"].isin(selected_labels)]["due_diligence_priority"].tolist()
@@ -62,6 +63,7 @@ def priority_filter(df: pd.DataFrame, key: str = "priority") -> list[str]:
         "Categoría de revisión",
         priorities,
         default=priorities,
+        placeholder="Seleccionar categorías",
         key=key,
     )
 
@@ -70,7 +72,7 @@ def evidence_filter(df: pd.DataFrame, key: str = "evidence") -> list[str]:
     if "evidence_grade" not in df.columns:
         return []
     options = sorted(df["evidence_grade"].dropna().astype(str).unique())
-    return st.multiselect("Soporte de contexto", options, default=options, key=key)
+    return st.multiselect("Soporte de contexto", options, default=options, placeholder="Seleccionar soporte", key=key)
 
 
 def robustness_filter(df: pd.DataFrame, key: str = "robustness") -> list[str]:
@@ -78,14 +80,14 @@ def robustness_filter(df: pd.DataFrame, key: str = "robustness") -> list[str]:
     if column not in df.columns:
         return []
     options = sorted(df[column].dropna().astype(str).unique())
-    return st.multiselect("Robustez de señal", options, default=options, key=key)
+    return st.multiselect("Robustez de señal", options, default=options, placeholder="Seleccionar robustez", key=key)
 
 
 def tension_filter(df: pd.DataFrame, key: str = "tension") -> list[float]:
     if "nivel_tension_kv" not in df.columns:
         return []
     values = sorted(df["nivel_tension_kv"].dropna().unique())
-    return st.multiselect("Tensión kV", values, default=values, key=key)
+    return st.multiselect("Tensión kV", values, default=values, placeholder="Seleccionar tensión", key=key)
 
 
 def barra_selector(df: pd.DataFrame, key: str = "barra") -> str | None:
