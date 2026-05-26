@@ -342,6 +342,418 @@ def render_ranking() -> None:
 
     st.markdown(
         """
+<style>
+/* Critical CSS kept in-page so Streamlit Cloud cannot render this tab as plain markdown
+   if the shared stylesheet is cached or loaded out of order. */
+.block-container {
+  max-width: 1500px !important;
+  padding-left: 2.35rem !important;
+  padding-right: 2.35rem !important;
+}
+
+.rank-page,
+.rank-page *,
+.rank-summary-card,
+.rank-summary-card *,
+.rank-taxonomy,
+.rank-taxonomy *,
+.rank-bottom-notes,
+.rank-bottom-notes * {
+  box-sizing: border-box !important;
+}
+
+.rank-page {
+  width: 100% !important;
+  margin: 0 0 0.65rem 0 !important;
+}
+
+.rank-header {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(330px, 0.35fr) !important;
+  gap: 1.35rem !important;
+  align-items: start !important;
+  width: 100% !important;
+  margin: 0.35rem 0 1.05rem 0 !important;
+}
+
+.rank-header h1 {
+  color: #102033 !important;
+  font-size: clamp(2.35rem, 3.4vw, 3.4rem) !important;
+  line-height: 1 !important;
+  margin: 0 0 0.45rem 0 !important;
+  font-weight: 880 !important;
+  letter-spacing: 0 !important;
+}
+
+.rank-header p {
+  color: #314258 !important;
+  font-size: 1.02rem !important;
+  margin: 0 !important;
+}
+
+.rank-caveat {
+  display: grid !important;
+  grid-template-columns: 42px minmax(0, 1fr) !important;
+  gap: 0.85rem !important;
+  align-items: center !important;
+  border: 1px solid #d8e3ea !important;
+  border-radius: 8px !important;
+  background: rgba(255,255,255,0.88) !important;
+  padding: 0.92rem 1.05rem !important;
+  box-shadow: 0 10px 26px rgba(16,32,51,0.045) !important;
+}
+
+.exec-icon {
+  display: inline-grid !important;
+  place-items: center !important;
+  width: 1.15em !important;
+  height: 1.15em !important;
+  line-height: 1 !important;
+  font-style: normal !important;
+}
+
+.exec-icon::before {
+  display: block !important;
+  font-family: Arial, sans-serif !important;
+  font-size: 1em !important;
+  line-height: 1 !important;
+  font-weight: 900 !important;
+}
+
+.exec-icon-shield::before { content: "◇"; }
+.exec-icon-target::before { content: "◎"; }
+.exec-icon-filter::before { content: "▽"; }
+.exec-icon-case::before { content: "▤"; }
+
+.rank-caveat > .exec-icon {
+  color: #2f6f9f !important;
+  font-size: 2rem !important;
+}
+
+.rank-caveat strong,
+.rank-caveat span {
+  display: block !important;
+  color: #102033 !important;
+  font-size: 0.8rem !important;
+  line-height: 1.35 !important;
+}
+
+.rank-caveat span {
+  color: #26384d !important;
+  margin-top: 0.15rem !important;
+  font-weight: 700 !important;
+}
+
+.rank-summary-card {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(230px, 0.28fr) minmax(275px, 0.34fr) !important;
+  gap: 1.1rem !important;
+  align-items: center !important;
+  width: 100% !important;
+  border: 1px solid #cddde7 !important;
+  border-radius: 8px !important;
+  background: linear-gradient(90deg, #ffffff 0%, #f8fcfd 70%, #edf7fa 100%) !important;
+  box-shadow: 0 12px 30px rgba(16,32,51,0.05) !important;
+  padding: 1rem 1.15rem !important;
+  margin: 0.2rem 0 0.85rem 0 !important;
+}
+
+.rank-summary-left {
+  display: grid !important;
+  grid-template-columns: 74px minmax(0, 1fr) !important;
+  gap: 0.9rem !important;
+  align-items: center !important;
+  min-width: 0 !important;
+}
+
+.rank-summary-icon {
+  width: 62px !important;
+  height: 62px !important;
+  border-radius: 50% !important;
+  background: #eefafa !important;
+  color: #168c8c !important;
+  display: grid !important;
+  place-items: center !important;
+}
+
+.rank-summary-icon .exec-icon {
+  font-size: 2.65rem !important;
+}
+
+.rank-summary-kpis {
+  display: grid !important;
+  grid-template-columns: repeat(5, minmax(88px, 1fr)) !important;
+  gap: 0.75rem !important;
+  align-items: stretch !important;
+}
+
+.rank-summary-title {
+  grid-column: 1 / -1 !important;
+  color: #102033 !important;
+  font-size: 0.86rem !important;
+  font-weight: 860 !important;
+}
+
+.rank-kpi {
+  border-right: 1px solid #d8e3ea !important;
+  padding-right: 0.65rem !important;
+}
+
+.rank-kpi:last-child {
+  border-right: 0 !important;
+}
+
+.rank-kpi strong {
+  display: block !important;
+  color: #164a63 !important;
+  font-size: 1.72rem !important;
+  line-height: 1 !important;
+  font-weight: 880 !important;
+}
+
+.rank-kpi span {
+  display: block !important;
+  color: #26384d !important;
+  font-size: 0.72rem !important;
+  line-height: 1.35 !important;
+  margin-top: 0.35rem !important;
+}
+
+.rank-start-box {
+  border-left: 1px solid #d8e3ea !important;
+  padding-left: 1.1rem !important;
+}
+
+.rank-start-box strong,
+.rank-next-box strong {
+  display: block !important;
+  color: #102033 !important;
+  font-size: 0.82rem !important;
+  margin-bottom: 0.45rem !important;
+}
+
+.rank-start-box ol {
+  list-style: none !important;
+  counter-reset: rank-step !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.rank-start-box li {
+  counter-increment: rank-step !important;
+  color: #102033 !important;
+  font-size: 0.82rem !important;
+  font-weight: 820 !important;
+  margin: 0.42rem 0 !important;
+  display: grid !important;
+  grid-template-columns: 24px minmax(0, 1fr) !important;
+  gap: 0.45rem !important;
+  align-items: center !important;
+}
+
+.rank-start-box li::before {
+  content: counter(rank-step) !important;
+  width: 21px !important;
+  height: 21px !important;
+  border-radius: 50% !important;
+  background: #168c8c !important;
+  color: #fff !important;
+  display: grid !important;
+  place-items: center !important;
+  font-size: 0.72rem !important;
+}
+
+.rank-next-box {
+  display: grid !important;
+  grid-template-columns: 42px minmax(0, 1fr) !important;
+  gap: 0.75rem !important;
+  border-left: 1px solid #d8e3ea !important;
+  padding-left: 1rem !important;
+}
+
+.rank-next-box > .exec-icon {
+  color: #2f6f9f !important;
+  font-size: 2rem !important;
+}
+
+.rank-next-box p {
+  color: #26384d !important;
+  font-size: 0.78rem !important;
+  line-height: 1.42 !important;
+  margin: 0 0 0.7rem 0 !important;
+}
+
+.rank-filter-title {
+  display: flex !important;
+  gap: 0.55rem !important;
+  align-items: center !important;
+  color: #102033 !important;
+  font-size: 0.86rem !important;
+  font-weight: 860 !important;
+  min-height: 54px !important;
+}
+
+.rank-filter-title .exec-icon {
+  color: #2f6f9f !important;
+  font-size: 1.25rem !important;
+}
+
+.rank-taxonomy {
+  display: grid !important;
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  gap: 0 !important;
+  border: 1px solid #d8e3ea !important;
+  border-radius: 8px !important;
+  background: #ffffff !important;
+  box-shadow: 0 9px 24px rgba(16,32,51,0.04) !important;
+  overflow: hidden !important;
+  width: 100% !important;
+  margin: 0.75rem 0 0.75rem 0 !important;
+}
+
+.rank-tax-item {
+  border-right: 1px solid #d8e3ea !important;
+  padding: 0.9rem 1rem 0.9rem 1.35rem !important;
+  position: relative !important;
+  min-height: 92px !important;
+}
+
+.rank-tax-item:last-child {
+  border-right: 0 !important;
+}
+
+.rank-tax-item::before {
+  content: "" !important;
+  position: absolute !important;
+  left: 0.7rem !important;
+  top: 1.08rem !important;
+  width: 9px !important;
+  height: 9px !important;
+  border-radius: 2px !important;
+}
+
+.rank-tax-item.red::before { background: #d94b3d !important; }
+.rank-tax-item.amber::before { background: #f08c00 !important; }
+.rank-tax-item.teal::before { background: #168c8c !important; }
+.rank-tax-item.steel::before { background: #64748b !important; }
+.rank-tax-item.purple::before { background: #9b6bb8 !important; }
+
+.rank-tax-item strong {
+  display: block !important;
+  font-size: 0.78rem !important;
+  margin-bottom: 0.35rem !important;
+  color: #102033 !important;
+}
+
+.rank-tax-item.red strong { color: #b23a2e !important; }
+.rank-tax-item.amber strong { color: #c47a16 !important; }
+.rank-tax-item.teal strong { color: #087a82 !important; }
+.rank-tax-item.steel strong { color: #45566b !important; }
+.rank-tax-item.purple strong { color: #7e3fa1 !important; }
+
+.rank-tax-item span {
+  display: block !important;
+  color: #26384d !important;
+  font-size: 0.72rem !important;
+  line-height: 1.38 !important;
+}
+
+.rank-section-title {
+  color: #102033 !important;
+  font-size: 1.38rem !important;
+  margin: 0.95rem 0 0.55rem 0 !important;
+  font-weight: 850 !important;
+}
+
+.rank-bottom-notes {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 0.8rem !important;
+  margin-top: 0.75rem !important;
+}
+
+.rank-bottom-notes > div {
+  display: grid !important;
+  grid-template-columns: 38px minmax(0, 1fr) !important;
+  gap: 0.75rem !important;
+  border: 1px solid #d8e3ea !important;
+  border-radius: 8px !important;
+  background: #ffffff !important;
+  padding: 0.9rem 1rem !important;
+  box-shadow: 0 8px 22px rgba(16,32,51,0.035) !important;
+}
+
+.rank-bottom-notes .exec-icon {
+  color: #2f6f9f !important;
+  font-size: 1.6rem !important;
+}
+
+.rank-bottom-notes strong {
+  display: block !important;
+  color: #102033 !important;
+  font-size: 0.82rem !important;
+}
+
+.rank-bottom-notes p {
+  margin: 0.2rem 0 0 0 !important;
+  color: #26384d !important;
+  font-size: 0.75rem !important;
+  line-height: 1.4 !important;
+}
+
+div[data-testid="stDataFrame"] {
+  border: 1px solid #d8e3ea !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+  box-shadow: 0 8px 24px rgba(24, 34, 53, 0.04) !important;
+}
+
+.stMultiSelect [data-baseweb="select"] > div,
+.stSelectbox [data-baseweb="select"] > div {
+  border-radius: 8px !important;
+  border-color: #cbd6e2 !important;
+  background: #fbfcfe !important;
+}
+
+.stMultiSelect [data-baseweb="tag"] {
+  background: #e5f2f7 !important;
+  border: 1px solid #b7d7e1 !important;
+}
+
+.stMultiSelect [data-baseweb="tag"] span {
+  color: #173b57 !important;
+  font-weight: 650 !important;
+}
+
+@media (max-width: 1050px) {
+  .rank-header,
+  .rank-summary-card,
+  .rank-summary-left,
+  .rank-next-box,
+  .rank-bottom-notes {
+    grid-template-columns: 1fr !important;
+  }
+
+  .rank-summary-kpis,
+  .rank-taxonomy {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .rank-start-box,
+  .rank-next-box {
+    border-left: 0 !important;
+    border-top: 1px solid #d8e3ea !important;
+    padding-left: 0 !important;
+    padding-top: 0.85rem !important;
+  }
+}
+</style>
+""",
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        """
 <div class="rank-page">
   <div class="rank-header">
     <div>
