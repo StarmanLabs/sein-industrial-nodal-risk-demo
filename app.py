@@ -340,7 +340,7 @@ def render_ranking() -> None:
         st.error("La capa producto no está disponible.")
         st.stop()
 
-    st.html(
+    st.markdown(
         """
 <div class="rank-page">
   <div class="rank-header">
@@ -358,22 +358,24 @@ def render_ranking() -> None:
     </div>
   </div>
 </div>
-"""
+""",
+        unsafe_allow_html=True,
     )
     summary_slot = st.empty()
 
     filter_top = st.columns([0.8, 1.25, 1.15, 1.1, 1])
     with filter_top[0]:
-        st.html(
+        st.markdown(
             """
 <div class="rank-filter-title">
   <span class="exec-icon exec-icon-filter" aria-hidden="true"></span>
   <strong>Filtros de revisión</strong>
 </div>
-"""
+""",
+            unsafe_allow_html=True,
         )
     with filter_top[4]:
-        reset_filters = st.button("Limpiar filtros", key="ranking_clear_filters", use_container_width=True)
+        reset_filters = st.button("Limpiar filtros", key="ranking_clear_filters", width="stretch")
     if reset_filters:
         st.session_state["ranking_priority"] = []
         st.session_state["ranking_robustness"] = []
@@ -414,7 +416,7 @@ def render_ranking() -> None:
         else "Amplía los filtros para recuperar barras candidatas de revisión."
     )
     with summary_slot.container():
-        st.html(
+        st.markdown(
             f"""
 <div class="rank-summary-card">
   <div class="rank-summary-left">
@@ -441,10 +443,11 @@ def render_ranking() -> None:
     <div><strong>Siguiente paso recomendado:</strong><p>{escape(next_action)}</p></div>
   </div>
 </div>
-"""
+""",
+            unsafe_allow_html=True,
         )
 
-    st.html(
+    st.markdown(
         """
 <div class="rank-taxonomy">
   <div class="rank-tax-item red"><strong>Revisión inmediata</strong><span>Primera cola de due diligence. Combina señal alta, recurrencia, robustez y soporte de contexto.</span></div>
@@ -453,10 +456,11 @@ def render_ranking() -> None:
   <div class="rank-tax-item steel"><strong>Contexto base</strong><span>Permanece como referencia del universo o necesita mejor contexto antes de una lectura fuerte.</span></div>
   <div class="rank-tax-item purple"><strong>Requiere contexto adicional</strong><span>No exige revisión inmediata; completar evidencia antes de interpretar.</span></div>
 </div>
-"""
+""",
+        unsafe_allow_html=True,
     )
 
-    st.html("<h2 class='rank-section-title'>Cola priorizada de revisión</h2>")
+    st.markdown("<h2 class='rank-section-title'>Cola priorizada de revisión</h2>", unsafe_allow_html=True)
     if filtered.empty:
         action_panel("Sin resultados para los filtros activos", "Amplía prioridad, evidencia, robustez o tensión para recuperar barras candidatas.")
     else:
@@ -554,13 +558,14 @@ def render_ranking() -> None:
         )
         st.caption(f"Mostrando {start + 1:,} a {min(end, len(filtered)):,} de {len(filtered):,} barras filtradas.")
         st.download_button("Descargar lista filtrada", filtered.to_csv(index=False).encode("utf-8"), file_name="sein_barra_due_diligence_worklist.csv", mime="text/csv")
-    st.html(
+    st.markdown(
         """
 <div class="rank-bottom-notes">
   <div><span class="exec-icon exec-icon-shield" aria-hidden="true"></span><strong>Nota metodológica:</strong><p>Esta priorización combina señales de precio, recurrencia, robustez y contexto del sistema. No sustituye análisis técnico, contractual u operativo.</p></div>
   <div><span class="exec-icon exec-icon-case" aria-hidden="true"></span><strong>Uso recomendado:</strong><p>Forme una lista corta con los filtros, revise los casos y valide con equipos técnicos y contractuales antes de cualquier decisión.</p></div>
 </div>
-"""
+""",
+        unsafe_allow_html=True,
     )
 
 
