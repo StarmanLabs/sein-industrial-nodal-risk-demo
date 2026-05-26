@@ -699,6 +699,13 @@ def render_ranking() -> None:
   color: #26384d !important;
   font-size: 0.75rem !important;
   line-height: 1.4 !important;
+  max-width: 72ch !important;
+}
+
+.rank-bottom-notes .rank-note-copy {
+  min-width: 0 !important;
+  overflow-wrap: normal !important;
+  word-break: normal !important;
 }
 
 div[data-testid="stDataFrame"] {
@@ -973,8 +980,8 @@ div[data-testid="stDataFrame"] {
     st.markdown(
         """
 <div class="rank-bottom-notes">
-  <div><span class="exec-icon exec-icon-shield" aria-hidden="true"></span><strong>Nota metodológica:</strong><p>Esta priorización combina señales de precio, recurrencia, robustez y contexto del sistema. No sustituye análisis técnico, contractual u operativo.</p></div>
-  <div><span class="exec-icon exec-icon-case" aria-hidden="true"></span><strong>Uso recomendado:</strong><p>Forme una lista corta con los filtros, revise los casos y valide con equipos técnicos y contractuales antes de cualquier decisión.</p></div>
+  <div><span class="exec-icon exec-icon-shield" aria-hidden="true"></span><div class="rank-note-copy"><strong>Nota metodológica:</strong><p>Esta priorización combina señales de precio, recurrencia, robustez y contexto del sistema. No sustituye análisis técnico, contractual u operativo.</p></div></div>
+  <div><span class="exec-icon exec-icon-case" aria-hidden="true"></span><div class="rank-note-copy"><strong>Uso recomendado:</strong><p>Forme una lista corta con los filtros, revise los casos y valide con equipos técnicos y contractuales antes de cualquier decisión.</p></div></div>
 </div>
 """,
         unsafe_allow_html=True,

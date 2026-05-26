@@ -2236,6 +2236,13 @@ h2, h3 {
   color: #26384d;
   font-size: 0.75rem;
   line-height: 1.4;
+  max-width: 72ch;
+}
+
+.rank-bottom-notes .rank-note-copy {
+  min-width: 0;
+  overflow-wrap: normal;
+  word-break: normal;
 }
 
 [data-testid="stPlotlyChart"] {
