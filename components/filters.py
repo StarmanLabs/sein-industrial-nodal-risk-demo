@@ -90,11 +90,24 @@ def robustness_filter(
     key: str = "robustness",
     label: str = "Robustez de señal",
     placeholder: str = "Seleccionar robustez",
+    display_map: dict[str, str] | None = None,
 ) -> list[str]:
     column = "robustness_flag_es" if "robustness_flag_es" in df.columns else "robustness_flag"
     if column not in df.columns:
         return []
     options = sorted(df[column].dropna().astype(str).unique())
+    if display_map:
+        label_rows = pd.DataFrame({"raw": options})
+        label_rows["display"] = label_rows["raw"].map(lambda value: display_map.get(value, value))
+        label_rows = label_rows.drop_duplicates("display")
+        selected_labels = st.multiselect(
+            label,
+            label_rows["display"].tolist(),
+            default=label_rows["display"].tolist(),
+            placeholder=placeholder,
+            key=key,
+        )
+        return label_rows[label_rows["display"].isin(selected_labels)]["raw"].tolist()
     return st.multiselect(label, options, default=options, placeholder=placeholder, key=key)
 
 

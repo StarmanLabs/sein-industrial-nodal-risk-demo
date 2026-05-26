@@ -833,6 +833,15 @@ div[data-testid="stDataFrame"] {
         st.session_state["ranking_tension"] = []
 
     filter_cols = st.columns([1.25, 1.05, 1.05])
+    stability_display = {
+        "Robustez alta": "Alta",
+        "High robustness": "Alta",
+        "Robustez moderada": "Moderada",
+        "Moderate robustness": "Moderada",
+        "Robustez baja": "Baja",
+        "Low robustness": "Baja",
+        "Fuera de top-list de sensibilidad": "Fuera de top-lista",
+    }
     with filter_cols[0]:
         selected_priorities = priority_filter(
             df,
@@ -846,6 +855,7 @@ div[data-testid="stDataFrame"] {
             key="ranking_robustness",
             label="Estabilidad de señal",
             placeholder="Seleccionar robustez",
+            display_map=stability_display,
         )
     with filter_cols[2]:
         selected_tension = tension_filter(
@@ -964,22 +974,6 @@ div[data-testid="stDataFrame"] {
             "Low information": "Información por completar",
         }
 
-        def _executive_reason(row: pd.Series) -> str:
-            priority = str(row.get("due_diligence_priority", ""))
-            if priority == "Priority A":
-                return "Alta prioridad operativa + robustez alta + señal recurrente"
-            if priority == "Priority B":
-                if float(row.get("avg_icpi", 0) or 0) >= float(row.get("avg_oanri", 0) or 0):
-                    return "Estrés nodal elevado + contexto relevante"
-                return "Prioridad operativa elevada"
-            if priority == "Watchlist":
-                return "Caso episódico / sensible"
-            if priority == "Monitor":
-                return "Contexto base del universo"
-            if priority == "Low information":
-                return "Contexto adicional requerido"
-            return str(row.get("priority_reason", "Revisión contextual sugerida"))
-
         def _stability_label(value: object) -> str:
             text = str(value)
             lower = text.lower()
@@ -992,6 +986,37 @@ div[data-testid="stDataFrame"] {
             if "fuera" in lower:
                 return "Fuera de top-lista"
             return text
+
+        def _executive_reason(row: pd.Series) -> str:
+            priority = str(row.get("due_diligence_priority", ""))
+            stability = _stability_label(row.get(robust_col, ""))
+            persistence = str(row.get("persistence_category_es", row.get("persistence_category", "")))
+            priority_months_value = int(row.get("priority_months", 0) or 0)
+            watchlist_months_value = int(row.get("watchlist_months", 0) or 0)
+            observed_months = int(row.get("coes_price_key_months_observed", 0) or 0)
+            if priority == "Priority A":
+                if persistence == "Persistente":
+                    return f"Prioridad operativa alta + estabilidad {stability.lower()} + señal persistente"
+                return f"Prioridad operativa alta + estabilidad {stability.lower()}"
+            if priority == "Priority B":
+                if stability == "Alta" and priority_months_value >= 8:
+                    return "Señal relevante + estabilidad alta + varios meses prioritarios"
+                if priority_months_value > 0 and watchlist_months_value > 0:
+                    return "Señal relevante + recurrencia mensual + contexto revisado"
+                if float(row.get("avg_icpi", 0) or 0) >= float(row.get("avg_oanri", 0) or 0):
+                    return "Estrés nodal elevado + contexto revisado"
+                return "Prioridad operativa elevada"
+            if priority == "Watchlist":
+                if watchlist_months_value > 0:
+                    return "Episodios de seguimiento + revisar recurrencia"
+                return "Caso episódico / sensible"
+            if priority == "Monitor":
+                return "Referencia comparativa; sin prioridad mensual"
+            if priority == "Low information":
+                if observed_months < 36:
+                    return "Cobertura temporal limitada + sin meses prioritarios"
+                return "Señal insuficiente para priorizar revisión"
+            return str(row.get("priority_reason", "Revisión contextual sugerida"))
 
         table = page_df.assign(
             **{
