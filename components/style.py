@@ -1486,6 +1486,7 @@ h2, h3 {
 .exec-icon-link::before { content: "∞"; }
 .exec-icon-filter::before { content: "▽"; }
 .exec-icon-case::before { content: "▤"; }
+.exec-icon-info::before { content: "i"; }
 
 .exec-kpi-item.urgent .exec-kpi-icon { color: var(--sein-red); background: #fff1ef; }
 .exec-kpi-item.selective .exec-kpi-icon { color: #f08c00; background: #fff7ed; }
@@ -2127,6 +2128,20 @@ h2, h3 {
   margin: 0 0 0.7rem 0;
 }
 
+.rank-next-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 7px;
+  background: var(--sein-navy);
+  color: #ffffff !important;
+  font-weight: 820;
+  font-size: 0.78rem;
+  padding: 0.52rem 0.8rem;
+  min-width: 170px;
+  text-decoration: none !important;
+}
+
 .rank-filter-title {
   display: flex;
   gap: 0.55rem;
@@ -2151,34 +2166,39 @@ h2, h3 {
   background: #ffffff;
   box-shadow: 0 9px 24px rgba(16,32,51,0.04);
   overflow: hidden;
+  margin: 0 0 0.75rem 0;
+}
+
+.rank-taxonomy-wrap {
+  border: 1px solid var(--sein-line);
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 9px 24px rgba(16,32,51,0.04);
+  overflow: hidden;
   margin: 0.75rem 0 0.75rem 0;
+}
+
+.rank-tax-heading {
+  color: var(--sein-ink);
+  font-size: 0.82rem;
+  font-weight: 860;
+  padding: 0.7rem 0.9rem 0.2rem 0.9rem;
+}
+
+.rank-taxonomy-wrap .rank-taxonomy {
+  border: 0;
+  box-shadow: none;
 }
 
 .rank-tax-item {
   border-right: 1px solid var(--sein-line);
-  padding: 0.9rem 1rem 0.9rem 1.35rem;
+  padding: 0.9rem 1rem 0.9rem 1rem;
   position: relative;
 }
 
 .rank-tax-item:last-child {
   border-right: 0;
 }
-
-.rank-tax-item::before {
-  content: "";
-  position: absolute;
-  left: 0.7rem;
-  top: 1.08rem;
-  width: 9px;
-  height: 9px;
-  border-radius: 2px;
-}
-
-.rank-tax-item.red::before { background: #d94b3d; }
-.rank-tax-item.amber::before { background: #f08c00; }
-.rank-tax-item.teal::before { background: var(--sein-teal); }
-.rank-tax-item.steel::before { background: #7c8aa0; }
-.rank-tax-item.purple::before { background: #9b68bd; }
 
 .rank-tax-item strong {
   display: block;

@@ -425,6 +425,7 @@ def render_ranking() -> None:
 .exec-icon-target::before { content: "◎"; }
 .exec-icon-filter::before { content: "▽"; }
 .exec-icon-case::before { content: "▤"; }
+.exec-icon-info::before { content: "i"; }
 
 .rank-caveat > .exec-icon {
   color: #2f6f9f !important;
@@ -584,6 +585,20 @@ def render_ranking() -> None:
   margin: 0 0 0.7rem 0 !important;
 }
 
+.rank-next-button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 7px !important;
+  background: #164a63 !important;
+  color: #ffffff !important;
+  font-weight: 820 !important;
+  font-size: 0.78rem !important;
+  padding: 0.52rem 0.8rem !important;
+  min-width: 170px !important;
+  text-decoration: none !important;
+}
+
 .rank-filter-title {
   display: flex !important;
   gap: 0.55rem !important;
@@ -609,12 +624,33 @@ def render_ranking() -> None:
   box-shadow: 0 9px 24px rgba(16,32,51,0.04) !important;
   overflow: hidden !important;
   width: 100% !important;
+  margin: 0 0 0.75rem 0 !important;
+}
+
+.rank-taxonomy-wrap {
+  border: 1px solid #d8e3ea !important;
+  border-radius: 8px !important;
+  background: #ffffff !important;
+  box-shadow: 0 9px 24px rgba(16,32,51,0.04) !important;
+  overflow: hidden !important;
   margin: 0.75rem 0 0.75rem 0 !important;
+}
+
+.rank-tax-heading {
+  color: #102033 !important;
+  font-size: 0.82rem !important;
+  font-weight: 860 !important;
+  padding: 0.7rem 0.9rem 0.2rem 0.9rem !important;
+}
+
+.rank-taxonomy-wrap .rank-taxonomy {
+  border: 0 !important;
+  box-shadow: none !important;
 }
 
 .rank-tax-item {
   border-right: 1px solid #d8e3ea !important;
-  padding: 0.9rem 1rem 0.9rem 1.35rem !important;
+  padding: 0.9rem 1rem 0.9rem 1rem !important;
   position: relative !important;
   min-height: 92px !important;
 }
@@ -622,22 +658,6 @@ def render_ranking() -> None:
 .rank-tax-item:last-child {
   border-right: 0 !important;
 }
-
-.rank-tax-item::before {
-  content: "" !important;
-  position: absolute !important;
-  left: 0.7rem !important;
-  top: 1.08rem !important;
-  width: 9px !important;
-  height: 9px !important;
-  border-radius: 2px !important;
-}
-
-.rank-tax-item.red::before { background: #d94b3d !important; }
-.rank-tax-item.amber::before { background: #f08c00 !important; }
-.rank-tax-item.teal::before { background: #168c8c !important; }
-.rank-tax-item.steel::before { background: #64748b !important; }
-.rank-tax-item.purple::before { background: #9b6bb8 !important; }
 
 .rank-tax-item strong {
   display: block !important;
@@ -781,10 +801,10 @@ div[data-testid="stDataFrame"] {
       <p><strong>Pregunta de decisión:</strong> ¿Qué barras deberían revisarse primero?</p>
     </div>
     <div class="rank-caveat">
-      <span class="exec-icon exec-icon-shield" aria-hidden="true"></span>
+      <span class="exec-icon exec-icon-info" aria-hidden="true"></span>
       <div>
-        <strong>Mayor posición = mayor prioridad de revisión.</strong>
-        <span>No significa que la barra sea “mala”. No prueba congestión física ni predice precios.</span>
+        <strong>Estar arriba significa mayor prioridad de revisión.</strong>
+        <span>No peor barra ni prueba de congestión física ni predicción de precios.</span>
       </div>
     </div>
   </div>
@@ -808,17 +828,32 @@ div[data-testid="stDataFrame"] {
     with filter_top[4]:
         reset_filters = st.button("Limpiar filtros", key="ranking_clear_filters", width="stretch")
     if reset_filters:
-        st.session_state["ranking_priority"] = []
+        st.session_state["ranking_level"] = []
         st.session_state["ranking_robustness"] = []
         st.session_state["ranking_tension"] = []
 
     filter_cols = st.columns([1.25, 1.05, 1.05])
     with filter_cols[0]:
-        selected_priorities = priority_filter(df, key="ranking_priority")
+        selected_priorities = priority_filter(
+            df,
+            key="ranking_level",
+            label="Nivel de revisión",
+            placeholder="Seleccionar categorías",
+        )
     with filter_cols[1]:
-        selected_robustness = robustness_filter(df, key="ranking_robustness")
+        selected_robustness = robustness_filter(
+            df,
+            key="ranking_robustness",
+            label="Estabilidad de señal",
+            placeholder="Seleccionar robustez",
+        )
     with filter_cols[2]:
-        selected_tension = tension_filter(df, key="ranking_tension")
+        selected_tension = tension_filter(
+            df,
+            key="ranking_tension",
+            label="Tensión kV",
+            placeholder="Seleccionar tensión",
+        )
 
     filtered = df.copy()
     if selected_priorities:
@@ -855,10 +890,10 @@ div[data-testid="stDataFrame"] {
     <div class="rank-summary-kpis">
       <div class="rank-summary-title">Con los filtros actuales:</div>
       <div class="rank-kpi"><strong>{len(filtered):,.0f}</strong><span>barras visibles</span></div>
-      <div class="rank-kpi"><strong>{queue_count:,.0f}</strong><span>en cola principal<br>(inmediata / selectiva)</span></div>
-      <div class="rank-kpi"><strong>{watch_count:,.0f}</strong><span>en seguimiento mensual<br>(casos episódicos)</span></div>
-      <div class="rank-kpi"><strong>{robust_high:,.0f}</strong><span>señales con<br>robustez alta</span></div>
-      <div class="rank-kpi"><strong>{immediate_count:,.0f}</strong><span>en revisión inmediata</span></div>
+      <div class="rank-kpi"><strong>{queue_count:,.0f}</strong><span>en cola principal<br>(prioritarias + recomendadas)</span></div>
+      <div class="rank-kpi"><strong>{watch_count:,.0f}</strong><span>en seguimiento activo<br>(casos episódicos)</span></div>
+      <div class="rank-kpi"><strong>{robust_high:,.0f}</strong><span>señales con<br>estabilidad alta</span></div>
+      <div class="rank-kpi"><strong>{immediate_count:,.0f}</strong><span>en revisión prioritaria</span></div>
     </div>
   </div>
   <div class="rank-start-box">
@@ -871,7 +906,7 @@ div[data-testid="stDataFrame"] {
   </div>
   <div class="rank-next-box">
     <span class="exec-icon exec-icon-case" aria-hidden="true"></span>
-    <div><strong>Siguiente paso recomendado:</strong><p>{escape(next_action)}</p></div>
+    <div><strong>Siguiente paso recomendado:</strong><p>{escape(next_action)}</p><a class="rank-next-button" href="?page=Caso%20de%20Estudio">Abrir caso de estudio →</a></div>
   </div>
 </div>
 """,
@@ -880,12 +915,15 @@ div[data-testid="stDataFrame"] {
 
     st.markdown(
         """
-<div class="rank-taxonomy">
-  <div class="rank-tax-item red"><strong>Revisión inmediata</strong><span>Primera cola de due diligence. Combina señal alta, recurrencia, robustez y soporte de contexto.</span></div>
-  <div class="rank-tax-item amber"><strong>Revisión selectiva</strong><span>Candidata relevante. Gana prioridad cuando sector, contrato, ubicación o contexto industrial aumentan exposición.</span></div>
-  <div class="rank-tax-item teal"><strong>Seguimiento mensual</strong><span>Caso episódico o sensible. Se vigila para distinguir persistencia, deterioro reciente o eventos puntuales.</span></div>
-  <div class="rank-tax-item steel"><strong>Contexto base</strong><span>Permanece como referencia del universo o necesita mejor contexto antes de una lectura fuerte.</span></div>
-  <div class="rank-tax-item purple"><strong>Requiere contexto adicional</strong><span>No exige revisión inmediata; completar evidencia antes de interpretar.</span></div>
+<div class="rank-taxonomy-wrap">
+  <div class="rank-tax-heading">Niveles de revisión: qué significan y qué hacer</div>
+  <div class="rank-taxonomy">
+    <div class="rank-tax-item red"><strong>1. Revisión prioritaria</strong><span>Revisar primero. Señal fuerte; abrir revisión estructurada.</span></div>
+    <div class="rank-tax-item amber"><strong>2. Revisión recomendada</strong><span>Revisar después. Candidata relevante; depende de sector, contrato o ubicación.</span></div>
+    <div class="rank-tax-item teal"><strong>3. Seguimiento activo</strong><span>Monitorear. Vigilar si la señal se repite o empeora.</span></div>
+    <div class="rank-tax-item steel"><strong>4. Referencia comparativa</strong><span>Usar como referencia. No prioritaria; sirve para comparar.</span></div>
+    <div class="rank-tax-item purple"><strong>5. Información por completar</strong><span>Completar evidencia. No interpretar fuerte hasta validar contexto.</span></div>
+  </div>
 </div>
 """,
         unsafe_allow_html=True,
@@ -913,10 +951,17 @@ div[data-testid="stDataFrame"] {
 
         action_short = {
             "Priority A": "Abrir revisión estructurada",
-            "Priority B": "Revisar después de inmediata",
+            "Priority B": "Revisar después de prioritarias",
             "Watchlist": "Monitorear recurrencia",
             "Monitor": "Mantener como contexto",
             "Low information": "Completar evidencia",
+        }
+        level_labels = {
+            "Priority A": "Revisión prioritaria",
+            "Priority B": "Revisión recomendada",
+            "Watchlist": "Seguimiento activo",
+            "Monitor": "Referencia comparativa",
+            "Low information": "Información por completar",
         }
 
         def _executive_reason(row: pd.Series) -> str:
@@ -935,14 +980,27 @@ div[data-testid="stDataFrame"] {
                 return "Contexto adicional requerido"
             return str(row.get("priority_reason", "Revisión contextual sugerida"))
 
+        def _stability_label(value: object) -> str:
+            text = str(value)
+            lower = text.lower()
+            if "alta" in lower or "high" in lower:
+                return "Alta"
+            if "moderada" in lower or "moderate" in lower:
+                return "Moderada"
+            if "baja" in lower or "low" in lower:
+                return "Baja"
+            if "fuera" in lower:
+                return "Fuera de top-lista"
+            return text
+
         table = page_df.assign(
             **{
                 "#": range(start + 1, start + 1 + len(page_df)),
                 "Score de revisión": page_df["decision_priority_score"].round(2),
-                "Categoría de revisión": page_df["due_diligence_priority_es"],
+                "Nivel de revisión": page_df["due_diligence_priority"].map(level_labels).fillna(page_df["due_diligence_priority_es"]),
                 "Acción recomendada": page_df["due_diligence_priority"].map(action_short).fillna(page_df["recommended_action"]),
                 "¿Por qué aparece?": page_df.apply(_executive_reason, axis=1),
-                "Robustez": page_df[robust_col],
+                "Estabilidad de señal": page_df[robust_col].map(_stability_label),
                 "Estrés nodal prom.": page_df["avg_icpi"].round(2),
                 "Prioridad operativa prom.": page_df["avg_oanri"].round(2),
                 "Tensión kV": page_df["nivel_tension_kv"].round(1),
@@ -952,10 +1010,10 @@ div[data-testid="stDataFrame"] {
                 "#",
                 "barra",
                 "Score de revisión",
-                "Categoría de revisión",
+                "Nivel de revisión",
                 "Acción recomendada",
                 "¿Por qué aparece?",
-                "Robustez",
+                "Estabilidad de señal",
                 "Estrés nodal prom.",
                 "Prioridad operativa prom.",
                 "Tensión kV",
@@ -964,22 +1022,22 @@ div[data-testid="stDataFrame"] {
 
         def _rank_style(value: object) -> str:
             text = str(value)
-            if text == "Revisión inmediata":
+            if text == "Revisión prioritaria":
                 return "background-color: #fde8e6; color: #9d1f17; font-weight: 800; border-radius: 6px"
-            if text == "Revisión selectiva":
+            if text == "Revisión recomendada":
                 return "background-color: #fff0cf; color: #a85a00; font-weight: 800; border-radius: 6px"
-            if text == "Seguimiento mensual":
+            if text == "Seguimiento activo":
                 return "background-color: #dff4f6; color: #087a82; font-weight: 800; border-radius: 6px"
-            if text == "Contexto base":
+            if text == "Referencia comparativa":
                 return "background-color: #eef2f6; color: #4f5d6f; font-weight: 800; border-radius: 6px"
-            if text == "Requiere contexto adicional":
+            if text == "Información por completar":
                 return "background-color: #f2e8f8; color: #7e3fa1; font-weight: 800; border-radius: 6px"
-            if "alta" in text.lower():
-                return "color: #1f8a5b; font-weight: 800"
-            if "moderada" in text.lower():
-                return "color: #c47a16; font-weight: 800"
-            if "baja" in text.lower() or "fuera" in text.lower():
-                return "color: #64748b; font-weight: 800"
+            if text == "Alta":
+                return "background-color: #e9f8ef; color: #1f8a5b; font-weight: 800; border-radius: 999px"
+            if text == "Moderada":
+                return "background-color: #fff3df; color: #c47a16; font-weight: 800; border-radius: 999px"
+            if text in {"Baja", "Fuera de top-lista"}:
+                return "background-color: #eef2f6; color: #64748b; font-weight: 800; border-radius: 999px"
             return ""
 
         st.dataframe(
@@ -991,10 +1049,10 @@ div[data-testid="stDataFrame"] {
                 "#": st.column_config.NumberColumn("#", width="small"),
                 "Barra": st.column_config.TextColumn("Barra", width="medium"),
                 "Score de revisión": st.column_config.ProgressColumn("Score de revisión", min_value=0, max_value=100, format="%.2f", width="medium"),
-                "Categoría de revisión": st.column_config.TextColumn("Categoría de revisión", width="medium"),
+                "Nivel de revisión": st.column_config.TextColumn("Nivel de revisión", width="medium"),
                 "Acción recomendada": st.column_config.TextColumn("Acción recomendada", width="medium"),
                 "¿Por qué aparece?": st.column_config.TextColumn("¿Por qué aparece?", width="large"),
-                "Robustez": st.column_config.TextColumn("Robustez", width="small"),
+                "Estabilidad de señal": st.column_config.TextColumn("Estabilidad de señal", width="small"),
                 "Estrés nodal prom.": st.column_config.NumberColumn("Estrés nodal prom.", format="%.2f", width="small"),
                 "Prioridad operativa prom.": st.column_config.NumberColumn("Prioridad operativa prom.", format="%.2f", width="small"),
                 "Tensión kV": st.column_config.NumberColumn("Tensión kV", format="%.1f", width="small"),
@@ -1005,8 +1063,8 @@ div[data-testid="stDataFrame"] {
     st.markdown(
         """
 <div class="rank-bottom-notes">
-  <div><span class="exec-icon exec-icon-shield" aria-hidden="true"></span><div class="rank-note-copy"><strong>Nota metodológica:</strong><p>Esta priorización combina señales de precio, recurrencia, robustez y contexto del sistema. No sustituye análisis técnico, contractual u operativo.</p></div></div>
-  <div><span class="exec-icon exec-icon-case" aria-hidden="true"></span><div class="rank-note-copy"><strong>Uso recomendado:</strong><p>Forme una lista corta con los filtros, revise los casos y valide con equipos técnicos y contractuales antes de cualquier decisión.</p></div></div>
+  <div><span class="exec-icon exec-icon-shield" aria-hidden="true"></span><div class="rank-note-copy"><strong>Nota metodológica:</strong><p>Esta priorización combina señales de precio, recurrencia, estabilidad de señal y contexto del sistema. No sustituye análisis técnico, contractual u operativo.</p></div></div>
+  <div><span class="exec-icon exec-icon-info" aria-hidden="true"></span><div class="rank-note-copy"><strong>¿Qué es la estabilidad de señal?</strong><p>Indica si la barra sigue apareciendo como relevante al probar supuestos alternativos del ranking. Estabilidad alta = señal más consistente. No prueba causalidad ni congestión.</p></div></div>
 </div>
 """,
         unsafe_allow_html=True,

@@ -21,16 +21,21 @@ CONTRACT_LABELS = {
 }
 
 PRIORITY_DISPLAY_LABELS = {
-    "Baja informacion": "Requiere contexto adicional",
-    "Baja información": "Requiere contexto adicional",
-    "Low information": "Requiere contexto adicional",
-    "Priority A": "Revisión inmediata",
-    "Priority B": "Revisión selectiva",
-    "Watchlist": "Seguimiento mensual",
-    "Monitor": "Contexto base",
-    "Prioridad A": "Revisión inmediata",
-    "Prioridad B": "Revisión selectiva",
-    "Monitorear": "Contexto base",
+    "Baja informacion": "Información por completar",
+    "Baja información": "Información por completar",
+    "Low information": "Información por completar",
+    "Priority A": "Revisión prioritaria",
+    "Priority B": "Revisión recomendada",
+    "Watchlist": "Seguimiento activo",
+    "Monitor": "Referencia comparativa",
+    "Prioridad A": "Revisión prioritaria",
+    "Prioridad B": "Revisión recomendada",
+    "Revisión inmediata": "Revisión prioritaria",
+    "Revisión selectiva": "Revisión recomendada",
+    "Seguimiento mensual": "Seguimiento activo",
+    "Monitorear": "Referencia comparativa",
+    "Contexto base": "Referencia comparativa",
+    "Requiere contexto adicional": "Información por completar",
 }
 
 PRIORITY_ORDER = {
@@ -42,7 +47,12 @@ PRIORITY_ORDER = {
 }
 
 
-def priority_filter(df: pd.DataFrame, key: str = "priority") -> list[str]:
+def priority_filter(
+    df: pd.DataFrame,
+    key: str = "priority",
+    label: str = "Categoría de revisión",
+    placeholder: str = "Seleccionar categorías",
+) -> list[str]:
     if "due_diligence_priority_es" in df.columns:
         options = df[["due_diligence_priority", "due_diligence_priority_es"]].drop_duplicates()
         options["priority_order"] = options["due_diligence_priority"].map(PRIORITY_ORDER).fillna(99)
@@ -51,19 +61,19 @@ def priority_filter(df: pd.DataFrame, key: str = "priority") -> list[str]:
             lambda value: PRIORITY_DISPLAY_LABELS.get(value, value)
         )
         selected_labels = st.multiselect(
-            "Categoría de revisión",
+            label,
             options["display_label"].tolist(),
             default=options["display_label"].tolist(),
-            placeholder="Seleccionar categorías",
+            placeholder=placeholder,
             key=key,
         )
         return options[options["display_label"].isin(selected_labels)]["due_diligence_priority"].tolist()
     priorities = sorted(df["due_diligence_priority"].dropna().unique())
     return st.multiselect(
-        "Categoría de revisión",
+        label,
         priorities,
         default=priorities,
-        placeholder="Seleccionar categorías",
+        placeholder=placeholder,
         key=key,
     )
 
@@ -75,19 +85,29 @@ def evidence_filter(df: pd.DataFrame, key: str = "evidence") -> list[str]:
     return st.multiselect("Soporte de contexto", options, default=options, placeholder="Seleccionar soporte", key=key)
 
 
-def robustness_filter(df: pd.DataFrame, key: str = "robustness") -> list[str]:
+def robustness_filter(
+    df: pd.DataFrame,
+    key: str = "robustness",
+    label: str = "Robustez de señal",
+    placeholder: str = "Seleccionar robustez",
+) -> list[str]:
     column = "robustness_flag_es" if "robustness_flag_es" in df.columns else "robustness_flag"
     if column not in df.columns:
         return []
     options = sorted(df[column].dropna().astype(str).unique())
-    return st.multiselect("Robustez de señal", options, default=options, placeholder="Seleccionar robustez", key=key)
+    return st.multiselect(label, options, default=options, placeholder=placeholder, key=key)
 
 
-def tension_filter(df: pd.DataFrame, key: str = "tension") -> list[float]:
+def tension_filter(
+    df: pd.DataFrame,
+    key: str = "tension",
+    label: str = "Tensión kV",
+    placeholder: str = "Seleccionar tensión",
+) -> list[float]:
     if "nivel_tension_kv" not in df.columns:
         return []
     values = sorted(df["nivel_tension_kv"].dropna().unique())
-    return st.multiselect("Tensión kV", values, default=values, placeholder="Seleccionar tensión", key=key)
+    return st.multiselect(label, values, default=values, placeholder=placeholder, key=key)
 
 
 def barra_selector(df: pd.DataFrame, key: str = "barra") -> str | None:
