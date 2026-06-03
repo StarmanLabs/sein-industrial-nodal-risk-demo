@@ -1,0 +1,92 @@
+# Auditoria de Cambios v11
+
+## Objetivo
+
+Separar los cambios defendibles de los cambios que requieren revision antes de migrar la capa v11 al producto.
+
+La pregunta no es si v11 produce numeros mas altos, sino si mejora la medicion sin desordenar la cola de decision.
+
+## Resultado ejecutivo
+
+- Barras evaluadas: 217.
+- Cambios relevantes auditados: 42.
+- Ascensos `Priority B -> Priority A` aceptables como candidatos v11: 14.
+- Casos que requieren revision antes de migrar: 6.
+- Casos donde conviene retener baseline hasta revisar: 7.
+- Casos utiles solo como sensibilidad: 15.
+
+## Lectura metodologica
+
+Los ascensos aceptables no son nuevas conclusiones fuertes. Son barras que ya estaban muy cerca de la frontera alta del baseline y que v11 vuelve mas visibles por una medicion menos redundante.
+
+Los cambios grandes de ranking o las entradas desde `Monitor` no deben migrarse automaticamente. Requieren lectura de contexto industrial, recurrencia mensual, soporte topologico y estabilidad.
+
+## Ascensos defendibles como candidatos v11
+
+| barra | transition | migration_assessment | decision_interpretation | decision_priority_score | decision_priority_score_v11 | rank_decision_priority_score_baseline | rank_decision_priority_score_v11 | rank_shift_priority_score_v11 | delta_decision_priority_score_v11 | priority_months | priority_months_v11 | watchlist_months | watchlist_months_v11 | score_months_observed_v11 | monthly_top20_months | monthly_top20_months_v11 | robustness_flag | evidence_grade | validity_class |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| SAN IGNACIO 15 | Priority B -> Priority A | accept_as_v11_priority_a_candidate | Ascenso defendible: ya estaba en la frontera alta del baseline (74.9) y v11 la cruza con bajo cambio de ranking. | 74.93 | 78.83 | 5.00 | 5.00 | 0.00 | 3.91 | 11.00 | 13.00 | 19.00 | 22.00 | 36.00 | 25.00 | 25.00 | High robustness | A | not_period_sensitive |
+| SAN ANTONIO 15 | Priority B -> Priority A | accept_as_v11_priority_a_candidate | Ascenso defendible: ya estaba en la frontera alta del baseline (74.9) y v11 la cruza con bajo cambio de ranking. | 74.92 | 78.82 | 6.00 | 6.00 | 0.00 | 3.90 | 11.00 | 13.00 | 19.00 | 22.00 | 36.00 | 25.00 | 25.00 | High robustness | A | not_period_sensitive |
+| GE1 33 | Priority B -> Priority A | accept_as_v11_priority_a_candidate | Ascenso defendible: ya estaba en la frontera alta del baseline (73.2) y v11 la cruza con bajo cambio de ranking. | 73.22 | 77.22 | 8.00 | 7.00 | -1.00 | 4.00 | 10.00 | 11.00 | 17.00 | 21.00 | 36.00 | 23.00 | 23.00 | High robustness | A | not_period_sensitive |
+| TINTAYA EXISTENTE 138 | Priority B -> Priority A | accept_as_v11_priority_a_candidate | Ascenso defendible: ya estaba en la frontera alta del baseline (73.6) y v11 la cruza con bajo cambio de ranking. | 73.64 | 76.50 | 7.00 | 8.00 | 1.00 | 2.86 | 9.00 | 12.00 | 19.00 | 20.00 | 36.00 | 19.00 | 21.00 | High robustness | A | not_period_sensitive |
+| MISAPUQUIO 33 | Priority B -> Priority A | accept_as_v11_priority_a_candidate | Ascenso defendible: ya estaba en la frontera alta del baseline (72.7) y v11 la cruza con bajo cambio de ranking. | 72.67 | 76.43 | 10.00 | 9.00 | -1.00 | 3.76 | 9.00 | 11.00 | 17.00 | 20.00 | 36.00 | 16.00 | 17.00 | High robustness | A | not_period_sensitive |
+| BELAUNDE 138 | Priority B -> Priority A | accept_as_v11_priority_a_candidate | Ascenso defendible: ya estaba en la frontera alta del baseline (72.5) y v11 la cruza con bajo cambio de ranking. | 72.49 | 75.94 | 12.00 | 10.00 | -2.00 | 3.46 | 9.00 | 11.00 | 18.00 | 21.00 | 36.00 | 14.00 | 15.00 | High robustness | A | not_period_sensitive |
+| PIURA OESTE 220 | Priority B -> Priority A | accept_as_v11_priority_a_candidate | Ascenso defendible: ya estaba en la frontera alta del baseline (72.3) y v11 la cruza con bajo cambio de ranking. | 72.26 | 75.79 | 13.00 | 11.00 | -2.00 | 3.53 | 10.00 | 10.00 | 17.00 | 20.00 | 36.00 | 21.00 | 22.00 | High robustness | A | not_period_sensitive |
+| TALARA13.2 | Priority B -> Priority A | accept_as_v11_priority_a_candidate | Ascenso defendible: ya estaba en la frontera alta del baseline (72.1) y v11 la cruza con bajo cambio de ranking. | 72.07 | 75.49 | 17.00 | 12.00 | -5.00 | 3.42 | 9.00 | 9.00 | 17.00 | 20.00 | 36.00 | 19.00 | 20.00 | High robustness | A | not_period_sensitive |
+| PARIAC 66 | Priority B -> Priority A | accept_as_v11_priority_a_candidate | Ascenso defendible: ya estaba en la frontera alta del baseline (72.8) y v11 la cruza con bajo cambio de ranking. | 72.78 | 75.43 | 9.00 | 13.00 | 4.00 | 2.65 | 7.00 | 9.00 | 17.00 | 18.00 | 36.00 | 17.00 | 17.00 | High robustness | A | not_period_sensitive |
+| TINTAYA NUEVA 220 | Priority B -> Priority A | accept_as_v11_priority_a_candidate | Ascenso defendible: ya estaba en la frontera alta del baseline (72.6) y v11 la cruza con bajo cambio de ranking. | 72.62 | 75.27 | 11.00 | 14.00 | 3.00 | 2.65 | 8.00 | 12.00 | 18.00 | 19.00 | 36.00 | 18.00 | 18.00 | High robustness | A | not_period_sensitive |
+| GALLITO CIEGO 60 | Priority B -> Priority A | accept_as_v11_priority_a_candidate | Ascenso defendible: ya estaba en la frontera alta del baseline (72.2) y v11 la cruza con bajo cambio de ranking. | 72.18 | 75.24 | 15.00 | 15.00 | 0.00 | 3.05 | 9.00 | 10.00 | 18.00 | 20.00 | 36.00 | 20.00 | 21.00 | High robustness | A | not_period_sensitive |
+| TALARA 220 | Priority B -> Priority A | accept_as_v11_priority_a_candidate | Ascenso defendible: ya estaba en la frontera alta del baseline (72.1) y v11 la cruza con bajo cambio de ranking. | 72.12 | 75.19 | 16.00 | 16.00 | 0.00 | 3.08 | 10.00 | 10.00 | 17.00 | 19.00 | 36.00 | 19.00 | 19.00 | High robustness | A | not_period_sensitive |
+| JULIACA10 | Priority B -> Priority A | accept_as_v11_priority_a_candidate | Ascenso defendible: ya estaba en la frontera alta del baseline (72.2) y v11 la cruza con bajo cambio de ranking. | 72.21 | 75.18 | 14.00 | 17.00 | 3.00 | 2.97 | 9.00 | 10.00 | 17.00 | 19.00 | 36.00 | 17.00 | 17.00 | High robustness | A | not_period_sensitive |
+| TOCACHE 138 | Priority B -> Priority A | accept_as_v11_priority_a_candidate | Ascenso defendible: ya estaba en la frontera alta del baseline (71.9) y v11 la cruza con bajo cambio de ranking. | 71.86 | 75.11 | 18.00 | 18.00 | 0.00 | 3.26 | 9.00 | 11.00 | 18.00 | 21.00 | 36.00 | 12.00 | 13.00 | High robustness | A | not_period_sensitive |
+
+## Casos que requieren revision antes de migrar
+
+| barra | transition | migration_assessment | decision_interpretation | decision_priority_score | decision_priority_score_v11 | rank_decision_priority_score_baseline | rank_decision_priority_score_v11 | rank_shift_priority_score_v11 | delta_decision_priority_score_v11 | priority_months | priority_months_v11 | watchlist_months | watchlist_months_v11 | score_months_observed_v11 | monthly_top20_months | monthly_top20_months_v11 | robustness_flag | evidence_grade | validity_class |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| CARHUAQUERO 10_S | Watchlist -> Priority B | case_review_before_migration | Cambia de Watchlist a Priority B. No debe migrarse sin revisar contexto industrial, recurrencia y soporte topologico. | 57.14 | 58.57 | 91.00 | 82.00 | -9.00 | 1.43 | 1.00 | 1.00 | 6.00 | 6.00 | 24.00 | 0.00 | 0.00 | Low robustness | A | not_period_sensitive |
+| PUERTO BRAVO 500 | Watchlist -> Priority B | case_review_before_migration | Cambia de Watchlist a Priority B. No debe migrarse sin revisar contexto industrial, recurrencia y soporte topologico. | 55.05 | 53.91 | 98.00 | 98.00 | 0.00 | -1.14 | 0.00 | 0.00 | 8.00 | 7.00 | 36.00 | 0.00 | 0.00 | Low robustness | A | not_period_sensitive |
+| JAEN 138 | Priority B -> Priority B | review_large_rank_shift_before_migration | La categoria no cambia, pero el ranking se mueve -21 posiciones; requiere lectura de caso antes de migrar. | 66.05 | 71.40 | 50.00 | 29.00 | -21.00 | 5.36 | 5.00 | 5.00 | 9.00 | 12.00 | 24.00 | 15.00 | 15.00 | High robustness | A | not_period_sensitive |
+| PAQUILLUSI 220 | Priority B -> Monitor | review_score_coverage_before_migration | La cobertura efectiva de score es limitada; no conviene elevar la categoria sin mas meses observados o justificacion temporal explicita. | 52.12 | 51.03 | 106.00 | 104.00 | -2.00 | -1.09 | 0.00 | 0.00 | 1.00 | 1.00 | 9.00 | 0.00 | 0.00 | Low robustness | A | project_or_concession_context_not_operation_confirmed |
+| PLANTA CASA GRANDE 13.8 | Monitor -> Monitor | review_score_coverage_before_migration | La cobertura efectiva de score es limitada; no conviene elevar la categoria sin mas meses observados o justificacion temporal explicita. | 28.33 | 42.74 | 182.00 | 123.00 | -59.00 | 14.41 | 0.00 | 0.00 | 0.00 | 0.00 | 1.00 | 1.00 | 1.00 | Moderate robustness | A | industrial_local_context_with_alias_and_event_caveat |
+| SANTIAGO DE CAO 138 | Monitor -> Monitor | review_score_coverage_before_migration | La cobertura efectiva de score es limitada; no conviene elevar la categoria sin mas meses observados o justificacion temporal explicita. | 27.08 | 40.06 | 188.00 | 136.00 | -52.00 | 12.99 | 0.00 | 0.00 | 0.00 | 0.00 | 1.00 | 1.00 | 1.00 | Moderate robustness | A | not_period_sensitive |
+
+## Retener baseline hasta revisar
+
+| barra | transition | migration_assessment | decision_interpretation | decision_priority_score | decision_priority_score_v11 | rank_decision_priority_score_baseline | rank_decision_priority_score_v11 | rank_shift_priority_score_v11 | delta_decision_priority_score_v11 | priority_months | priority_months_v11 | watchlist_months | watchlist_months_v11 | score_months_observed_v11 | monthly_top20_months | monthly_top20_months_v11 | robustness_flag | evidence_grade | validity_class |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| PACHACHACA50 | Watchlist -> Monitor | retain_baseline_category_pending_review | v11 baja la categoria de Watchlist a Monitor. Mantener baseline hasta confirmar que la reduccion no elimina una senal episodica relevante. | 46.65 | 43.50 | 118.00 | 119.00 | 1.00 | -3.15 | 0.00 | 0.00 | 3.00 | 1.00 | 36.00 | 0.00 | 0.00 | Low robustness | A | not_period_sensitive |
+| HUANCHOR 50 | Priority B -> Watchlist | retain_baseline_category_pending_review | v11 baja la categoria de Priority B a Watchlist. Mantener baseline hasta confirmar que la reduccion no elimina una senal episodica relevante. | 44.15 | 42.62 | 128.00 | 125.00 | -3.00 | -1.53 | 2.00 | 1.00 | 4.00 | 4.00 | 36.00 | 0.00 | 0.00 | Low robustness | A | not_period_sensitive |
+| POROMA 220 | Watchlist -> Monitor | retain_baseline_category_pending_review | v11 baja la categoria de Watchlist a Monitor. Mantener baseline hasta confirmar que la reduccion no elimina una senal episodica relevante. | 45.61 | 41.97 | 123.00 | 126.00 | 3.00 | -3.64 | 0.00 | 0.00 | 2.00 | 0.00 | 36.00 | 0.00 | 0.00 | Low robustness | A | not_period_sensitive |
+| MARCONA 220 | Watchlist -> Monitor | retain_baseline_category_pending_review | v11 baja la categoria de Watchlist a Monitor. Mantener baseline hasta confirmar que la reduccion no elimina una senal episodica relevante. | 45.58 | 41.83 | 124.00 | 128.00 | 4.00 | -3.75 | 0.00 | 0.00 | 2.00 | 0.00 | 36.00 | 0.00 | 0.00 | Low robustness | A | not_period_sensitive |
+| PARAGSHA2 138 | Watchlist -> Monitor | retain_baseline_category_pending_review | v11 baja la categoria de Watchlist a Monitor. Mantener baseline hasta confirmar que la reduccion no elimina una senal episodica relevante. | 43.19 | 39.87 | 134.00 | 138.00 | 4.00 | -3.32 | 0.00 | 0.00 | 2.00 | 1.00 | 36.00 | 0.00 | 0.00 | Low robustness | A | not_period_sensitive |
+| CARAPONGO 220 | Watchlist -> Monitor | retain_baseline_category_pending_review | v11 baja la categoria de Watchlist a Monitor. Mantener baseline hasta confirmar que la reduccion no elimina una senal episodica relevante. | 42.39 | 39.12 | 139.00 | 141.00 | 2.00 | -3.27 | 1.00 | 0.00 | 1.00 | 1.00 | 36.00 | 0.00 | 0.00 | Low robustness | A | not_period_sensitive |
+| CT INDEPENDENCIA 60 | Watchlist -> Monitor | retain_baseline_category_pending_review | v11 baja la categoria de Watchlist a Monitor. Mantener baseline hasta confirmar que la reduccion no elimina una senal episodica relevante. | 42.74 | 39.10 | 136.00 | 142.00 | 6.00 | -3.64 | 1.00 | 0.00 | 1.00 | 1.00 | 36.00 | 0.00 | 0.00 | Low robustness | A | not_period_sensitive |
+
+## Sensibilidad metodologica sin cambio de categoria
+
+| barra | transition | migration_assessment | decision_interpretation | decision_priority_score | decision_priority_score_v11 | rank_decision_priority_score_baseline | rank_decision_priority_score_v11 | rank_shift_priority_score_v11 | delta_decision_priority_score_v11 | priority_months | priority_months_v11 | watchlist_months | watchlist_months_v11 | score_months_observed_v11 | monthly_top20_months | monthly_top20_months_v11 | robustness_flag | evidence_grade | validity_class |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| POMACOCHA 220 | Monitor -> Monitor | use_as_sensitivity_not_category_change | La categoria se mantiene, pero el score cambia -5.1 puntos. Usar como sensibilidad metodologica. | 34.07 | 29.01 | 163.00 | 170.00 | 7.00 | -5.06 | 0.00 | 0.00 | 0.00 | 0.00 | 36.00 | 0.00 | 0.00 | Low robustness | A | not_period_sensitive |
+| OLLEROS 500 | Monitor -> Monitor | use_as_sensitivity_not_category_change | La categoria se mantiene, pero el score cambia -5.2 puntos. Usar como sensibilidad metodologica. | 33.31 | 28.12 | 170.00 | 173.00 | 3.00 | -5.20 | 0.00 | 0.00 | 0.00 | 0.00 | 36.00 | 0.00 | 0.00 | Low robustness | A | not_period_sensitive |
+| PACHACHACA 220 | Monitor -> Monitor | use_as_sensitivity_not_category_change | La categoria se mantiene, pero el score cambia -5.2 puntos. Usar como sensibilidad metodologica. | 32.88 | 27.65 | 171.00 | 175.00 | 4.00 | -5.23 | 0.00 | 0.00 | 0.00 | 0.00 | 36.00 | 0.00 | 0.00 | Low robustness | A | not_period_sensitive |
+| YANANGO 220 | Monitor -> Monitor | use_as_sensitivity_not_category_change | La categoria se mantiene, pero el score cambia -5.5 puntos. Usar como sensibilidad metodologica. | 31.89 | 26.44 | 175.00 | 177.00 | 2.00 | -5.45 | 0.00 | 0.00 | 0.00 | 0.00 | 36.00 | 0.00 | 0.00 | Low robustness | A | not_period_sensitive |
+| CALLAHUANCA 60 | Monitor -> Monitor | use_as_sensitivity_not_category_change | La categoria se mantiene, pero el score cambia -5.1 puntos. Usar como sensibilidad metodologica. | 31.00 | 25.90 | 176.00 | 179.00 | 3.00 | -5.09 | 0.00 | 0.00 | 1.00 | 0.00 | 36.00 | 0.00 | 0.00 | Low robustness | A | not_period_sensitive |
+| CH OROYA 50 | Monitor -> Monitor | use_as_sensitivity_not_category_change | La categoria se mantiene, pero el score cambia -5.2 puntos. Usar como sensibilidad metodologica. | 29.85 | 24.64 | 179.00 | 182.00 | 3.00 | -5.21 | 0.00 | 0.00 | 0.00 | 0.00 | 36.00 | 0.00 | 0.00 | Low robustness | A | not_period_sensitive |
+| HUAYUCACHI 220 | Monitor -> Monitor | use_as_sensitivity_not_category_change | La categoria se mantiene, pero el score cambia -5.5 puntos. Usar como sensibilidad metodologica. | 28.03 | 22.57 | 183.00 | 187.00 | 4.00 | -5.45 | 0.00 | 0.00 | 0.00 | 0.00 | 36.00 | 0.00 | 0.00 | Low robustness | A | not_period_sensitive |
+| HUANCAVELICA 220 | Monitor -> Monitor | use_as_sensitivity_not_category_change | La categoria se mantiene, pero el score cambia -5.4 puntos. Usar como sensibilidad metodologica. | 27.92 | 22.50 | 184.00 | 188.00 | 4.00 | -5.42 | 0.00 | 0.00 | 0.00 | 0.00 | 36.00 | 0.00 | 0.00 | Low robustness | A | not_period_sensitive |
+| CHIMAY 220 | Monitor -> Monitor | use_as_sensitivity_not_category_change | La categoria se mantiene, pero el score cambia -5.5 puntos. Usar como sensibilidad metodologica. | 27.58 | 22.08 | 187.00 | 190.00 | 3.00 | -5.50 | 0.00 | 0.00 | 0.00 | 0.00 | 36.00 | 0.00 | 0.00 | Low robustness | A | not_period_sensitive |
+| CHILCA UNO 220 | Monitor -> Monitor | use_as_sensitivity_not_category_change | La categoria se mantiene, pero el score cambia -5.5 puntos. Usar como sensibilidad metodologica. | 26.24 | 20.74 | 190.00 | 191.00 | 1.00 | -5.50 | 0.00 | 0.00 | 0.00 | 0.00 | 36.00 | 0.00 | 0.00 | Low robustness | A | not_period_sensitive |
+| LAS FLORES 220 | Monitor -> Monitor | use_as_sensitivity_not_category_change | La categoria se mantiene, pero el score cambia -5.3 puntos. Usar como sensibilidad metodologica. | 25.13 | 19.81 | 192.00 | 192.00 | 0.00 | -5.32 | 0.00 | 0.00 | 0.00 | 0.00 | 36.00 | 0.00 | 0.00 | Low robustness | A | not_period_sensitive |
+| CERRO DEL AGUILA 220 | Monitor -> Monitor | use_as_sensitivity_not_category_change | La categoria se mantiene, pero el score cambia -5.7 puntos. Usar como sensibilidad metodologica. | 25.40 | 19.74 | 191.00 | 193.00 | 2.00 | -5.66 | 0.00 | 0.00 | 0.00 | 0.00 | 36.00 | 0.00 | 0.00 | Low robustness | A | not_period_sensitive |
+| CHILCA DOS 13.8 | Monitor -> Monitor | use_as_sensitivity_not_category_change | La categoria se mantiene, pero el score cambia -5.2 puntos. Usar como sensibilidad metodologica. | 24.13 | 18.98 | 193.00 | 194.00 | 1.00 | -5.15 | 0.00 | 0.00 | 0.00 | 0.00 | 36.00 | 0.00 | 0.00 | Low robustness | A | not_period_sensitive |
+| CAMPO ARMIÑO 220 | Monitor -> Monitor | use_as_sensitivity_not_category_change | La categoria se mantiene, pero el score cambia -5.5 puntos. Usar como sensibilidad metodologica. | 21.75 | 16.26 | 196.00 | 197.00 | 1.00 | -5.49 | 0.00 | 0.00 | 0.00 | 0.00 | 36.00 | 0.00 | 0.00 | Low robustness | A | not_period_sensitive |
+| RESTITUCIÓN 220 | Monitor -> Monitor | use_as_sensitivity_not_category_change | La categoria se mantiene, pero el score cambia -5.2 puntos. Usar como sensibilidad metodologica. | 20.58 | 15.34 | 197.00 | 198.00 | 1.00 | -5.24 | 0.00 | 0.00 | 0.00 | 0.00 | 36.00 | 0.00 | 0.00 | Low robustness | A | not_period_sensitive |
+
+## Recomendacion
+
+1. Aceptar los 14 ascensos `Priority B -> Priority A` como candidatos v11, no como migracion final inmediata.
+2. Revisar manualmente los casos de `Monitor/Watchlist -> Priority B` y los grandes cambios de ranking.
+3. Mantener `Low information` fuera de cambios por formula.
+4. Si la revision de casos es coherente, preparar una migracion controlada de dashboard a v11.
+5. Si no, conservar baseline y documentar v11 como prueba de sensibilidad robusta.

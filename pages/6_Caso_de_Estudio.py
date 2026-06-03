@@ -74,7 +74,8 @@ decision_summary_card(
     row["recommended_action"],
     (
         f"Soporte de contexto {row['evidence_grade']}; "
-        f"{humanize_analytical_text(row.get('robustness_flag_es', row['robustness_flag']))}."
+        f"{humanize_analytical_text(row.get('signal_stability_label_es', row.get('robustness_flag_es', row['robustness_flag'])))}; "
+        f"{humanize_analytical_text(row.get('score_coverage_class_es', 'cobertura analítica no clasificada'))}."
     ),
 )
 
@@ -99,8 +100,10 @@ insight_grid(
             "evidence",
         ),
         (
-            "Cobertura COES",
-            f"Serie mensual usada para estrés nodal/prioridad operativa: {price_window}; meses observados: {_clean(row.get('coes_price_key_months_observed'), '0')}.",
+            "Cobertura analítica",
+            "Periodo fuente: "
+            f"{price_window}; meses efectivos de score: {_clean(row.get('score_months_observed'), '0')}; "
+            f"meses de fuente COES: {_clean(row.get('source_months_observed', row.get('coes_price_key_months_observed')), '0')}.",
             "action",
         ),
         (
@@ -129,7 +132,7 @@ insight_grid(
         ),
         (
             "Calidad de soporte",
-            f"Soporte de contexto {row['evidence_grade']} y {humanize_analytical_text(row.get('robustness_flag_es', row['robustness_flag']))}.",
+            f"Soporte de contexto {row['evidence_grade']}; {humanize_analytical_text(row.get('signal_stability_label_es', row.get('robustness_flag_es', row['robustness_flag'])))}; {humanize_analytical_text(row.get('score_coverage_class_es', 'cobertura analítica no clasificada'))}.",
             "evidence",
         ),
         (
@@ -168,7 +171,7 @@ check_cols = st.columns(2)
 with check_cols[0]:
     action_panel(
         "Validaciones analíticas",
-        "1. Confirmar si la señal es persistente o episódica. 2. Revisar meses con mayor prioridad operativa. 3. Comparar ranking estrés nodal/prioridad operativa. 4. Verificar robustez y evidencia.",
+        "1. Confirmar si la señal es persistente o episódica. 2. Revisar meses con mayor prioridad operativa. 3. Comparar ranking estrés nodal/prioridad operativa. 4. Verificar estabilidad de señal, cobertura analítica y soporte de contexto.",
     )
 with check_cols[1]:
     action_panel(

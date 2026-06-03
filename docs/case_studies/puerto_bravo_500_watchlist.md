@@ -1,59 +1,69 @@
-# Case Study: PUERTO BRAVO 500
+# Caso de Estudio: PUERTO BRAVO 500
 
-## Case Type
+## Tipo de Caso
 
-`Seguimiento mensual` case used to explain episodic signals.
+Watchlist - candidato episodico
 
-## Executive Reading
+## Lectura Ejecutiva
 
-`PUERTO BRAVO 500` is useful as a public methodology example because it shows why the product separates first-queue due diligence from monthly-followup behavior.
+`PUERTO BRAVO 500` aparece como **Watchlist** dentro de la capa producto porque combina una senal relativa ICPI/OANRI relevante con contexto topologico revisado y una recomendacion explicita de due diligence.
 
-The barra has relevant months, but the signal is not strong enough to use as a headline case. Its main value is to show how episodic signals should be monitored without overstating the conclusion.
+Esta lectura no identifica la causa fisica de la senal ni reemplaza revision contractual, topologica o de confiabilidad. Su valor es ordenar la investigacion.
 
-## Analytical Profile
+## Ficha Analitica
 
-| Field | Value |
+| Campo | Valor |
 |---|---|
 | Barra | PUERTO BRAVO 500 |
-| Review category | Seguimiento mensual |
-| Score de revision | 55.05 |
-| Estres nodal average | 54.77 |
-| Prioridad operativa average | 49.74 |
-| Estres nodal rank | 88 |
-| Prioridad operativa rank | 95 |
-| High-priority months | 0 |
-| Monthly-followup months | 8 |
-| Persistence | Monitor |
-| Soporte de contexto | A |
-| Robustez de senal | Not covered by sensitivity top-list |
-| Dominant driver | Price level |
+| Prioridad | Watchlist |
+| Score de prioridad | 55.05 |
+| ICPI promedio | 54.77 |
+| OANRI promedio | 49.74 |
+| Ranking ICPI | 88 |
+| Ranking OANRI | 95 |
+| Meses de prioridad | 0 |
+| Meses en watchlist | 8 |
+| Persistencia | Monitorear |
+| Estres episodico | Estres episodico moderado |
+| Grado de evidencia | A |
+| Robustez | Robustez baja |
+| Driver dominante | price_level |
 
-## Highest Signal Months
+## Meses Criticos o de Mayor Senal OANRI
 
-| Month | Estres nodal | Prioridad operativa | Monthly rank | Monthly category | Primary driver | System-regime score |
-|---|---:|---:|---:|---|---|---:|
-| 2023-05 | 60.35 | 78.34 | 65 | Seguimiento mensual | Stress premium | 0.97 |
-| 2023-11 | 60.37 | 75.65 | 70 | Seguimiento mensual | Stress premium | 0.92 |
-| 2023-10 | 61.29 | 70.67 | 63 | Seguimiento mensual | Price level | 0.78 |
-| 2023-04 | 60.18 | 70.37 | 69 | Seguimiento mensual | Price level | 0.83 |
-| 2023-08 | 51.13 | 70.31 | 89 | Seguimiento mensual | Critical windows | 1.00 |
-| 2024-10 | 56.48 | 68.50 | 78 | Seguimiento mensual | Stress premium | 0.81 |
+| month | ICPI_v8 | OANRI_v10 | ranking_mensual_v10 | decision_tier | primary_driver | system_regime_v10_0_1 |
+| --- | --- | --- | --- | --- | --- | --- |
+| 2023-05 | 60.35 | 78.34 | 65.0 | Watchlist | stress_premium | 0.97 |
+| 2023-11 | 60.37 | 75.65 | 70.0 | Watchlist | stress_premium | 0.92 |
+| 2023-10 | 61.29 | 70.67 | 63.0 | Watchlist | price_level | 0.78 |
+| 2023-04 | 60.18 | 70.37 | 69.0 | Watchlist | price_level | 0.83 |
+| 2023-08 | 51.13 | 70.31 | 89.0 | Watchlist | critical_windows | 1.0 |
+| 2024-10 | 56.48 | 68.5 | 78.0 | Watchlist | stress_premium | 0.81 |
 
-## How To Use This Case
+## Escenarios Industriales Relevantes
 
-This case should be used to explain monthly monitoring logic:
+_No hay filas disponibles para esta vista._
 
-- episodic cases can still matter under specific contract or sector assumptions;
-- monthly signals require date-aware interpretation;
-- lower robustness coverage should reduce claim strength;
-- monitoring is a decision, not a weak result.
+## Interpretacion Economica
 
-## Limitations
+La senal sugiere que esta barra merece priorizacion en un proceso de due diligence industrial cuando la ubicacion, el perfil de consumo o la estructura contractual vuelven relevante la exposicion a precios marginales nodales.
 
-- This case is not a headline due-diligence candidate.
-- The signal should be monitored across months rather than interpreted as persistent exposure.
-- The case requires additional robustness review before stronger public or commercial interpretation.
+Para usuarios industriales, el siguiente paso no es asumir un sobrecosto, sino revisar:
 
-## Recommended Next Step
+- exposicion contractual a precio spot o indexacion;
+- ubicacion efectiva de suministro o barra de referencia;
+- persistencia versus episodios aislados;
+- evidencia topologica y confiabilidad disponible;
+- sensibilidad de resultados frente a supuestos.
 
-Monitor monthly behavior and review only if sector exposure or contract sensitivity makes episodic stress commercially relevant.
+## Limitaciones
+
+- No prueba congestion fisica.
+- No predice precios electricos.
+- No calcula montos de facturacion especificos.
+- No realiza estudios electricos de flujo de red o despacho.
+- La robustez se evalua para todo el universo de barras mediante estabilidad de ranking bajo escenarios alternativos de ponderacion. Resultado del caso: Robustez baja (48.20 puntos).
+
+## Accion Recomendada
+
+Monitorear evolucion mensual y revisar solo si los supuestos de exposicion vuelven comercialmente relevante el estres episodico.

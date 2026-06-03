@@ -37,9 +37,12 @@ PRIORITY_EN = {
 }
 
 ROBUSTNESS_ES = {
-    "High robustness": "Robustez alta",
-    "Moderate robustness": "Robustez moderada",
-    "Low robustness": "Robustez baja",
+    "High robustness": "Estabilidad alta",
+    "Moderate robustness": "Estabilidad moderada",
+    "Low robustness": "Estabilidad baja",
+    "Robustez alta": "Estabilidad alta",
+    "Robustez moderada": "Estabilidad moderada",
+    "Robustez baja": "Estabilidad baja",
 }
 
 DRIVER_ES = {
@@ -138,8 +141,19 @@ def load_product_layer() -> pd.DataFrame:
         out["due_diligence_priority_es"] = out["due_diligence_priority"].map(
             lambda value: PRIORITY_ES.get(str(value), str(value))
         )
-        out["robustness_flag_es"] = out["robustez"]
+        out["robustness_flag_es"] = out.get("estabilidad_senal", out["robustez"])
         out["robustness_flag"] = out["robustez"]
+        out["signal_stability_label_es"] = out.get(
+            "estabilidad_senal", out["robustness_flag_es"]
+        )
+        out["signal_stability_score"] = out.get("score_estabilidad", pd.NA)
+        out["monthly_top20_months"] = out.get("meses_top20_mensual", 0)
+        out["monthly_top20_share"] = out.get("share_top20_mensual", 0)
+        out["monthly_attention_label_es"] = out.get("zona_mensual", "Fuera de zona mensual")
+        out["monthly_attention_interpretation"] = out.get(
+            "lectura_zona_mensual",
+            "El Top 20 mensual se usa como zona ejecutiva de seguimiento, no como universo metodologico.",
+        )
         out["evidence_grade"] = out["soporte_evidencia"]
         out["priority_reason"] = out.get("resumen_contexto", "")
         out["recommended_action"] = out["accion_recomendada"]
@@ -149,6 +163,17 @@ def load_product_layer() -> pd.DataFrame:
         out["persistence_category_es"] = out["persistencia"]
         out["primary_driver"] = out["driver_principal"]
         out["primary_driver_es"] = out["driver_principal"]
+        out["score_months_observed"] = out.get("meses_score", out.get("meses_observados", 0))
+        out["score_coverage_class_es"] = out.get(
+            "cobertura_analitica", "Cobertura analitica no clasificada"
+        )
+        out["source_months_observed"] = out.get(
+            "meses_fuente_coes", out.get("meses_observados", 0)
+        )
+        out["coverage_semantics_note"] = out.get(
+            "nota_cobertura",
+            "meses_score describe meses efectivos del indicador; meses_fuente_coes describe trazabilidad de fuente COES.",
+        )
     else:
         out["nivel_tension_kv"] = out["voltage_kv"]
         out["topology_context_asset"] = out["topology_context"]
@@ -168,6 +193,14 @@ def load_product_layer() -> pd.DataFrame:
         out["robustness_flag_es"] = out["robustness_flag"].map(
             lambda value: ROBUSTNESS_ES.get(str(value), str(value))
         )
+        out["signal_stability_label_es"] = out["robustness_flag_es"]
+        out["signal_stability_score"] = pd.NA
+        out["monthly_top20_months"] = out.get("watchlist_months", 0)
+        out["monthly_top20_share"] = 0
+        out["monthly_attention_label_es"] = "Zona mensual no disponible"
+        out["monthly_attention_interpretation"] = (
+            "El Top 20 mensual se usa como zona ejecutiva de seguimiento, no como universo metodologico."
+        )
         out["evidence_grade"] = out["topology_evidence_grade"]
         out["priority_reason"] = out["public_story_angle"]
         out["recommended_action"] = out["recommended_next_step"]
@@ -180,6 +213,12 @@ def load_product_layer() -> pd.DataFrame:
         out["primary_driver"] = out["main_driver"]
         out["primary_driver_es"] = out["main_driver"].map(
             lambda value: DRIVER_ES.get(str(value), str(value))
+        )
+        out["score_months_observed"] = out.get("months_observed", out.get("watchlist_months", 0))
+        out["score_coverage_class_es"] = "Cobertura analitica no clasificada"
+        out["source_months_observed"] = out["score_months_observed"]
+        out["coverage_semantics_note"] = (
+            "meses_score describe meses efectivos del indicador; meses_fuente_coes describe trazabilidad de fuente COES."
         )
     out["episodic_stress_category"] = out["persistence_category"]
     out["episodic_stress_category_es"] = out["persistence_category_es"]
@@ -213,14 +252,27 @@ def load_product_layer() -> pd.DataFrame:
         )
         out["coes_price_key_first_month"] = out["barra"].map(first_month)
         out["coes_price_key_last_month"] = out["barra"].map(last_month)
-        out["coes_price_key_months_observed"] = out["barra"].map(months).fillna(0).astype(int)
+        monthly_months = out["barra"].map(months).fillna(0).astype(int)
+        out["score_months_observed"] = pd.to_numeric(
+            out["score_months_observed"], errors="coerce"
+        ).fillna(monthly_months).astype(int)
+        out["source_months_observed"] = pd.to_numeric(
+            out["source_months_observed"], errors="coerce"
+        ).fillna(monthly_months).astype(int)
+        out["coes_price_key_months_observed"] = out["source_months_observed"]
         out["p90_oanri"] = out["barra"].map(p90_oanri).fillna(out["avg_oanri"])
         out["priority_months"] = out["barra"].map(priority_months).fillna(0).astype(int)
         out["watchlist_months"] = out["barra"].map(watchlist_months).fillna(0).astype(int)
     else:
         out["coes_price_key_first_month"] = "no disponible"
         out["coes_price_key_last_month"] = "no disponible"
-        out["coes_price_key_months_observed"] = 0
+        out["score_months_observed"] = pd.to_numeric(
+            out["score_months_observed"], errors="coerce"
+        ).fillna(0).astype(int)
+        out["source_months_observed"] = pd.to_numeric(
+            out["source_months_observed"], errors="coerce"
+        ).fillna(out["score_months_observed"]).astype(int)
+        out["coes_price_key_months_observed"] = out["source_months_observed"]
         out["priority_months"] = 0
         out["watchlist_months"] = 0
 

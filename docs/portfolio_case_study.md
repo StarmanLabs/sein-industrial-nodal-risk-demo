@@ -10,7 +10,7 @@ I built a decision-support system that converts COES marginal-price data into a 
 
 ## Method
 
-The product combines a Nodal Price Stress Score, a System-Adjusted Nodal Risk Score, robustness checks, reviewed topology context, and industrial sector-contract scenarios.
+The product combines ICPI, OANRI, robustness checks, reviewed topology context, and industrial sector-contract scenarios.
 
 ## Decision Value
 

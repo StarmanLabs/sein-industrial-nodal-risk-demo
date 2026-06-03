@@ -19,8 +19,12 @@ COLUMN_LABELS = {
     "persistence_category_es": "Persistencia",
     "episodic_stress_category": "Estrés episódico",
     "episodic_stress_category_es": "Estrés episódico",
-    "robustness_flag": "Robustez",
-    "robustness_flag_es": "Robustez",
+    "robustness_flag": "Estabilidad de señal",
+    "robustness_flag_es": "Estabilidad de señal",
+    "signal_stability_label_es": "Estabilidad de señal",
+    "score_coverage_class_es": "Cobertura analítica",
+    "score_months_observed": "Meses score",
+    "source_months_observed": "Meses fuente COES",
     "evidence_grade": "Soporte de contexto",
     "due_diligence_priority": "Categoría de revisión",
     "due_diligence_priority_es": "Categoría de revisión",
@@ -40,7 +44,7 @@ COLUMN_LABELS = {
     "p90_industrial_exposure_score": "Score exposición p90",
     "priority_months": "Meses revisión inmediata",
     "watchlist_months": "Meses seguimiento",
-    "robustness_inclusion_share": "Inclusión robustez",
+    "robustness_inclusion_share": "Inclusión estabilidad",
     "profile_priority_score": "Score de revisión",
     "unique_barras": "Barras únicas",
     "monthly_mwh": "MWh mensual",
@@ -94,6 +98,21 @@ DISPLAY_TEXT_REPLACEMENTS = {
     "Monitor": "Contexto base",
     "Low information": "Requiere contexto adicional",
     "Estres episodico": "Estrés episódico",
+    "Estabilidad alta": "Consistente",
+    "Robustez alta": "Consistente",
+    "High robustness": "Consistente",
+    "Estabilidad moderada": "Moderada",
+    "Robustez moderada": "Moderada",
+    "Moderate robustness": "Moderada",
+    "Estabilidad baja": "Sensible",
+    "Robustez baja": "Sensible",
+    "Low robustness": "Sensible",
+    "Fuera de top-list de sensibilidad": "Contextual",
+    "Not covered by sensitivity top-list": "Contextual",
+    "Cobertura analitica completa": "Completa",
+    "Cobertura analitica alta": "Alta",
+    "Cobertura analitica parcial": "Parcial",
+    "Cobertura analitica limitada": "Limitada",
     "Episodico": "Episódico",
     "Senal": "Señal",
     "senal": "señal",
@@ -148,18 +167,27 @@ def _style_table(df: pd.DataFrame):
         "Contexto base": "background-color: #eef2f6; color: #4f5d6f; font-weight: 700",
         "Requiere contexto adicional": "background-color: #f1f3f5; color: #6b7280; font-weight: 700",
     }
-    robustness_colors = {
-        "Robustez alta": "color: #287c67; font-weight: 700",
-        "Robustez moderada": "color: #d9902f; font-weight: 700",
-        "Robustez baja": "color: #c5524a; font-weight: 700",
+    stability_colors = {
+        "Consistente": "color: #287c67; font-weight: 700",
+        "Moderada": "color: #d9902f; font-weight: 700",
+        "Sensible": "color: #64748b; font-weight: 700",
+        "Contextual": "color: #64748b; font-weight: 700",
+    }
+    coverage_colors = {
+        "Completa": "color: #287c67; font-weight: 700",
+        "Alta": "color: #168c8c; font-weight: 700",
+        "Parcial": "color: #d9902f; font-weight: 700",
+        "Limitada": "color: #c5524a; font-weight: 700",
     }
 
     def style_cell(value: object) -> str:
         text = "" if value is None else str(value)
         if text in priority_colors:
             return priority_colors[text]
-        if text in robustness_colors:
-            return robustness_colors[text]
+        if text in stability_colors:
+            return stability_colors[text]
+        if text in coverage_colors:
+            return coverage_colors[text]
         if text in {"A", "Contexto revisado"}:
             return "color: #287c67; font-weight: 700"
         if text in {"B", "Contexto útil"}:
@@ -170,23 +198,27 @@ def _style_table(df: pd.DataFrame):
 
 
 def priority_table(df: pd.DataFrame) -> None:
+    work = df.sort_values("decision_priority_score", ascending=False).copy()
+    work.insert(0, "posicion", range(1, len(work) + 1))
+    stability_col = (
+        "signal_stability_label_es"
+        if "signal_stability_label_es" in work.columns
+        else "robustness_flag_es"
+    )
     cols = [
+        "posicion",
         "barra",
-        "nivel_tension_kv",
-        "topology_context_asset",
-        "topology_context_type_es",
-        "evidence_family_es",
         "decision_priority_score",
-        "rank_icpi",
-        "rank_oanri",
-        "avg_icpi",
-        "avg_oanri",
-        "robustness_flag_es",
-        "evidence_grade",
         "due_diligence_priority_es",
         "recommended_action",
+        "priority_reason",
+        stability_col,
+        "score_coverage_class_es",
+        "avg_icpi",
+        "avg_oanri",
     ]
-    display = present(df[[c for c in cols if c in df.columns]])
+    labels = {"posicion": "#", "priority_reason": "¿Por qué aparece?"}
+    display = present(work[[c for c in cols if c in work.columns]]).rename(columns=labels)
     st.dataframe(
         _style_table(display),
         use_container_width=True,

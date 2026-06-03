@@ -25,13 +25,13 @@ PRIORITY_DISPLAY_LABELS = {
     "Baja información": "Información por completar",
     "Low information": "Información por completar",
     "Priority A": "Revisión prioritaria",
-    "Priority B": "Revisión recomendada",
+    "Priority B": "Revisión selectiva",
     "Watchlist": "Seguimiento activo",
     "Monitor": "Referencia comparativa",
     "Prioridad A": "Revisión prioritaria",
-    "Prioridad B": "Revisión recomendada",
+    "Prioridad B": "Revisión selectiva",
     "Revisión inmediata": "Revisión prioritaria",
-    "Revisión selectiva": "Revisión recomendada",
+    "Revisión selectiva": "Revisión selectiva",
     "Seguimiento mensual": "Seguimiento activo",
     "Monitorear": "Referencia comparativa",
     "Contexto base": "Referencia comparativa",
@@ -88,11 +88,17 @@ def evidence_filter(df: pd.DataFrame, key: str = "evidence") -> list[str]:
 def robustness_filter(
     df: pd.DataFrame,
     key: str = "robustness",
-    label: str = "Robustez de señal",
-    placeholder: str = "Seleccionar robustez",
+    label: str = "Estabilidad de señal",
+    placeholder: str = "Seleccionar estabilidad",
     display_map: dict[str, str] | None = None,
 ) -> list[str]:
-    column = "robustness_flag_es" if "robustness_flag_es" in df.columns else "robustness_flag"
+    column = (
+        "signal_stability_label_es"
+        if "signal_stability_label_es" in df.columns
+        else "robustness_flag_es"
+        if "robustness_flag_es" in df.columns
+        else "robustness_flag"
+    )
     if column not in df.columns:
         return []
     options = sorted(df[column].dropna().astype(str).unique())

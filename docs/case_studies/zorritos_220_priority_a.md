@@ -1,63 +1,75 @@
-# Case Study: ZORRITOS 220
+# Caso de Estudio: ZORRITOS 220
 
-## Case Type
+## Tipo de Caso
 
-`Revision inmediata` transmission-context case.
+Prioridad A - candidato fuerte
 
-## Executive Reading
+## Lectura Ejecutiva
 
-`ZORRITOS 220` appears in the first review queue because it combines elevated `Estres nodal`, strong `Prioridad operativa`, reviewed topology context and a clear next step for industrial due diligence.
+`ZORRITOS 220` aparece como **Prioridad A** dentro de la capa producto porque combina una senal relativa ICPI/OANRI relevante con contexto topologico revisado y una recomendacion explicita de due diligence.
 
-The value of this case is prioritization. It helps decide where to investigate first; it is not a causal grid diagnosis or an engineering conclusion.
+Esta lectura no identifica la causa fisica de la senal ni reemplaza revision contractual, topologica o de confiabilidad. Su valor es ordenar la investigacion.
 
-## Analytical Profile
+## Ficha Analitica
 
-| Field | Value |
+| Campo | Valor |
 |---|---|
 | Barra | ZORRITOS 220 |
-| Review category | Revision inmediata |
-| Score de revision | 75.39 |
-| Estres nodal average | 76.10 |
-| Prioridad operativa average | 64.80 |
-| Estres nodal rank | 3 |
-| Prioridad operativa rank | 3 |
-| High-priority months | 11 |
-| Monthly-followup months | 19 |
-| Persistence | Persistent |
-| Soporte de contexto | A |
-| Robustez de senal | Robustez alta |
-| Dominant driver | Price level |
+| Prioridad | Prioridad A |
+| Score de prioridad | 75.39 |
+| ICPI promedio | 76.10 |
+| OANRI promedio | 64.80 |
+| Ranking ICPI | 3 |
+| Ranking OANRI | 3 |
+| Meses de prioridad | 11 |
+| Meses en watchlist | 19 |
+| Persistencia | Persistente |
+| Estres episodico | Estres episodico alto |
+| Grado de evidencia | A |
+| Robustez | Robustez alta |
+| Driver dominante | price_level |
 
-## Highest Signal Months
+## Meses Criticos o de Mayor Senal OANRI
 
-| Month | Estres nodal | Prioridad operativa | Monthly rank | Monthly category | Primary driver | System-regime score |
-|---|---:|---:|---:|---|---|---:|
-| 2023-08 | 78.94 | 98.57 | 6 | Prioridad de revision | Price level | 1.00 |
-| 2024-11 | 78.01 | 96.69 | 3 | Prioridad de revision | Price level | 0.94 |
-| 2023-05 | 78.23 | 95.81 | 10 | Prioridad de revision | Price level | 0.97 |
-| 2023-11 | 78.88 | 94.21 | 6 | Prioridad de revision | Price level | 0.92 |
-| 2023-03 | 84.95 | 94.02 | 2 | Prioridad de revision | Volatility | 0.89 |
-| 2023-04 | 80.54 | 90.24 | 4 | Prioridad de revision | Volatility | 0.83 |
+| month | ICPI_v8 | OANRI_v10 | ranking_mensual_v10 | decision_tier | primary_driver | system_regime_v10_0_1 |
+| --- | --- | --- | --- | --- | --- | --- |
+| 2023-08 | 78.94 | 98.57 | 6.0 | Priority due diligence | price_level | 1.0 |
+| 2024-11 | 78.01 | 96.69 | 3.0 | Priority due diligence | price_level | 0.94 |
+| 2023-05 | 78.23 | 95.81 | 10.0 | Priority due diligence | price_level | 0.97 |
+| 2023-11 | 78.88 | 94.21 | 6.0 | Priority due diligence | price_level | 0.92 |
+| 2023-03 | 84.95 | 94.02 | 2.0 | Priority due diligence | volatility | 0.89 |
+| 2023-04 | 80.54 | 90.24 | 4.0 | Priority due diligence | volatility | 0.83 |
 
-## Industrial Exposure Reading
+## Escenarios Industriales Relevantes
 
-The signal suggests that this barra deserves structured review when location, consumption profile or contract structure makes nodal marginal-price exposure relevant.
+| sector | contract_type | avg_industrial_exposure_score | p90_industrial_exposure_score | priority_months | watchlist_months | profile_priority_score |
+| --- | --- | --- | --- | --- | --- | --- |
+| mining_continuous_load | full_spot_exposure | 66.82 | 77.63 | 0 | 22 | 70.48 |
+| data_center_or_high_availability | full_spot_exposure | 66.38 | 77.23 | 0 | 21 | 69.7 |
+| cement_and_heavy_materials | full_spot_exposure | 64.68 | 75.46 | 0 | 18 | 66.97 |
+| agroindustry_seasonal | full_spot_exposure | 63.73 | 74.51 | 0 | 17 | 65.74 |
+| mining_continuous_load | indexed_50pct_spot | 63.75 | 74.29 | 0 | 17 | 65.62 |
 
-For an industrial user, the next analytical step is to review:
+## Interpretacion Economica
 
-- spot or indexed contract exposure;
-- effective supply location or reference barra;
-- persistence versus isolated episodes;
-- topology/context support;
-- sensitivity to sector and contract assumptions.
+La senal sugiere que esta barra merece priorizacion en un proceso de due diligence industrial cuando la ubicacion, el perfil de consumo o la estructura contractual vuelven relevante la exposicion a precios marginales nodales.
 
-## Limitations
+Para usuarios industriales, el siguiente paso no es asumir un sobrecosto, sino revisar:
 
-- This case is a screening signal, not a final conclusion.
-- The topology context supports review; it does not establish physical causality.
-- Industrial exposure scenarios are assumption-based and should not be read as billing estimates.
-- Engineering, reliability and contractual due diligence remain required before commercial decisions.
+- exposicion contractual a precio spot o indexacion;
+- ubicacion efectiva de suministro o barra de referencia;
+- persistencia versus episodios aislados;
+- evidencia topologica y confiabilidad disponible;
+- sensibilidad de resultados frente a supuestos.
 
-## Recommended Next Step
+## Limitaciones
 
-Open a structured due-diligence review: contract exposure, topology/context support, reliability indicators and nearby industrial demand assumptions.
+- No prueba congestion fisica.
+- No predice precios electricos.
+- No calcula montos de facturacion especificos.
+- No realiza estudios electricos de flujo de red o despacho.
+- La robustez se evalua para todo el universo de barras mediante estabilidad de ranking bajo escenarios alternativos de ponderacion. Resultado del caso: Robustez alta (99.35 puntos).
+
+## Accion Recomendada
+
+Revisar exposicion contractual, contexto topologico, evidencia de confiabilidad y relevancia de ubicacion industrial antes de decisiones comerciales.

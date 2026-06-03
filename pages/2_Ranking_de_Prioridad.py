@@ -34,13 +34,29 @@ if df.empty:
 
 section_header(
     "Filtros de cola de decisión",
-    "Ajusta la lista según prioridad, robustez o tensión. La tabla mantiene el orden por score de prioridad.",
+    "Ajusta la lista según nivel de revisión, estabilidad de señal o tensión. La tabla mantiene el orden por score de revisión.",
 )
 filter_cols = st.columns([1.25, 1.05, 1.05])
 with filter_cols[0]:
     selected_priorities = priority_filter(df, key="ranking_priority")
 with filter_cols[1]:
-    selected_robustness = robustness_filter(df, key="ranking_robustness")
+    selected_robustness = robustness_filter(
+        df,
+        key="ranking_robustness",
+        display_map={
+            "Estabilidad alta": "Consistente",
+            "Robustez alta": "Consistente",
+            "High robustness": "Consistente",
+            "Estabilidad moderada": "Moderada",
+            "Robustez moderada": "Moderada",
+            "Moderate robustness": "Moderada",
+            "Estabilidad baja": "Sensible",
+            "Robustez baja": "Sensible",
+            "Low robustness": "Sensible",
+            "Fuera de top-list de sensibilidad": "Contextual",
+            "Not covered by sensitivity top-list": "Contextual",
+        },
+    )
 with filter_cols[2]:
     selected_tension = tension_filter(df, key="ranking_tension")
 
@@ -48,7 +64,13 @@ filtered = df.copy()
 if selected_priorities:
     filtered = filtered[filtered["due_diligence_priority"].isin(selected_priorities)]
 if selected_robustness:
-    robustness_col = "robustness_flag_es" if "robustness_flag_es" in filtered.columns else "robustness_flag"
+    robustness_col = (
+        "signal_stability_label_es"
+        if "signal_stability_label_es" in filtered.columns
+        else "robustness_flag_es"
+        if "robustness_flag_es" in filtered.columns
+        else "robustness_flag"
+    )
     filtered = filtered[filtered[robustness_col].astype(str).isin(selected_robustness)]
 if selected_tension:
     filtered = filtered[filtered["nivel_tension_kv"].isin(selected_tension)]
@@ -97,7 +119,7 @@ insight_grid(
         ),
         (
             "Hallazgo principal",
-            "La cola combina estrés nodal, prioridad operativa, recurrencia mensual, robustez y soporte de contexto de activo, conexión, subestación, central o corredor.",
+            "La cola combina estrés nodal, prioridad operativa, recurrencia mensual, estabilidad de señal, cobertura analítica y soporte de contexto de activo, conexión, subestación, central o corredor.",
             "evidence",
         ),
         (
@@ -123,7 +145,7 @@ section_header(
 if filtered.empty:
     action_panel(
         "Sin resultados para los filtros activos",
-        "Amplía prioridad, evidencia, robustez o tensión para recuperar barras candidatas en la cola de decisión.",
+        "Amplía nivel de revisión, estabilidad de señal o tensión para recuperar barras candidatas en la cola de decisión.",
     )
 else:
     priority_table(filtered)
