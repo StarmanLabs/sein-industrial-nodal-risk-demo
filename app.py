@@ -904,10 +904,10 @@ div[data-testid="stDataFrame"] {
     <div class="rank-summary-kpis">
       <div class="rank-summary-title">Con los filtros actuales:</div>
       <div class="rank-kpi"><strong>{len(filtered):,.0f}</strong><span>barras visibles</span></div>
-      <div class="rank-kpi"><strong>{queue_count:,.0f}</strong><span>en cola principal<br>(prioritarias + recomendadas)</span></div>
-      <div class="rank-kpi"><strong>{watch_count:,.0f}</strong><span>en seguimiento activo<br>(casos episódicos)</span></div>
+      <div class="rank-kpi"><strong>{queue_count:,.0f}</strong><span>en cola principal<br>(inmediata + selectiva)</span></div>
+      <div class="rank-kpi"><strong>{watch_count:,.0f}</strong><span>en seguimiento mensual<br>(casos episódicos)</span></div>
       <div class="rank-kpi"><strong>{robust_high:,.0f}</strong><span>señales<br>consistentes</span></div>
-      <div class="rank-kpi"><strong>{immediate_count:,.0f}</strong><span>en revisión prioritaria</span></div>
+      <div class="rank-kpi"><strong>{immediate_count:,.0f}</strong><span>en revisión inmediata</span></div>
     </div>
   </div>
   <div class="rank-start-box">
@@ -932,11 +932,11 @@ div[data-testid="stDataFrame"] {
 <div class="rank-taxonomy-wrap">
   <div class="rank-tax-heading">Niveles de revisión: qué significan y qué hacer</div>
   <div class="rank-taxonomy">
-    <div class="rank-tax-item red"><strong>1. Revisión prioritaria</strong><span>Revisar primero. Señal fuerte; abrir revisión estructurada.</span></div>
+    <div class="rank-tax-item red"><strong>1. Revisión inmediata</strong><span>Revisar primero. Señal fuerte; abrir revisión estructurada.</span></div>
     <div class="rank-tax-item amber"><strong>2. Revisión selectiva</strong><span>Revisar después de las prioritarias. Gana urgencia si sector, contrato o ubicación aumentan exposición.</span></div>
-    <div class="rank-tax-item teal"><strong>3. Seguimiento activo</strong><span>Monitorear. Vigilar si la señal se repite o empeora.</span></div>
-    <div class="rank-tax-item steel"><strong>4. Referencia comparativa</strong><span>Usar como referencia. No prioritaria; sirve para comparar.</span></div>
-    <div class="rank-tax-item purple"><strong>5. Contexto por completar</strong><span>Completar evidencia o cobertura antes de una lectura fuerte.</span></div>
+    <div class="rank-tax-item teal"><strong>3. Seguimiento mensual</strong><span>Monitorear. Vigilar si la señal se repite o empeora.</span></div>
+    <div class="rank-tax-item steel"><strong>4. Contexto base</strong><span>Usar como referencia. No prioritaria; sirve para comparar.</span></div>
+    <div class="rank-tax-item purple"><strong>5. Requiere contexto adicional</strong><span>Completar evidencia o cobertura antes de una lectura fuerte.</span></div>
   </div>
 </div>
 """,
@@ -971,11 +971,11 @@ div[data-testid="stDataFrame"] {
             "Low information": "Completar contexto",
         }
         level_labels = {
-            "Priority A": "Revisión prioritaria",
+            "Priority A": "Revisión inmediata",
             "Priority B": "Revisión selectiva",
-            "Watchlist": "Seguimiento activo",
-            "Monitor": "Referencia comparativa",
-            "Low information": "Contexto por completar",
+            "Watchlist": "Seguimiento mensual",
+            "Monitor": "Contexto base",
+            "Low information": "Requiere contexto adicional",
         }
 
         def _stability_label(value: object) -> str:
@@ -1034,7 +1034,7 @@ div[data-testid="stDataFrame"] {
                     return "Episodios a monitorear"
                 return "Caso sensible a escenario"
             if priority == "Monitor":
-                return "Referencia comparativa"
+                return "Contexto base"
             if priority == "Low information":
                 if observed_months < 36:
                     return "Completar cobertura"
@@ -1070,15 +1070,15 @@ div[data-testid="stDataFrame"] {
 
         def _rank_style(value: object) -> str:
             text = str(value)
-            if text == "Revisión prioritaria":
+            if text == "Revisión inmediata":
                 return "background-color: #fde8e6; color: #9d1f17; font-weight: 800; border-radius: 6px"
             if text == "Revisión selectiva":
                 return "background-color: #fff0cf; color: #a85a00; font-weight: 800; border-radius: 6px"
-            if text == "Seguimiento activo":
+            if text == "Seguimiento mensual":
                 return "background-color: #dff4f6; color: #087a82; font-weight: 800; border-radius: 6px"
-            if text == "Referencia comparativa":
+            if text == "Contexto base":
                 return "background-color: #eef2f6; color: #4f5d6f; font-weight: 800; border-radius: 6px"
-            if text == "Contexto por completar":
+            if text == "Requiere contexto adicional":
                 return "background-color: #f2e8f8; color: #7e3fa1; font-weight: 800; border-radius: 6px"
             if text == "Consistente":
                 return "background-color: #e9f8ef; color: #1f8a5b; font-weight: 800; border-radius: 999px"

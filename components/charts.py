@@ -132,7 +132,8 @@ def icpi_oanri_scatter(df: pd.DataFrame):
         data[color_col] = data[color_col].replace(
             {
                 "Baja informacion": "Baja información",
-                "Low information": "Baja información",
+                "Baja información": "Requiere contexto adicional",
+                "Low information": "Requiere contexto adicional",
                 "Prioridad A": "Revisión inmediata",
                 "Prioridad B": "Revisión selectiva",
                 "Watchlist": "Seguimiento mensual",

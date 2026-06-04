@@ -88,7 +88,8 @@ VALUE_LABELS = {
 }
 
 DISPLAY_TEXT_REPLACEMENTS = {
-    "Baja informacion": "Baja información",
+    "Baja informacion": "Requiere contexto adicional",
+    "Baja información": "Requiere contexto adicional",
     "Prioridad A": "Revisión inmediata",
     "Prioridad B": "Revisión selectiva",
     "Priority A": "Revisión inmediata",

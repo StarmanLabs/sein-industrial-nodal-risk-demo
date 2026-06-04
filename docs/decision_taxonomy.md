@@ -27,11 +27,11 @@ Esto separa dos preguntas distintas:
 
 | Nivel publico | Interno | Accion |
 |---|---|---|
-| Revision prioritaria | Priority A | Abrir revision estructurada |
-| Revision recomendada | Priority B | Revisar despues de prioritarias o si sector/contrato/ubicacion aumenta exposicion |
-| Seguimiento activo | Watchlist | Monitorear recurrencia mensual |
-| Referencia comparativa | Monitor | Mantener como contexto del universo |
-| Informacion por completar | Low information | Completar evidencia antes de interpretar fuerte |
+| Revision inmediata | Priority A | Abrir revision estructurada |
+| Revision selectiva | Priority B | Revisar despues de inmediatas o si sector/contrato/ubicacion aumenta exposicion |
+| Seguimiento mensual | Watchlist | Monitorear recurrencia mensual |
+| Contexto base | Monitor | Mantener como contexto del universo |
+| Requiere contexto adicional | Low information | Completar evidencia antes de interpretar fuerte |
 
 ## Estabilidad de senal
 
@@ -49,7 +49,7 @@ Esto separa dos preguntas distintas:
 | Zona mensual frecuente | 8 a 17 meses en Top 20 | Caso frecuente; revisar recurrencia y exposicion |
 | Zona mensual episodica | 2 a 7 meses en Top 20 | Caso temporal; revisar meses especificos |
 | Entrada puntual a zona mensual | 1 mes en Top 20 | Revisar episodio antes de generalizar |
-| Fuera de zona mensual | 0 meses en Top 20 | Referencia comparativa dentro del universo completo |
+| Fuera de zona mensual | 0 meses en Top 20 | Contexto base dentro del universo completo |
 
 ## Frase recomendada para dashboard
 

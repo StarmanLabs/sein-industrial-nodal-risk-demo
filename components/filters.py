@@ -21,21 +21,21 @@ CONTRACT_LABELS = {
 }
 
 PRIORITY_DISPLAY_LABELS = {
-    "Baja informacion": "Información por completar",
-    "Baja información": "Información por completar",
-    "Low information": "Información por completar",
-    "Priority A": "Revisión prioritaria",
+    "Baja informacion": "Requiere contexto adicional",
+    "Baja información": "Requiere contexto adicional",
+    "Low information": "Requiere contexto adicional",
+    "Priority A": "Revisión inmediata",
     "Priority B": "Revisión selectiva",
-    "Watchlist": "Seguimiento activo",
-    "Monitor": "Referencia comparativa",
-    "Prioridad A": "Revisión prioritaria",
+    "Watchlist": "Seguimiento mensual",
+    "Monitor": "Contexto base",
+    "Prioridad A": "Revisión inmediata",
     "Prioridad B": "Revisión selectiva",
-    "Revisión inmediata": "Revisión prioritaria",
+    "Revisión inmediata": "Revisión inmediata",
     "Revisión selectiva": "Revisión selectiva",
-    "Seguimiento mensual": "Seguimiento activo",
-    "Monitorear": "Referencia comparativa",
-    "Contexto base": "Referencia comparativa",
-    "Requiere contexto adicional": "Información por completar",
+    "Seguimiento mensual": "Seguimiento mensual",
+    "Monitorear": "Contexto base",
+    "Contexto base": "Contexto base",
+    "Requiere contexto adicional": "Requiere contexto adicional",
 }
 
 PRIORITY_ORDER = {

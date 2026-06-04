@@ -576,13 +576,13 @@ def metric_card(label: str, value: object, note: str | None = None, kind: str = 
 
 def _priority_kind(priority: object) -> str:
     text = str(priority).lower()
-    if "priority a" in text or "prioridad a" in text:
+    if "priority a" in text or "prioridad a" in text or "revisión inmediata" in text or "revision inmediata" in text:
         return "priority-a"
-    if "priority b" in text or "prioridad b" in text:
+    if "priority b" in text or "prioridad b" in text or "revisión selectiva" in text or "revision selectiva" in text:
         return "priority-b"
-    if "watchlist" in text:
+    if "watchlist" in text or "seguimiento mensual" in text:
         return "watchlist"
-    if "monitor" in text or "monitorear" in text:
+    if "monitor" in text or "monitorear" in text or "contexto base" in text:
         return "monitor"
     return "monitor"
 
