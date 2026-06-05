@@ -1382,6 +1382,33 @@ def render_icpi_oanri() -> None:
   margin-top: 0.8rem;
 }
 
+.signal-map-help {
+  border: 1px solid #d8e3ea;
+  border-radius: 8px;
+  background: #eef8fb;
+  padding: 0.85rem 0.9rem;
+  color: #102033;
+}
+
+.signal-map-help strong {
+  display: block;
+  font-size: 0.86rem;
+  margin-bottom: 0.35rem;
+}
+
+.signal-map-help p {
+  margin: 0 0 0.35rem 0;
+  color: #314258;
+  font-size: 0.75rem;
+  line-height: 1.36;
+}
+
+.signal-map-help a {
+  color: #087a82;
+  font-weight: 850;
+  text-decoration: none;
+}
+
 .signal-level-list {
   display: grid;
   gap: 0.55rem;
@@ -1435,6 +1462,10 @@ def render_icpi_oanri() -> None:
   padding: 0.9rem 1rem;
 }
 
+.signal-filter-card {
+  margin: 0.85rem 0;
+}
+
 .signal-filter-title {
   display: flex;
   gap: 0.55rem;
@@ -1480,6 +1511,112 @@ def render_icpi_oanri() -> None:
 .signal-guide {
   padding: 1rem 1.15rem;
   margin-top: 0.85rem;
+}
+
+.signal-table-card {
+  border: 1px solid #d8e3ea;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 10px 26px rgba(16,32,51,0.045);
+  margin-top: 0.85rem;
+  padding: 1rem 1.05rem;
+}
+
+.signal-table-card h3 {
+  margin: 0 0 0.22rem 0;
+  color: #102033;
+  font-size: 1.08rem;
+  font-weight: 880;
+}
+
+.signal-table-card p {
+  margin: 0 0 0.75rem 0;
+  color: #314258;
+  font-size: 0.82rem;
+}
+
+.signal-table-wrap {
+  overflow-x: auto;
+  border: 1px solid #d8e3ea;
+  border-radius: 8px;
+}
+
+.signal-candidates-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+  color: #102033;
+}
+
+.signal-candidates-table th {
+  background: #f8fafc;
+  color: #45566b;
+  font-size: 0.7rem;
+  text-transform: none;
+  font-weight: 850;
+  padding: 0.72rem 0.7rem;
+  border-bottom: 1px solid #d8e3ea;
+  border-right: 1px solid #e6edf3;
+  text-align: left;
+}
+
+.signal-candidates-table td {
+  padding: 0.58rem 0.7rem;
+  border-bottom: 1px solid #e6edf3;
+  border-right: 1px solid #edf2f6;
+  vertical-align: middle;
+}
+
+.signal-candidates-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.signal-candidates-table .num {
+  text-align: center;
+  color: #314258;
+  width: 42px;
+}
+
+.signal-candidates-table .metric {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.signal-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 124px;
+  border-radius: 7px;
+  padding: 0.25rem 0.45rem;
+  font-weight: 850;
+  font-size: 0.72rem;
+}
+
+.signal-pill.red { color: #9f2f2a; background: #fde8e6; }
+.signal-pill.amber { color: #a85d05; background: #fff0cf; }
+.signal-pill.teal { color: #087a82; background: #dff4f6; }
+.signal-pill.steel { color: #45566b; background: #e5f2f7; }
+.signal-pill.purple { color: #7e3fa1; background: #f2e8f8; }
+
+.signal-table-action {
+  color: #164a63;
+  font-weight: 900;
+  text-decoration: none;
+  font-size: 1rem;
+}
+
+.signal-actions-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1rem;
+  align-items: center;
+  margin-top: 0.8rem;
+}
+
+.signal-actions-row span {
+  color: #314258;
+  font-size: 0.82rem;
 }
 
 .signal-guide-title {
@@ -1606,120 +1743,114 @@ def render_icpi_oanri() -> None:
         unsafe_allow_html=True,
     )
 
-    chart_col, read_col, table_col = st.columns([2.05, 0.92, 1.23], gap="medium")
-    with chart_col:
-        st.markdown(
-            """
-<div class="signal-chart-shell">
-  <div class="signal-chart-title">Mapa de señales: estrés nodal vs prioridad operativa</div>
-""",
-            unsafe_allow_html=True,
+    priority_label_map = {
+        "Priority A": "Revisión inmediata",
+        "Priority B": "Revisión selectiva",
+        "Watchlist": "Seguimiento mensual",
+        "Monitor": "Contexto base",
+        "Low information": "Requiere contexto adicional",
+        "Baja informacion": "Requiere contexto adicional",
+        "Baja información": "Requiere contexto adicional",
+        "Prioridad A": "Revisión inmediata",
+        "Prioridad B": "Revisión selectiva",
+        "Monitorear": "Contexto base",
+    }
+
+    def public_priority_label(value: object) -> str:
+        text = str(value) if pd.notna(value) else "Contexto base"
+        return priority_label_map.get(text, text)
+
+    if "due_diligence_priority_es" in df.columns:
+        reset_priority_labels = (
+            df["due_diligence_priority_es"]
+            .dropna()
+            .map(public_priority_label)
+            .drop_duplicates()
+            .tolist()
         )
-        chart_slot = st.empty()
-        st.markdown(
-            """
-  <div class="signal-chart-caption">El tamaño del punto refleja el score de revisión; el color marca el nivel de revisión recomendado.</div>
-</div>
-""",
-            unsafe_allow_html=True,
-        )
-    with read_col:
-        st.markdown(
-            """
-<div class="signal-side-card">
-  <h3>Cómo leer el mapa</h3>
-  <div class="signal-level-list">
-    <div class="signal-level red"><div class="signal-card-icon"><svg viewBox="0 0 24 24"><path d="M5 21V4"/><path d="M5 5h11l-1.8 4L16 13H5"/></svg></div><div><strong>Revisión inmediata</strong><span>Alta prioridad operativa y alto estrés nodal. Abrir revisión estructurada.</span></div></div>
-    <div class="signal-level amber"><div class="signal-card-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><div><strong>Revisión selectiva</strong><span>Candidata relevante. Revisar después de inmediatas o según sector/contrato/ubicación.</span></div></div>
-    <div class="signal-level teal"><div class="signal-card-icon"><svg viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></div><div><strong>Seguimiento mensual</strong><span>Señal que puede ser episódica o sensible. Monitorear recurrencia o deterioro.</span></div></div>
-    <div class="signal-level steel"><div class="signal-card-icon"><svg viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h17"/><rect x="7" y="12" width="3" height="4"/><rect x="12" y="9" width="3" height="7"/><rect x="17" y="6" width="3" height="10"/></svg></div><div><strong>Contexto base</strong><span>Sirve como contexto del universo. No requiere revisión prioritaria.</span></div></div>
-    <div class="signal-level purple"><div class="signal-card-icon"><svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg></div><div><strong>Requiere contexto adicional</strong><span>Falta evidencia para interpretar fuerte. Completar contexto antes de concluir.</span></div></div>
-  </div>
-</div>
-""",
-            unsafe_allow_html=True,
-        )
-    with table_col:
-        st.markdown(
-            """
-<div class="signal-side-card signal-candidates-card">
-  <h3>Candidatos principales (revisión prioritaria)</h3>
-""",
-            unsafe_allow_html=True,
-        )
-        table_slot = st.empty()
-        st.markdown(
-            """
-<a class="rank-next-button" href="?page=Ranking%20de%20Prioridad">Ver cola completa en Ranking de Prioridad →</a>
-</div>
-""",
-            unsafe_allow_html=True,
+    else:
+        reset_priority_labels = (
+            df["due_diligence_priority"]
+            .dropna()
+            .map(public_priority_label)
+            .drop_duplicates()
+            .tolist()
         )
 
-    filter_note_cols = st.columns([2.35, 1.25, 0.72], gap="medium")
-    with filter_note_cols[0]:
-        st.markdown(
-            """
+    stability_display = {
+        "Estabilidad alta": "Consistente",
+        "Robustez alta": "Consistente",
+        "High robustness": "Consistente",
+        "Estabilidad moderada": "Moderada",
+        "Robustez moderada": "Moderada",
+        "Moderate robustness": "Moderada",
+        "Estabilidad baja": "Sensible",
+        "Robustez baja": "Sensible",
+        "Low robustness": "Sensible",
+        "Fuera de top-list de sensibilidad": "Contextual",
+        "Not covered by sensitivity top-list": "Contextual",
+    }
+    stability_col_name = (
+        "signal_stability_label_es"
+        if "signal_stability_label_es" in df.columns
+        else "robustness_flag_es"
+        if "robustness_flag_es" in df.columns
+        else "robustness_flag"
+    )
+    reset_stability_labels = (
+        df[stability_col_name]
+        .dropna()
+        .astype(str)
+        .map(lambda value: stability_display.get(value, value))
+        .drop_duplicates()
+        .tolist()
+        if stability_col_name in df.columns
+        else []
+    )
+    reset_tension_values = sorted(df["nivel_tension_kv"].dropna().unique()) if "nivel_tension_kv" in df.columns else []
+
+    def reset_signal_filters() -> None:
+        st.session_state["signal_priority"] = reset_priority_labels
+        st.session_state["signal_stability"] = reset_stability_labels
+        st.session_state["signal_tension"] = reset_tension_values
+
+    st.markdown(
+        """
 <div class="signal-filter-card">
   <div class="signal-filter-title">
     <svg viewBox="0 0 24 24"><path d="M3 5h18l-7 8v5l-4 2v-7Z"/></svg>
     <strong>Filtros del mapa</strong>
   </div>
-</div>
 """,
-            unsafe_allow_html=True,
+        unsafe_allow_html=True,
+    )
+    filter_cols = st.columns([1.25, 1.25, 1.05, 0.72], gap="medium")
+    with filter_cols[0]:
+        selected_priorities = priority_filter(
+            df,
+            key="signal_priority",
+            label="Nivel de revisión",
+            placeholder="Todas seleccionadas",
         )
-        priority_col, stability_col, tension_col = st.columns(3)
-        with priority_col:
-            selected_priorities = priority_filter(
-                df,
-                key="signal_priority",
-                label="Nivel de revisión",
-                placeholder="Todas seleccionadas",
-            )
-        stability_display = {
-            "Estabilidad alta": "Consistente",
-            "Robustez alta": "Consistente",
-            "High robustness": "Consistente",
-            "Estabilidad moderada": "Moderada",
-            "Robustez moderada": "Moderada",
-            "Moderate robustness": "Moderada",
-            "Estabilidad baja": "Sensible",
-            "Robustez baja": "Sensible",
-            "Low robustness": "Sensible",
-            "Fuera de top-list de sensibilidad": "Contextual",
-            "Not covered by sensitivity top-list": "Contextual",
-        }
-        with stability_col:
-            selected_robustness = robustness_filter(
-                df,
-                key="signal_stability",
-                label="Estabilidad de señal",
-                placeholder="Todas seleccionadas",
-                display_map=stability_display,
-            )
-        with tension_col:
-            selected_tension = tension_filter(
-                df,
-                key="signal_tension",
-                label="Tensión kV",
-                placeholder="Todas",
-            )
-    with filter_note_cols[1]:
-        st.markdown(
-            """
-<div class="signal-note-card">
-  <div><svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.5 2.9 8.5 7 10 4.1-1.5 7-5.5 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-5"/></svg></div>
-  <div>
-    <strong>Notas metodológicas</strong>
-    <span>Este mapa combina promedios mensuales de estrés nodal y prioridad operativa. Las señales se clasifican en niveles de revisión para orientar atención experta.</span>
-  </div>
-</div>
-""",
-            unsafe_allow_html=True,
+    with filter_cols[1]:
+        selected_robustness = robustness_filter(
+            df,
+            key="signal_stability",
+            label="Estabilidad de señal",
+            placeholder="Todas seleccionadas",
+            display_map=stability_display,
         )
-    with filter_note_cols[2]:
-        download_slot = st.empty()
+    with filter_cols[2]:
+        selected_tension = tension_filter(
+            df,
+            key="signal_tension",
+            label="Tensión kV",
+            placeholder="Todas",
+        )
+    with filter_cols[3]:
+        st.write("")
+        st.button("Limpiar filtros", key="signal_clear_filters", on_click=reset_signal_filters, width="stretch")
+    st.markdown("</div>", unsafe_allow_html=True)
 
     filtered = df.copy()
     if selected_priorities:
@@ -1736,40 +1867,150 @@ def render_icpi_oanri() -> None:
     if selected_tension:
         filtered = filtered[filtered["nivel_tension_kv"].isin(selected_tension)]
 
+    chart_col, read_col = st.columns([2.25, 0.95], gap="medium")
+    with chart_col:
+        st.markdown(
+            """
+<div class="signal-chart-shell">
+  <div class="signal-chart-title">Mapa de señales: estrés nodal vs prioridad operativa</div>
+""",
+            unsafe_allow_html=True,
+        )
+        chart_slot = st.empty()
+        st.markdown(
+            """
+  <div class="signal-chart-caption">El tamaño del punto refleja la estabilidad de señal; el color marca el nivel de revisión recomendado.</div>
+</div>
+""",
+            unsafe_allow_html=True,
+        )
+    with read_col:
+        st.markdown(
+            """
+<div class="signal-side-card">
+  <h3>Cómo leer el mapa</h3>
+  <div class="signal-level-list">
+    <div class="signal-level red"><div class="signal-card-icon"><svg viewBox="0 0 24 24"><path d="M5 21V4"/><path d="M5 5h11l-1.8 4L16 13H5"/></svg></div><div><strong>Revisión inmediata</strong><span>Alta prioridad operativa y alto estrés nodal. Abrir revisión estructurada.</span></div></div>
+    <div class="signal-level amber"><div class="signal-card-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><div><strong>Revisión selectiva</strong><span>Candidata relevante. Revisar después de prioritarias o según sector/contrato/ubicación.</span></div></div>
+    <div class="signal-level teal"><div class="signal-card-icon"><svg viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></div><div><strong>Seguimiento mensual</strong><span>Señal que puede ser episódica o sensible. Monitorear recurrencia o deterioro.</span></div></div>
+    <div class="signal-level steel"><div class="signal-card-icon"><svg viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h17"/><rect x="7" y="12" width="3" height="4"/><rect x="12" y="9" width="3" height="7"/><rect x="17" y="6" width="3" height="10"/></svg></div><div><strong>Contexto base</strong><span>Sirve como contexto del universo. No requiere revisión prioritaria.</span></div></div>
+    <div class="signal-level purple"><div class="signal-card-icon"><svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg></div><div><strong>Requiere contexto adicional</strong><span>Falta evidencia para interpretar fuerte. Completar contexto antes de concluir.</span></div></div>
+  </div>
+</div>
+<div class="signal-map-help">
+  <strong>¿En qué se diferencia del Ranking de Prioridad?</strong>
+  <p><b>Mapa de Señales:</b> muestra dónde se ubican las barras según estrés nodal y prioridad operativa.</p>
+  <p><b>Ranking de Prioridad:</b> ordena las barras para decidir qué revisar primero.</p>
+  <a href="?page=Ranking%20de%20Prioridad">→ Ir a Ranking de Prioridad</a>
+</div>
+""",
+            unsafe_allow_html=True,
+        )
+
     if filtered.empty:
         chart_slot.warning("Sin barras para los filtros activos. Amplía el nivel de revisión, estabilidad o tensión.")
-        table_slot.warning("Sin candidatos para mostrar.")
+        candidate_rows = pd.DataFrame()
     else:
         chart_slot.plotly_chart(icpi_oanri_scatter(filtered), use_container_width=True)
         candidate_rows = (
             filtered.sort_values("decision_priority_score", ascending=False)
-            .head(5)
+            .head(10)
             .reset_index(drop=True)
         )
-        candidate_table = pd.DataFrame(
-            {
-                "#": range(1, len(candidate_rows) + 1),
-                "Barra": candidate_rows["barra"],
-                "Estrés nodal prom.": candidate_rows["avg_icpi"].round(2),
-                "Prioridad operativa prom.": candidate_rows["avg_oanri"].round(2),
-                "Score de revisión": candidate_rows["decision_priority_score"].round(2),
-            }
-        )
-        table_slot.dataframe(
-            candidate_table,
-            width="stretch",
-            hide_index=True,
-            height=250,
-            column_config={
-                "#": st.column_config.NumberColumn("#", width="small"),
-                "Barra": st.column_config.TextColumn("Barra", width="medium"),
-                "Estrés nodal prom.": st.column_config.NumberColumn("Estrés nodal prom.", format="%.2f", width="small"),
-                "Prioridad operativa prom.": st.column_config.NumberColumn("Prioridad operativa prom.", format="%.2f", width="small"),
-                "Score de revisión": st.column_config.NumberColumn("Score de revisión", format="%.2f", width="small"),
-            },
-        )
 
-    with download_slot.container():
+    def level_class(label: str) -> str:
+        return {
+            "Revisión inmediata": "red",
+            "Revisión selectiva": "amber",
+            "Seguimiento mensual": "teal",
+            "Contexto base": "steel",
+            "Requiere contexto adicional": "purple",
+        }.get(label, "steel")
+
+    def map_reading(row: pd.Series) -> str:
+        high_stress = float(row.get("avg_icpi", 0)) >= median_stress
+        high_priority = float(row.get("avg_oanri", 0)) >= median_priority
+        label = public_priority_label(row.get("due_diligence_priority_es", row.get("due_diligence_priority", "")))
+        if label == "Revisión inmediata":
+            return "Alta prioridad y alto estrés"
+        if high_priority and high_stress:
+            return "Alta prioridad y alto estrés"
+        if high_priority:
+            return "Prioridad alta + estrés medio"
+        if high_stress:
+            return "Estrés alto + prioridad baja"
+        return "Estrés medio + prioridad media"
+
+    if candidate_rows.empty:
+        table_rows = "<tr><td colspan='8'>Sin candidatos para los filtros activos.</td></tr>"
+    else:
+        rendered_rows = []
+        for idx, row in candidate_rows.iterrows():
+            label = public_priority_label(row.get("due_diligence_priority_es", row.get("due_diligence_priority", "")))
+            rendered_rows.append(
+                "<tr>"
+                f"<td class='num'>{idx + 1}</td>"
+                f"<td><strong>{escape(str(row['barra']))}</strong></td>"
+                f"<td><span class='signal-pill {level_class(label)}'>{escape(label)}</span></td>"
+                f"<td>{escape(map_reading(row))}</td>"
+                f"<td class='metric'>{float(row['avg_icpi']):.2f}</td>"
+                f"<td class='metric'>{float(row['avg_oanri']):.2f}</td>"
+                f"<td class='metric'>{float(row['decision_priority_score']):.2f}</td>"
+                "<td class='num'><a class='signal-table-action' href='?page=Caso%20de%20Estudio'>↗</a></td>"
+                "</tr>"
+            )
+        table_rows = "\n".join(rendered_rows)
+
+    shown_count = len(candidate_rows)
+    filtered_count = len(filtered)
+    st.markdown(
+        f"""
+<div class="signal-table-card">
+  <h3>Candidatos principales del mapa</h3>
+  <p>Barras destacadas según los filtros actuales. Para ver la cola completa, abre <strong>Ranking de Prioridad</strong>.</p>
+  <div class="signal-table-wrap">
+    <table class="signal-candidates-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Barra</th>
+          <th>Nivel de revisión</th>
+          <th>Lectura en el mapa</th>
+          <th>Estrés nodal prom.</th>
+          <th>Prioridad operativa prom.</th>
+          <th>Score de revisión</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        {table_rows}
+      </tbody>
+    </table>
+  </div>
+  <div class="signal-actions-row">
+    <span>Mostrando 1 a {shown_count:,} de {filtered_count:,} barras en cola de revisión según filtros.</span>
+    <a class="rank-next-button" href="?page=Ranking%20de%20Prioridad">Ver cola completa en Ranking de Prioridad →</a>
+  </div>
+</div>
+""",
+        unsafe_allow_html=True,
+    )
+
+    note_cols = st.columns([2.55, 0.65], gap="medium")
+    with note_cols[0]:
+        st.markdown(
+            """
+<div class="signal-note-card">
+  <div><svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.5 2.9 8.5 7 10 4.1-1.5 7-5.5 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-5"/></svg></div>
+  <div>
+    <strong>Notas metodológicas</strong>
+    <span>Este mapa combina promedios mensuales de estrés nodal y prioridad operativa. Las señales se clasifican en niveles de revisión para orientar atención experta. No se usan para pruebas de causalidad ni predicción de congestión.</span>
+  </div>
+</div>
+""",
+            unsafe_allow_html=True,
+        )
+    with note_cols[1]:
         st.download_button(
             "Descargar lista filtrada",
             filtered.to_csv(index=False).encode("utf-8"),
