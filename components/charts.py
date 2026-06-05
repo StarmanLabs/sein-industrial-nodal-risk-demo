@@ -162,7 +162,7 @@ def icpi_oanri_scatter(df: pd.DataFrame):
         size="decision_priority_score",
         hover_name="barra",
         hover_data=hover_cols,
-        title="Mapa de señales: cola de revisión por barra",
+        title=None,
         color_discrete_map=PRIORITY_COLORS,
         labels={
             "avg_icpi": "Estrés nodal promedio",
@@ -221,7 +221,22 @@ def icpi_oanri_scatter(df: pd.DataFrame):
         marker={"line": {"width": 0.7, "color": "#ffffff"}, "opacity": 0.86},
         hovertemplate="<b>%{hovertext}</b><br>Estrés nodal: %{x:.1f}<br>Prioridad operativa: %{y:.1f}<extra></extra>",
     )
-    return apply_chart_style(fig, height=650)
+    fig = apply_chart_style(fig, height=560)
+    fig.update_layout(
+        title_text="",
+        margin={"l": 54, "r": 24, "t": 42, "b": 54},
+        legend={
+            "orientation": "h",
+            "yanchor": "bottom",
+            "y": 1.04,
+            "xanchor": "left",
+            "x": 0,
+            "title": None,
+            "font": {"size": 10},
+            "itemsizing": "constant",
+        },
+    )
+    return fig
 
 
 def system_regime_line(df: pd.DataFrame):

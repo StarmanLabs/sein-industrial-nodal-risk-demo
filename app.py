@@ -1163,15 +1163,15 @@ def render_icpi_oanri() -> None:
 <style>
 .signal-page {
   width: 100%;
-  margin: 0.25rem 0 0.75rem 0;
+  margin: 0.15rem 0 0.65rem 0;
 }
 
 .signal-header {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(350px, 0.32fr);
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 0.28fr);
   gap: 1.25rem;
   align-items: start;
-  margin-bottom: 1rem;
+  margin-bottom: 0.85rem;
 }
 
 .signal-header h1 {
@@ -1229,9 +1229,9 @@ def render_icpi_oanri() -> None:
 
 .signal-top-band {
   display: grid;
-  grid-template-columns: minmax(300px, 0.28fr) minmax(0, 1fr);
-  gap: 1rem;
-  margin: 0 0 1rem 0;
+  grid-template-columns: minmax(270px, 0.25fr) minmax(0, 1fr);
+  gap: 0.85rem;
+  margin: 0 0 0.85rem 0;
 }
 
 .signal-context-card,
@@ -1249,9 +1249,10 @@ def render_icpi_oanri() -> None:
 
 .signal-context-card {
   display: grid;
-  grid-template-columns: 46px minmax(0, 1fr);
-  gap: 0.9rem;
-  padding: 1rem 1.1rem;
+  grid-template-columns: 40px minmax(0, 1fr);
+  gap: 0.75rem;
+  padding: 0.9rem 0.95rem;
+  min-height: 126px;
 }
 
 .signal-map-icon svg,
@@ -1281,9 +1282,9 @@ def render_icpi_oanri() -> None:
 
 .signal-context-card p {
   color: #26384d;
-  margin: 0 0 0.55rem 0;
-  line-height: 1.45;
-  font-size: 0.86rem;
+  margin: 0 0 0.45rem 0;
+  line-height: 1.38;
+  font-size: 0.8rem;
 }
 
 .signal-context-card small {
@@ -1300,9 +1301,9 @@ def render_icpi_oanri() -> None:
 }
 
 .signal-kpi {
-  padding: 1.1rem 1.15rem;
+  padding: 1rem 1.05rem;
   border-right: 1px solid #d8e3ea;
-  min-height: 132px;
+  min-height: 126px;
 }
 
 .signal-kpi:last-child {
@@ -1337,7 +1338,7 @@ def render_icpi_oanri() -> None:
 }
 
 .signal-chart-shell {
-  padding: 0.95rem 1rem 0.55rem 1rem;
+  padding: 0.85rem 0.9rem 0.45rem 0.9rem;
 }
 
 .signal-chart-title {
@@ -1354,27 +1355,28 @@ def render_icpi_oanri() -> None:
 .signal-chart-caption {
   color: #64748b;
   font-size: 0.76rem;
-  margin-top: -0.25rem;
+  margin-top: 0.15rem;
 }
 
 .signal-side-card {
-  padding: 0.95rem 1rem;
-  min-height: 100%;
+  padding: 0.85rem 0.9rem;
+  min-height: auto;
+  margin-bottom: 0.75rem;
 }
 
 .signal-level-list {
   display: grid;
-  gap: 0.65rem;
+  gap: 0.55rem;
 }
 
 .signal-level {
   display: grid;
-  grid-template-columns: 42px minmax(0, 1fr);
-  gap: 0.7rem;
+  grid-template-columns: 38px minmax(0, 1fr);
+  gap: 0.62rem;
   align-items: start;
   border: 1px solid #d8e3ea;
   border-radius: 8px;
-  padding: 0.78rem 0.8rem;
+  padding: 0.62rem 0.7rem;
   background: #ffffff;
 }
 
@@ -1395,8 +1397,8 @@ def render_icpi_oanri() -> None:
 .signal-level span {
   display: block;
   color: #314258;
-  font-size: 0.7rem;
-  line-height: 1.35;
+  font-size: 0.68rem;
+  line-height: 1.28;
 }
 
 .signal-level.red strong { color: #b23a2e; }
@@ -1412,7 +1414,7 @@ def render_icpi_oanri() -> None:
 
 .signal-filter-card,
 .signal-note-card {
-  padding: 0.9rem 1rem;
+  padding: 0.82rem 0.95rem;
 }
 
 .signal-filter-title {
@@ -1458,7 +1460,7 @@ def render_icpi_oanri() -> None:
 }
 
 .signal-guide {
-  padding: 0.9rem 1.05rem;
+  padding: 0.85rem 1rem;
   margin-top: 0.85rem;
 }
 
@@ -1581,7 +1583,7 @@ def render_icpi_oanri() -> None:
         unsafe_allow_html=True,
     )
 
-    chart_col, read_col, table_col = st.columns([2.15, 0.95, 1.12])
+    chart_col, side_col = st.columns([2.55, 1.05], gap="medium")
     with chart_col:
         st.markdown(
             """
@@ -1598,7 +1600,7 @@ def render_icpi_oanri() -> None:
 """,
             unsafe_allow_html=True,
         )
-    with read_col:
+    with side_col:
         st.markdown(
             """
 <div class="signal-side-card">
@@ -1614,7 +1616,6 @@ def render_icpi_oanri() -> None:
 """,
             unsafe_allow_html=True,
         )
-    with table_col:
         st.markdown(
             """
 <div class="signal-side-card">
@@ -1631,7 +1632,7 @@ def render_icpi_oanri() -> None:
             unsafe_allow_html=True,
         )
 
-    filter_note_cols = st.columns([1.65, 1.35, 0.48])
+    filter_note_cols = st.columns([1.75, 1.45, 0.62], gap="medium")
     with filter_note_cols[0]:
         st.markdown(
             """
