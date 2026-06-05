@@ -212,13 +212,12 @@ def priority_table(df: pd.DataFrame) -> None:
         "decision_priority_score",
         "due_diligence_priority_es",
         "recommended_action",
-        "priority_reason",
         stability_col,
         "score_coverage_class_es",
         "avg_icpi",
         "avg_oanri",
     ]
-    labels = {"posicion": "#", "priority_reason": "¿Por qué aparece?"}
+    labels = {"posicion": "#"}
     display = present(work[[c for c in cols if c in work.columns]]).rename(columns=labels)
     st.dataframe(
         _style_table(display),

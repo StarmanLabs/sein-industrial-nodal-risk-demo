@@ -650,9 +650,13 @@ def render_ranking() -> None:
 
 .rank-tax-item {
   border-right: 1px solid #d8e3ea !important;
-  padding: 0.9rem 1rem 0.9rem 1rem !important;
+  padding: 0.85rem 0.95rem !important;
   position: relative !important;
   min-height: 92px !important;
+  display: grid !important;
+  grid-template-columns: 42px minmax(0, 1fr) !important;
+  gap: 0.75rem !important;
+  align-items: start !important;
 }
 
 .rank-tax-item:last-child {
@@ -662,7 +666,7 @@ def render_ranking() -> None:
 .rank-tax-item strong {
   display: block !important;
   font-size: 0.78rem !important;
-  margin-bottom: 0.35rem !important;
+  margin-bottom: 0.25rem !important;
   color: #102033 !important;
 }
 
@@ -678,6 +682,31 @@ def render_ranking() -> None:
   font-size: 0.72rem !important;
   line-height: 1.38 !important;
 }
+
+.rank-tax-icon {
+  width: 34px !important;
+  height: 34px !important;
+  border-radius: 999px !important;
+  display: grid !important;
+  place-items: center !important;
+  margin-top: 0.05rem !important;
+}
+
+.rank-tax-icon svg {
+  width: 20px !important;
+  height: 20px !important;
+  fill: none !important;
+  stroke: currentColor !important;
+  stroke-width: 2.2 !important;
+  stroke-linecap: round !important;
+  stroke-linejoin: round !important;
+}
+
+.rank-tax-item.red .rank-tax-icon { color: #b23a2e !important; background: #fde8e6 !important; }
+.rank-tax-item.amber .rank-tax-icon { color: #c47a16 !important; background: #fff0cf !important; }
+.rank-tax-item.teal .rank-tax-icon { color: #087a82 !important; background: #dff4f6 !important; }
+.rank-tax-item.steel .rank-tax-icon { color: #2f6f9f !important; background: #e5f2f7 !important; }
+.rank-tax-item.purple .rank-tax-icon { color: #7e3fa1 !important; background: #f2e8f8 !important; }
 
 .rank-section-title {
   color: #102033 !important;
@@ -932,11 +961,11 @@ div[data-testid="stDataFrame"] {
 <div class="rank-taxonomy-wrap">
   <div class="rank-tax-heading">Niveles de revisión: qué significan y qué hacer</div>
   <div class="rank-taxonomy">
-    <div class="rank-tax-item red"><strong>1. Revisión inmediata</strong><span>Revisar primero. Señal fuerte; abrir revisión estructurada.</span></div>
-    <div class="rank-tax-item amber"><strong>2. Revisión selectiva</strong><span>Revisar después de las prioritarias. Gana urgencia si sector, contrato o ubicación aumentan exposición.</span></div>
-    <div class="rank-tax-item teal"><strong>3. Seguimiento mensual</strong><span>Monitorear. Vigilar si la señal se repite o empeora.</span></div>
-    <div class="rank-tax-item steel"><strong>4. Contexto base</strong><span>Usar como referencia. No prioritaria; sirve para comparar.</span></div>
-    <div class="rank-tax-item purple"><strong>5. Requiere contexto adicional</strong><span>Completar evidencia o cobertura antes de una lectura fuerte.</span></div>
+    <div class="rank-tax-item red"><div class="rank-tax-icon"><svg viewBox="0 0 24 24"><path d="M5 21V4"/><path d="M5 5h11l-1.8 4L16 13H5"/></svg></div><div><strong>1. Revisión inmediata</strong><span>Revisar primero. Señal fuerte; abrir revisión estructurada.</span></div></div>
+    <div class="rank-tax-item amber"><div class="rank-tax-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><div><strong>2. Revisión selectiva</strong><span>Revisar después de las prioritarias. Gana urgencia si sector, contrato o ubicación aumentan exposición.</span></div></div>
+    <div class="rank-tax-item teal"><div class="rank-tax-icon"><svg viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></div><div><strong>3. Seguimiento mensual</strong><span>Monitorear. Vigilar si la señal se repite o empeora.</span></div></div>
+    <div class="rank-tax-item steel"><div class="rank-tax-icon"><svg viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h17"/><rect x="7" y="12" width="3" height="4"/><rect x="12" y="9" width="3" height="7"/><rect x="17" y="6" width="3" height="10"/></svg></div><div><strong>4. Contexto base</strong><span>Usar como referencia. No prioritaria; sirve para comparar.</span></div></div>
+    <div class="rank-tax-item purple"><div class="rank-tax-icon"><svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg></div><div><strong>5. Requiere contexto adicional</strong><span>Completar evidencia o cobertura antes de una lectura fuerte.</span></div></div>
   </div>
 </div>
 """,
@@ -1047,7 +1076,6 @@ div[data-testid="stDataFrame"] {
                 "Score de revisión": page_df["decision_priority_score"].round(2),
                 "Nivel de revisión": page_df["due_diligence_priority"].map(level_labels).fillna(page_df["due_diligence_priority_es"]),
                 "Acción recomendada": page_df["due_diligence_priority"].map(action_short).fillna(page_df["recommended_action"]),
-                "¿Por qué aparece?": page_df.apply(_executive_reason, axis=1),
                 "Estabilidad de señal": page_df[robust_col].map(_stability_label),
                 "Cobertura analítica": page_df.get("score_coverage_class_es", pd.Series("", index=page_df.index)).map(_coverage_label),
                 "Estrés nodal prom.": page_df["avg_icpi"].round(2),
@@ -1060,7 +1088,6 @@ div[data-testid="stDataFrame"] {
                 "Score de revisión",
                 "Nivel de revisión",
                 "Acción recomendada",
-                "¿Por qué aparece?",
                 "Estabilidad de señal",
                 "Cobertura analítica",
                 "Estrés nodal prom.",
@@ -1105,7 +1132,6 @@ div[data-testid="stDataFrame"] {
                 "Score de revisión": st.column_config.ProgressColumn("Score de revisión", min_value=0, max_value=100, format="%.2f", width="medium"),
                 "Nivel de revisión": st.column_config.TextColumn("Nivel de revisión", width="medium"),
                 "Acción recomendada": st.column_config.TextColumn("Acción recomendada", width="medium"),
-                "¿Por qué aparece?": st.column_config.TextColumn("¿Por qué aparece?", width="large"),
                 "Estabilidad de señal": st.column_config.TextColumn("Estabilidad de señal", width="small"),
                 "Cobertura analítica": st.column_config.TextColumn("Cobertura", width="small"),
                 "Estrés nodal prom.": st.column_config.NumberColumn("Estrés nodal prom.", format="%.2f", width="small"),

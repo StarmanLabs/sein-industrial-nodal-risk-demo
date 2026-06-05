@@ -2192,8 +2192,12 @@ h2, h3 {
 
 .rank-tax-item {
   border-right: 1px solid var(--sein-line);
-  padding: 0.9rem 1rem 0.9rem 1rem;
+  padding: 0.85rem 0.95rem;
   position: relative;
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: start;
 }
 
 .rank-tax-item:last-child {
@@ -2204,7 +2208,7 @@ h2, h3 {
   display: block;
   color: var(--sein-ink);
   font-size: 0.78rem;
-  margin-bottom: 0.35rem;
+  margin-bottom: 0.25rem;
 }
 
 .rank-tax-item span {
@@ -2213,6 +2217,31 @@ h2, h3 {
   font-size: 0.72rem;
   line-height: 1.4;
 }
+
+.rank-tax-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  margin-top: 0.05rem;
+}
+
+.rank-tax-icon svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.rank-tax-item.red .rank-tax-icon { color: #b23a2e; background: #fde8e6; }
+.rank-tax-item.amber .rank-tax-icon { color: #c47a16; background: #fff0cf; }
+.rank-tax-item.teal .rank-tax-icon { color: #087a82; background: #dff4f6; }
+.rank-tax-item.steel .rank-tax-icon { color: #2f6f9f; background: #e5f2f7; }
+.rank-tax-item.purple .rank-tax-icon { color: #7e3fa1; background: #f2e8f8; }
 
 .rank-section-title {
   color: var(--sein-ink);
