@@ -1167,7 +1167,10 @@ def render_icpi_oanri() -> None:
 }
 
 .block-container:has(.signal-page) {
-  max-width: 1740px !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
   padding-left: 2rem !important;
   padding-right: 2rem !important;
 }
@@ -1345,7 +1348,7 @@ def render_icpi_oanri() -> None:
 
 .signal-chart-shell {
   padding: 0.9rem 1rem 0.55rem 1rem;
-  min-height: 670px;
+  min-height: 0;
 }
 
 .signal-chart-title {
@@ -1369,6 +1372,14 @@ def render_icpi_oanri() -> None:
   padding: 0.9rem 0.95rem;
   min-height: auto;
   margin-bottom: 0.75rem;
+}
+
+.signal-candidates-card {
+  min-height: 100%;
+}
+
+.signal-candidates-card .rank-next-button {
+  margin-top: 0.8rem;
 }
 
 .signal-level-list {
@@ -1595,7 +1606,7 @@ def render_icpi_oanri() -> None:
         unsafe_allow_html=True,
     )
 
-    chart_col, side_col = st.columns([3.25, 1.05], gap="medium")
+    chart_col, read_col, table_col = st.columns([2.05, 0.92, 1.23], gap="medium")
     with chart_col:
         st.markdown(
             """
@@ -1612,7 +1623,7 @@ def render_icpi_oanri() -> None:
 """,
             unsafe_allow_html=True,
         )
-    with side_col:
+    with read_col:
         st.markdown(
             """
 <div class="signal-side-card">
@@ -1628,11 +1639,11 @@ def render_icpi_oanri() -> None:
 """,
             unsafe_allow_html=True,
         )
+    with table_col:
         st.markdown(
             """
-<div class="signal-side-card">
-  <h3>Candidatos principales</h3>
-</div>
+<div class="signal-side-card signal-candidates-card">
+  <h3>Candidatos principales (revisión prioritaria)</h3>
 """,
             unsafe_allow_html=True,
         )
@@ -1640,6 +1651,7 @@ def render_icpi_oanri() -> None:
         st.markdown(
             """
 <a class="rank-next-button" href="?page=Ranking%20de%20Prioridad">Ver cola completa en Ranking de Prioridad →</a>
+</div>
 """,
             unsafe_allow_html=True,
         )

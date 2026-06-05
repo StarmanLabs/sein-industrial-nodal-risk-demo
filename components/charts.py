@@ -221,7 +221,7 @@ def icpi_oanri_scatter(df: pd.DataFrame):
         marker={"line": {"width": 0.7, "color": "#ffffff"}, "opacity": 0.86},
         hovertemplate="<b>%{hovertext}</b><br>Estrés nodal: %{x:.1f}<br>Prioridad operativa: %{y:.1f}<extra></extra>",
     )
-    fig = apply_chart_style(fig, height=620)
+    fig = apply_chart_style(fig, height=560)
     fig.update_layout(
         title_text="",
         margin={"l": 54, "r": 24, "t": 42, "b": 54},
