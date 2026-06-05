@@ -1166,9 +1166,15 @@ def render_icpi_oanri() -> None:
   margin: 0.15rem 0 0.65rem 0;
 }
 
+.block-container:has(.signal-page) {
+  max-width: 1740px !important;
+  padding-left: 2rem !important;
+  padding-right: 2rem !important;
+}
+
 .signal-header {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(300px, 0.28fr);
+  grid-template-columns: minmax(0, 1fr) minmax(340px, 0.26fr);
   gap: 1.25rem;
   align-items: start;
   margin-bottom: 0.85rem;
@@ -1229,7 +1235,7 @@ def render_icpi_oanri() -> None:
 
 .signal-top-band {
   display: grid;
-  grid-template-columns: minmax(270px, 0.25fr) minmax(0, 1fr);
+  grid-template-columns: minmax(330px, 0.23fr) minmax(0, 1fr);
   gap: 0.85rem;
   margin: 0 0 0.85rem 0;
 }
@@ -1338,7 +1344,8 @@ def render_icpi_oanri() -> None:
 }
 
 .signal-chart-shell {
-  padding: 0.85rem 0.9rem 0.45rem 0.9rem;
+  padding: 0.9rem 1rem 0.55rem 1rem;
+  min-height: 670px;
 }
 
 .signal-chart-title {
@@ -1359,7 +1366,7 @@ def render_icpi_oanri() -> None:
 }
 
 .signal-side-card {
-  padding: 0.85rem 0.9rem;
+  padding: 0.9rem 0.95rem;
   min-height: auto;
   margin-bottom: 0.75rem;
 }
@@ -1376,7 +1383,7 @@ def render_icpi_oanri() -> None:
   align-items: start;
   border: 1px solid #d8e3ea;
   border-radius: 8px;
-  padding: 0.62rem 0.7rem;
+  padding: 0.68rem 0.72rem;
   background: #ffffff;
 }
 
@@ -1397,8 +1404,8 @@ def render_icpi_oanri() -> None:
 .signal-level span {
   display: block;
   color: #314258;
-  font-size: 0.68rem;
-  line-height: 1.28;
+  font-size: 0.7rem;
+  line-height: 1.32;
 }
 
 .signal-level.red strong { color: #b23a2e; }
@@ -1414,7 +1421,7 @@ def render_icpi_oanri() -> None:
 
 .signal-filter-card,
 .signal-note-card {
-  padding: 0.82rem 0.95rem;
+  padding: 0.9rem 1rem;
 }
 
 .signal-filter-title {
@@ -1460,7 +1467,7 @@ def render_icpi_oanri() -> None:
 }
 
 .signal-guide {
-  padding: 0.85rem 1rem;
+  padding: 1rem 1.15rem;
   margin-top: 0.85rem;
 }
 
@@ -1521,6 +1528,11 @@ def render_icpi_oanri() -> None:
   .signal-top-band,
   .signal-guide-flow {
     grid-template-columns: 1fr;
+  }
+  .block-container:has(.signal-page) {
+    max-width: 100% !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
   }
   .signal-kpi-band {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1583,7 +1595,7 @@ def render_icpi_oanri() -> None:
         unsafe_allow_html=True,
     )
 
-    chart_col, side_col = st.columns([2.55, 1.05], gap="medium")
+    chart_col, side_col = st.columns([3.25, 1.05], gap="medium")
     with chart_col:
         st.markdown(
             """
@@ -1632,7 +1644,7 @@ def render_icpi_oanri() -> None:
             unsafe_allow_html=True,
         )
 
-    filter_note_cols = st.columns([1.75, 1.45, 0.62], gap="medium")
+    filter_note_cols = st.columns([2.35, 1.25, 0.72], gap="medium")
     with filter_note_cols[0]:
         st.markdown(
             """
