@@ -379,10 +379,17 @@ def barra_component_profile(df: pd.DataFrame, barra: str):
 def watchlist_heatmap(df: pd.DataFrame, order: list[str] | None = None):
     df = df.copy()
     df["month_label"] = df["month"].dt.strftime("%Y-%m")
+    value_col = (
+        "Prioridad operativa"
+        if "Prioridad operativa" in df.columns
+        else "OANRI_v10"
+        if "OANRI_v10" in df.columns
+        else "prioridad_operativa"
+    )
     data = df.pivot_table(
         index="barra",
         columns="month_label",
-        values="Prioridad operativa",
+        values=value_col,
         aggfunc="mean",
     )
     if order:

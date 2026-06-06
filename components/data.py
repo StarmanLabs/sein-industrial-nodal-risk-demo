@@ -339,6 +339,8 @@ def load_monthly_panel() -> pd.DataFrame:
     out["block_stress_v10"] = (out["p95_price"].rank(pct=True)).fillna(0)
     out["block_criticality_v10"] = (out["duracion_total_critica_h"].rank(pct=True)).fillna(0)
     out["system_regime_v10_0_1"] = (out["OANRI_v10"] / 100).clip(0, 1)
+    out["Estrés nodal"] = out["ICPI_v8"]
+    out["Prioridad operativa"] = out["OANRI_v10"]
     return out
 
 

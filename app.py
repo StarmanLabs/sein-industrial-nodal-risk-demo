@@ -2064,6 +2064,12 @@ def render_watchlist() -> None:
         st.error("La capa de seguimiento mensual no está disponible.")
         st.stop()
 
+    def _first_available(columns: list[str], data: pd.DataFrame) -> str | None:
+        return next((column for column in columns if column in data.columns), None)
+
+    watchlist_priority_col = _first_available(["Prioridad operativa", "OANRI_v10", "prioridad_operativa"], watchlist)
+    watchlist_stress_col = _first_available(["Estrés nodal", "ICPI_v8", "estres_nodal"], watchlist)
+
     filter_cols = st.columns([1.1, 1.2])
     with filter_cols[0]:
         selected_priorities = priority_filter(profiles, key="watchlist_priority")
@@ -2081,7 +2087,8 @@ def render_watchlist() -> None:
     with cols[2]:
         metric_card("Observaciones top", f"{len(watchlist):,.0f}", "barra-mes")
     with cols[3]:
-        metric_card("Máx. prioridad operativa", f"{watchlist['Prioridad operativa'].max():.1f}", "episodio más alto", kind="warning")
+        max_priority = pd.to_numeric(watchlist[watchlist_priority_col], errors="coerce").max() if watchlist_priority_col else float("nan")
+        metric_card("Máx. prioridad operativa", f"{max_priority:.1f}", "episodio más alto", kind="warning")
 
     section_header("Mapa mensual de seguimiento", "Color más intenso significa prioridad operativa mensual más alta. Filas repetidamente intensas sugieren persistencia; bloques aislados sugieren episodios puntuales.")
     st.plotly_chart(watchlist_heatmap(heatmap_data, order=ordered_barras), use_container_width=True)
@@ -2093,7 +2100,13 @@ def render_watchlist() -> None:
         st.plotly_chart(barra_month_line(panel, selected_barra), use_container_width=True)
 
     section_header("Top mensual de señales")
-    compact_table(watchlist.sort_values(["month", "ranking_mensual_v10"]).head(120), ["month", "barra", "Estrés nodal", "Prioridad operativa", "ranking_mensual_v10", "decision_tier", "primary_driver"])
+    top_columns = ["month", "barra"]
+    if watchlist_stress_col:
+        top_columns.append(watchlist_stress_col)
+    if watchlist_priority_col:
+        top_columns.append(watchlist_priority_col)
+    top_columns.extend(["ranking_mensual_v10", "decision_tier", "primary_driver"])
+    compact_table(watchlist.sort_values(["month", "ranking_mensual_v10"]).head(120), top_columns)
 
 
 def render_exposicion() -> None:
