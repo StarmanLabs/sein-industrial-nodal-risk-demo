@@ -37,12 +37,15 @@ PRIORITY_EN = {
 }
 
 ROBUSTNESS_ES = {
-    "High robustness": "Estabilidad alta",
-    "Moderate robustness": "Estabilidad moderada",
-    "Low robustness": "Estabilidad baja",
-    "Robustez alta": "Estabilidad alta",
-    "Robustez moderada": "Estabilidad moderada",
-    "Robustez baja": "Estabilidad baja",
+    "High robustness": "Baja dependencia",
+    "Moderate robustness": "Dependencia media",
+    "Low robustness": "Alta dependencia",
+    "Robustez alta": "Baja dependencia",
+    "Robustez moderada": "Dependencia media",
+    "Robustez baja": "Alta dependencia",
+    "Estabilidad alta": "Baja dependencia",
+    "Estabilidad moderada": "Dependencia media",
+    "Estabilidad baja": "Alta dependencia",
 }
 
 DRIVER_ES = {
@@ -107,6 +110,10 @@ def _priority_order(value: object) -> int:
     }.get(str(value), 9)
 
 
+def _criterion_dependency_label(value: object) -> str:
+    return ROBUSTNESS_ES.get(str(value), str(value))
+
+
 def _parse_month_label(df: pd.DataFrame) -> pd.DataFrame:
     out = df.copy()
     if "month_label" in out.columns:
@@ -141,11 +148,11 @@ def load_product_layer() -> pd.DataFrame:
         out["due_diligence_priority_es"] = out["due_diligence_priority"].map(
             lambda value: PRIORITY_ES.get(str(value), str(value))
         )
-        out["robustness_flag_es"] = out.get("estabilidad_senal", out["robustez"])
-        out["robustness_flag"] = out["robustez"]
-        out["signal_stability_label_es"] = out.get(
-            "estabilidad_senal", out["robustness_flag_es"]
+        out["robustness_flag_es"] = out.get("estabilidad_senal", out["robustez"]).map(
+            _criterion_dependency_label
         )
+        out["robustness_flag"] = out["robustez"]
+        out["signal_stability_label_es"] = out["robustness_flag_es"]
         out["signal_stability_score"] = out.get("score_estabilidad", pd.NA)
         out["monthly_top20_months"] = out.get("meses_top20_mensual", 0)
         out["monthly_top20_share"] = out.get("share_top20_mensual", 0)
@@ -193,7 +200,9 @@ def load_product_layer() -> pd.DataFrame:
         out["robustness_flag_es"] = out["robustness_flag"].map(
             lambda value: ROBUSTNESS_ES.get(str(value), str(value))
         )
-        out["signal_stability_label_es"] = out["robustness_flag_es"]
+        out["signal_stability_label_es"] = out["robustness_flag_es"].map(
+            _criterion_dependency_label
+        )
         out["signal_stability_score"] = pd.NA
         out["monthly_top20_months"] = out.get("watchlist_months", 0)
         out["monthly_top20_share"] = 0

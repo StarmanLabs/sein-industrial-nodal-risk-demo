@@ -14,12 +14,12 @@ PRODUCT_CAVEAT = (
 )
 
 TEXT_REPLACEMENTS = {
-    "High robustness": "estabilidad alta",
-    "Moderate robustness": "estabilidad moderada",
-    "Low robustness": "estabilidad baja",
-    "Robustez alta": "Estabilidad alta",
-    "Robustez moderada": "Estabilidad moderada",
-    "Robustez baja": "Estabilidad baja",
+    "High robustness": "baja dependencia del criterio",
+    "Moderate robustness": "dependencia media del criterio",
+    "Low robustness": "alta dependencia del criterio",
+    "Robustez alta": "Baja dependencia del criterio",
+    "Robustez moderada": "Dependencia media del criterio",
+    "Robustez baja": "Alta dependencia del criterio",
     "Not covered by sensitivity top-list": "sin cobertura en top-list de sensibilidad",
     "Topology-aware due diligence, spatial/economic screening, and decision-support context.": "Due diligence con contexto topológico, screening espacial/económico y soporte a decisión.",
     "Final COES canonical joins, physical flow direction, congestion attribution, or causal claims.": "Lectura orientada a screening y priorización; para decisiones finales se complementa con validación contractual, operativa y de red.",
@@ -387,7 +387,7 @@ def priority_system_legend() -> None:
         [
             (
                 "Revisión inmediata",
-                "Primera cola de due diligence: combina señal alta, recurrencia, estabilidad de señal y soporte de contexto suficiente para iniciar revisión experta.",
+                "Primera cola de due diligence: combina señal alta, recurrencia mensual, baja dependencia del criterio y soporte de contexto suficiente para iniciar revisión experta.",
                 "decision",
             ),
             (
@@ -456,7 +456,7 @@ def methodology_definition_grid() -> None:
             ),
             (
                 "Validez estadística",
-                "Los índices son relativos 0-100: usan rankings, promedios, colas, volatilidad, episodios críticos, persistencia mensual y sensibilidad. La estabilidad revisa si la señal sigue siendo relevante bajo criterios alternativos.",
+                "Las señales son relativas 0-100: usan rankings, promedios, colas, volatilidad, episodios críticos, persistencia mensual y sensibilidad. La dependencia del criterio revisa cuánto cambia la prioridad bajo supuestos alternativos.",
                 "caveat",
             ),
         ]
@@ -687,8 +687,8 @@ def evidence_definition_grid() -> None:
             "Una barra solo debe subir a soporte máximo si se confirma con fuentes adicionales: COES, OSINERGMIN, operador, ficha técnica, unifilar, tensión, nombre y conexión coherente.",
         ),
         (
-            "Estabilidad de señal",
-            "Mide si una barra sigue siendo relevante bajo criterios alternativos. Consistente = señal estable; sensible o contextual = requiere más contraste antes de priorizar.",
+            "Dependencia del criterio",
+            "Mide cuánto cambia la prioridad de una barra al probar criterios alternativos. Baja dependencia = lectura más estable; alta dependencia o contextual = revisar episodios, sector y evidencia antes de priorizar.",
         ),
     ]
     rendered_cards = "\n".join(
