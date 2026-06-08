@@ -171,7 +171,7 @@ check_cols = st.columns(2)
 with check_cols[0]:
     action_panel(
         "Validaciones analíticas",
-        "1. Confirmar si la señal es persistente o episódica. 2. Revisar meses con mayor prioridad operativa. 3. Comparar ranking estrés nodal/prioridad operativa. 4. Verificar estabilidad de señal, cobertura analítica y soporte de contexto.",
+        "1. Confirmar si la señal es persistente o episódica. 2. Revisar meses con mayor prioridad operativa. 3. Comparar ranking estrés nodal/prioridad operativa. 4. Verificar dependencia del criterio, cobertura analítica y soporte de contexto.",
     )
 with check_cols[1]:
     action_panel(

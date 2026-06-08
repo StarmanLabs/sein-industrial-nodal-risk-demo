@@ -34,7 +34,7 @@ if df.empty:
 
 section_header(
     "Filtros de cola de decisión",
-    "Ajusta la lista según nivel de revisión, estabilidad de señal o tensión. La tabla mantiene el orden por score de revisión.",
+    "Ajusta la lista según nivel de revisión, dependencia del criterio o tensión. La tabla mantiene el orden por score de revisión.",
 )
 filter_cols = st.columns([1.25, 1.05, 1.05])
 with filter_cols[0]:
@@ -44,15 +44,18 @@ with filter_cols[1]:
         df,
         key="ranking_robustness",
         display_map={
-            "Estabilidad alta": "Consistente",
-            "Robustez alta": "Consistente",
-            "High robustness": "Consistente",
-            "Estabilidad moderada": "Moderada",
-            "Robustez moderada": "Moderada",
-            "Moderate robustness": "Moderada",
-            "Estabilidad baja": "Sensible",
-            "Robustez baja": "Sensible",
-            "Low robustness": "Sensible",
+            "Estabilidad alta": "Baja dependencia",
+            "Robustez alta": "Baja dependencia",
+            "High robustness": "Baja dependencia",
+            "Baja dependencia": "Baja dependencia",
+            "Estabilidad moderada": "Dependencia media",
+            "Robustez moderada": "Dependencia media",
+            "Moderate robustness": "Dependencia media",
+            "Dependencia media": "Dependencia media",
+            "Estabilidad baja": "Alta dependencia",
+            "Robustez baja": "Alta dependencia",
+            "Low robustness": "Alta dependencia",
+            "Alta dependencia": "Alta dependencia",
             "Fuera de top-list de sensibilidad": "Contextual",
             "Not covered by sensitivity top-list": "Contextual",
         },
@@ -119,7 +122,7 @@ insight_grid(
         ),
         (
             "Hallazgo principal",
-            "La cola combina estrés nodal, prioridad operativa, recurrencia mensual, estabilidad de señal, cobertura analítica y soporte de contexto de activo, conexión, subestación, central o corredor.",
+            "La cola combina estrés nodal, prioridad operativa, recurrencia mensual, dependencia del criterio, cobertura analítica y soporte de contexto de activo, conexión, subestación, central o corredor.",
             "evidence",
         ),
         (
@@ -145,7 +148,7 @@ section_header(
 if filtered.empty:
     action_panel(
         "Sin resultados para los filtros activos",
-        "Amplía nivel de revisión, estabilidad de señal o tensión para recuperar barras candidatas en la cola de decisión.",
+        "Amplía nivel de revisión, dependencia del criterio o tensión para recuperar barras candidatas en la cola de decisión.",
     )
 else:
     priority_table(filtered)
