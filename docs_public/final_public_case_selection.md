@@ -19,5 +19,5 @@ Public label guide:
 
 - `Revision inmediata`: first review queue for the strongest public demo cases.
 - `Revision selectiva`: relevant candidates that need sector, contract or context filtering.
-- `Seguimiento mensual`: episodic cases that matter mainly through monthly behavior.
+- `Señal episódica`: episodic cases that matter mainly through monthly behavior.
 - `Contexto base`: reference universe for comparison and future monitoring.

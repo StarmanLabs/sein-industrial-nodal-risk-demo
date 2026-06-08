@@ -2,7 +2,7 @@
 
 Barra: PLANTAETANOL 60
 
-Prioridad: Prioridad A
+Prioridad: Señal prioritaria
 
 Estrés nodal: 77.44
 

@@ -17,29 +17,29 @@ Esto separa dos preguntas distintas:
 | Estres nodal | `avg_icpi` / `estres_nodal` | Senal relativa de precio marginal por barra | Mayor valor = senal de precio mas intensa dentro del universo |
 | Prioridad operativa | `avg_oanri` / `prioridad_operativa` | Estres nodal leido con contexto mensual del sistema | Mayor valor = mayor prioridad de revision bajo contexto operativo |
 | Score de revision | `decision_priority_score` / `score_revision` | Traduccion ejecutiva para ordenar la cola de trabajo | Mayor valor = revisar antes |
-| Nivel de revision | `due_diligence_priority_es` / `prioridad` | Categoria de accion sugerida | No clasifica barras como buenas o malas |
-| Estabilidad de senal | `signal_stability_label_es` / `estabilidad_senal` | Que tan consistente es la barra bajo supuestos alternativos | No es cobertura de datos ni prueba causal |
+| Tipo de senal | `due_diligence_priority_es` / `prioridad` | Lectura ejecutiva para orientar la cola de revision | No clasifica barras como buenas o malas |
+| Dependencia del criterio | `signal_stability_label_es` / `dependencia_criterio` | Que tanto cambia la prioridad bajo supuestos alternativos | No es cobertura de datos ni prueba causal |
 | Zona mensual | `monthly_attention_label_es` / `zona_mensual` | Frecuencia con que la barra entra al Top 20 mensual | Sirve para distinguir persistencia, frecuencia y episodios |
 | Meses Top 20 | `monthly_top20_months` / `meses_top20_mensual` | Numero de meses en la zona ejecutiva mensual | Capa operativa de monitoreo |
 | Soporte de evidencia | `evidence_grade` / `soporte_evidencia` | Contexto revisado de activo, barra, subestacion, central, corredor o industria | Ayuda a explicar por que revisar; no prueba causalidad fisica |
 
-## Niveles de revision
+## Tipos de senal
 
-| Nivel publico | Interno | Accion |
+| Tipo publico | Interno | Accion |
 |---|---|---|
-| Revision inmediata | Priority A | Abrir revision estructurada |
-| Revision selectiva | Priority B | Revisar despues de inmediatas o si sector/contrato/ubicacion aumenta exposicion |
-| Seguimiento mensual | Watchlist | Monitorear recurrencia mensual |
+| Senal prioritaria | Priority A | Abrir revision estructurada |
+| Senal condicionada | Priority B | Revisar si sector/contrato/ubicacion aumenta exposicion |
+| Senal episodica | Watchlist | Monitorear recurrencia mensual |
 | Contexto base | Monitor | Mantener como contexto del universo |
-| Requiere contexto adicional | Low information | Completar evidencia antes de interpretar fuerte |
+| Informacion por completar | Low information | Completar evidencia antes de interpretar fuerte |
 
-## Estabilidad de senal
+## Dependencia del criterio
 
 | Etiqueta publica | Interno | Lectura correcta |
 |---|---|---|
-| Estabilidad alta | High robustness | La barra se mantiene relevante bajo supuestos alternativos |
-| Estabilidad moderada | Moderate robustness | La senal es util pero mas sensible a supuestos |
-| Estabilidad baja | Low robustness | La barra es menos estable como candidata prioritaria; no significa dato invalido |
+| Baja dependencia | High robustness | La barra se mantiene relevante bajo supuestos alternativos |
+| Dependencia media | Moderate robustness | La senal es util pero mas sensible a supuestos |
+| Alta dependencia | Low robustness | La prioridad depende mas del criterio usado; no significa dato invalido |
 
 ## Zona mensual
 

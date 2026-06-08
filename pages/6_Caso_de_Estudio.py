@@ -41,9 +41,9 @@ if not barra:
 row = profiles[profiles["barra"] == barra].iloc[0]
 priority_label = row.get("due_diligence_priority_es", row["due_diligence_priority"])
 priority_kind = {
-    "Revisión inmediata": "priority-a",
-    "Revisión selectiva": "priority-b",
-    "Seguimiento mensual": "info",
+    "Señal prioritaria": "priority-a",
+    "Señal condicionada": "priority-b",
+    "Señal episódica": "info",
     "Contexto base": "neutral",
 }.get(str(priority_label), "neutral")
 
@@ -57,7 +57,7 @@ def _clean(value: object, fallback: str = "No disponible en la capa producto") -
 
 cols = st.columns(5)
 with cols[0]:
-    metric_card("Categoría", priority_label, "decisión sugerida", kind=priority_kind)
+    metric_card("Tipo de señal", priority_label, "lectura ejecutiva", kind=priority_kind)
 with cols[1]:
     metric_card("Score", f"{row['decision_priority_score']:.1f}", "0-100 relativo", kind="warning")
 with cols[2]:

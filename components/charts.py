@@ -9,11 +9,14 @@ COLOR_SEQUENCE = ["#173b57", "#138a8a", "#d9902f", "#c5524a", "#6b778c"]
 STRESS_SCALE = ["#f8fafc", "#dbeaf0", "#98c3cf", "#2f6f9f", "#173b57"]
 HEAT_SCALE = ["#fff7ed", "#fed7aa", "#fb923c", "#dc5f2e", "#9f2f2a"]
 PRIORITY_COLORS = {
+    "Señal prioritaria": "#b23a2e",
+    "Señal condicionada": "#c47a16",
+    "Señal episódica": "#168c8c",
+    "Contexto base": "#64748b",
+    "Información por completar": "#9aa4b2",
     "Revisión inmediata": "#b23a2e",
     "Revisión selectiva": "#c47a16",
     "Seguimiento mensual": "#168c8c",
-    "Contexto base": "#64748b",
-    "Requiere contexto adicional": "#9aa4b2",
     "Prioridad A": "#c5524a",
     "Prioridad B": "#d9902f",
     "Watchlist": "#2f6f9f",
@@ -132,11 +135,16 @@ def icpi_oanri_scatter(df: pd.DataFrame):
         data[color_col] = data[color_col].replace(
             {
                 "Baja informacion": "Baja información",
-                "Baja información": "Requiere contexto adicional",
-                "Low information": "Requiere contexto adicional",
-                "Prioridad A": "Revisión inmediata",
-                "Prioridad B": "Revisión selectiva",
-                "Watchlist": "Seguimiento mensual",
+                "Baja información": "Información por completar",
+                "Low information": "Información por completar",
+                "Prioridad A": "Señal prioritaria",
+                "Prioridad B": "Señal condicionada",
+                "Priority A": "Señal prioritaria",
+                "Priority B": "Señal condicionada",
+                "Watchlist": "Señal episódica",
+                "Revisión inmediata": "Señal prioritaria",
+                "Revisión selectiva": "Señal condicionada",
+                "Seguimiento mensual": "Señal episódica",
                 "Monitorear": "Contexto base",
                 "Monitor": "Contexto base",
             }
@@ -167,7 +175,7 @@ def icpi_oanri_scatter(df: pd.DataFrame):
         labels={
             "avg_icpi": "Estrés nodal promedio",
             "avg_oanri": "Prioridad operativa promedio",
-            color_col: "Categoría de revisión",
+            color_col: "Tipo de señal",
             "decision_priority_score": "Score de revisión",
             "rank_icpi": "Ranking estrés nodal",
             "rank_oanri": "Ranking prioridad operativa",

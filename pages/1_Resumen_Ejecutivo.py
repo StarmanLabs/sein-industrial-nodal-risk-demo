@@ -40,21 +40,21 @@ with cols[1]:
     metric_card("Meses analizados", f"{panel['month'].nunique() if not panel.empty else 0}", "panel histórico")
 with cols[2]:
     metric_card(
-        "Revisión inmediata",
+        "Señal prioritaria",
         f"{(profiles['due_diligence_priority'] == 'Priority A').sum():,.0f}",
-        "primera cola",
+        "candidata fuerte",
         kind="danger",
     )
 with cols[3]:
     metric_card(
-        "Revisión selectiva",
+        "Señal condicionada",
         f"{(profiles['due_diligence_priority'] == 'Priority B').sum():,.0f}",
-        "segunda revisión",
+        "depende de exposición",
         kind="warning",
     )
 with cols[4]:
     metric_card(
-        "Seguimiento mensual",
+        "Señal episódica",
         f"{(profiles['due_diligence_priority'] == 'Watchlist').sum():,.0f}",
         "monitoreo activo",
         kind="info",
@@ -78,7 +78,7 @@ insight_grid(
         ),
         (
             "Siguiente acción",
-            "Abrir revisión inmediata, contrastar exposición industrial y revisar contexto topológico antes de bajar a casos.",
+            "Abrir las señales prioritarias, contrastar exposición industrial y revisar contexto topológico antes de bajar a casos.",
             "action",
         ),
         (

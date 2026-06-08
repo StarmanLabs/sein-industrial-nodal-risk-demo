@@ -21,21 +21,25 @@ CONTRACT_LABELS = {
 }
 
 PRIORITY_DISPLAY_LABELS = {
-    "Baja informacion": "Requiere contexto adicional",
-    "Baja información": "Requiere contexto adicional",
-    "Low information": "Requiere contexto adicional",
-    "Priority A": "Revisión inmediata",
-    "Priority B": "Revisión selectiva",
-    "Watchlist": "Seguimiento mensual",
+    "Baja informacion": "Información por completar",
+    "Baja información": "Información por completar",
+    "Low information": "Información por completar",
+    "Priority A": "Señal prioritaria",
+    "Priority B": "Señal condicionada",
+    "Watchlist": "Señal episódica",
     "Monitor": "Contexto base",
-    "Prioridad A": "Revisión inmediata",
-    "Prioridad B": "Revisión selectiva",
-    "Revisión inmediata": "Revisión inmediata",
-    "Revisión selectiva": "Revisión selectiva",
-    "Seguimiento mensual": "Seguimiento mensual",
+    "Prioridad A": "Señal prioritaria",
+    "Prioridad B": "Señal condicionada",
+    "Revisión inmediata": "Señal prioritaria",
+    "Revisión selectiva": "Señal condicionada",
+    "Seguimiento mensual": "Señal episódica",
+    "Señal prioritaria": "Señal prioritaria",
+    "Señal condicionada": "Señal condicionada",
+    "Señal episódica": "Señal episódica",
     "Monitorear": "Contexto base",
     "Contexto base": "Contexto base",
-    "Requiere contexto adicional": "Requiere contexto adicional",
+    "Requiere contexto adicional": "Información por completar",
+    "Información por completar": "Información por completar",
 }
 
 PRIORITY_ORDER = {
@@ -50,7 +54,7 @@ PRIORITY_ORDER = {
 def priority_filter(
     df: pd.DataFrame,
     key: str = "priority",
-    label: str = "Categoría de revisión",
+    label: str = "Tipo de señal",
     placeholder: str = "Seleccionar categorías",
 ) -> list[str]:
     if "due_diligence_priority_es" in df.columns:

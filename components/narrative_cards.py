@@ -33,11 +33,15 @@ TEXT_REPLACEMENTS = {
     "stress_premium": "prima de estrés",
     "volatility": "volatilidad",
     "Baja informacion": "Baja información",
-    "Priority A": "Revisión inmediata",
-    "Priority B": "Revisión selectiva",
-    "Watchlist": "Seguimiento mensual",
+    "Priority A": "Señal prioritaria",
+    "Priority B": "Señal condicionada",
+    "Watchlist": "Señal episódica",
     "Monitor": "Contexto base",
-    "Low information": "Requiere contexto adicional",
+    "Low information": "Información por completar",
+    "Revisión inmediata": "Señal prioritaria",
+    "Revisión selectiva": "Señal condicionada",
+    "Seguimiento mensual": "Señal episódica",
+    "Requiere contexto adicional": "Información por completar",
     "Estres episodico": "Estrés episódico",
     "Episodico": "Episódico",
     "Senal": "Señal",
@@ -275,11 +279,11 @@ def use_path_panel(items: list[tuple[str, str]]) -> None:
 
 def decision_taxonomy() -> None:
     items = [
-        ("Revisión inmediata", "Señal alta, recurrencia y soporte suficiente.", "urgent", "warning"),
-        ("Revisión selectiva", "Prioridad si sector, contrato o ubicación aumentan exposición.", "selective", "target"),
-        ("Seguimiento mensual", "Caso episódico o sensible a escenarios; vigilar persistencia.", "watch", "eye"),
+        ("Señal prioritaria", "Candidata fuerte: señal alta, recurrencia y soporte suficiente.", "urgent", "warning"),
+        ("Señal condicionada", "Relevante si sector, contrato, ubicación o escenario aumentan exposición.", "selective", "target"),
+        ("Señal episódica", "Tiene picos o meses relevantes; requiere seguimiento mensual.", "watch", "eye"),
         ("Contexto base", "Permanece en el universo para comparación y referencia.", "base", "database"),
-        ("Requiere contexto adicional", "Información limitada; priorizar obtención de evidencia.", "limited", "help"),
+        ("Información por completar", "Necesita más contexto antes de una lectura fuerte.", "limited", "help"),
     ]
     icons = {
         "warning": '<svg viewBox="0 0 24 24"><path d="M12 3 2 21h20L12 3Z"/><path d="M12 9v5M12 17h.01"/></svg>',
@@ -386,23 +390,23 @@ def priority_system_legend() -> None:
     insight_grid(
         [
             (
-                "Revisión inmediata",
-                "Primera cola de due diligence: combina señal alta, recurrencia mensual, baja dependencia del criterio y soporte de contexto suficiente para iniciar revisión experta.",
+                "Señal prioritaria",
+                "Candidata fuerte: combina señal alta, recurrencia mensual, baja dependencia del criterio y soporte de contexto suficiente para iniciar revisión experta.",
                 "decision",
             ),
             (
-                "Revisión selectiva",
+                "Señal condicionada",
                 "Candidata relevante. Gana prioridad cuando el sector, contrato, ubicación o contexto industrial aumentan exposición.",
                 "evidence",
             ),
             (
-                "Seguimiento mensual",
-                "Caso episódico o sensible a escenario. Se vigila para distinguir persistencia, deterioro reciente o eventos puntuales.",
+                "Señal episódica",
+                "Caso con picos o meses relevantes. Se vigila para distinguir persistencia, deterioro reciente o eventos puntuales.",
                 "action",
             ),
             (
-                "Contexto base / requiere contexto adicional",
-                "Permanece como referencia del universo o necesita mejor contexto antes de una lectura fuerte. No exige revisión inmediata.",
+                "Contexto base / información por completar",
+                "Permanece como referencia del universo o necesita mejor contexto antes de una lectura fuerte.",
                 "caveat",
             ),
         ]

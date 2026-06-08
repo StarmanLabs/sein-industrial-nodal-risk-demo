@@ -58,14 +58,14 @@ context_summary_panel(
     "Mapa de decisión: señal local vs prioridad ajustada",
     (
         f"Panel COES mensual {start_month} a {end_month}. Cada punto es una barra; "
-        "la posición muestra estrés nodal y prioridad operativa promedio, el color muestra prioridad y "
+        "la posición muestra estrés nodal y prioridad operativa promedio, el color muestra tipo de señal y "
         "el tamaño resume el score de due diligence."
     ),
     [
         ("Barras SEIN", f"{df['barra'].nunique():,.0f}", "unidad de análisis"),
         ("Cola de revisión", f"{review_queue:,.0f}", f"{high_priority_share:.0%} del universo"),
         ("Mediana estrés nodal", _fmt_number(float(df["avg_icpi"].median())), "línea vertical"),
-        ("Seguimiento mensual", f"{monthly_followup:,.0f}", "casos episódicos"),
+        ("Señal episódica", f"{monthly_followup:,.0f}", "casos episódicos"),
     ],
 )
 
@@ -105,7 +105,7 @@ decision_matrix(
     [
         (
             "estrés nodal alto + prioridad operativa alto",
-            "Candidata de revisión inmediata. La señal local y la lectura ajustada por sistema apuntan en la misma dirección.",
+            "Señal prioritaria. La señal local y la lectura ajustada por sistema apuntan en la misma dirección.",
             "high",
         ),
         (

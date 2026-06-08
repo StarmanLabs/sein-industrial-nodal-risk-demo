@@ -87,10 +87,11 @@ def _fallback_use_path_panel(items: list[tuple[str, str]]) -> None:
 def _fallback_decision_taxonomy() -> None:
     insight_grid(
         [
-            ("Revisión inmediata", "Primera cola de due diligence: señal alta, recurrencia y soporte suficiente.", "decision"),
-            ("Revisión selectiva", "Candidata relevante; gana prioridad si el sector, contrato o ubicación aumentan exposición.", "evidence"),
-            ("Seguimiento mensual", "Caso episódico o sensible a escenarios; se vigila por persistencia y cambios recientes.", "action"),
+            ("Señal prioritaria", "Candidata fuerte: señal alta, recurrencia y soporte suficiente.", "decision"),
+            ("Señal condicionada", "Relevante si sector, contrato, ubicación o escenario aumentan exposición.", "evidence"),
+            ("Señal episódica", "Tiene picos o meses relevantes; requiere seguimiento mensual.", "action"),
             ("Contexto base", "Permanece en el universo analítico para comparación, referencia y nuevos eventos.", "caveat"),
+            ("Información por completar", "Necesita más contexto antes de una lectura fuerte.", "caveat"),
         ]
     )
 
@@ -231,9 +232,9 @@ def render_resumen() -> None:
     </div>
   </div>
   <div class="exec-kpi-band">
-    {_kpi_item(priority_a_count, "Revisión inmediata", "Señal alta, recurrencia y soporte suficiente.", "urgent", "warning")}
-    {_kpi_item(priority_b_count, "Revisión selectiva", "Prioridad si sector, contrato o ubicación aumentan exposición.", "selective", "target")}
-    {_kpi_item(watchlist_count, "Seguimiento mensual", "Caso episódico o sensible; se vigila por persistencia.", "watch", "eye")}
+    {_kpi_item(priority_a_count, "Señal prioritaria", "Candidata fuerte: señal alta, recurrencia y soporte suficiente.", "urgent", "warning")}
+    {_kpi_item(priority_b_count, "Señal condicionada", "Relevante si sector, contrato o ubicación aumentan exposición.", "selective", "target")}
+    {_kpi_item(watchlist_count, "Señal episódica", "Tiene picos o meses relevantes; requiere seguimiento.", "watch", "eye")}
     {_kpi_item(barras_count, "Barras analizadas", "Universo comparable del SEIN.", "scope", "network")}
     {_kpi_item(months_count, "Meses analizados", "Panel histórico 2023-2025.", "scope", "calendar")}
   </div>
@@ -882,7 +883,7 @@ div[data-testid="stDataFrame"] {
         selected_priorities = priority_filter(
             df,
             key="ranking_level",
-            label="Nivel de revisión",
+            label="Tipo de señal",
             placeholder="Seleccionar categorías",
         )
     with filter_cols[1]:
@@ -971,13 +972,13 @@ div[data-testid="stDataFrame"] {
     st.markdown(
         """
 <div class="rank-taxonomy-wrap">
-  <div class="rank-tax-heading">Niveles de revisión: qué significan y qué hacer</div>
+  <div class="rank-tax-heading">Taxonomía de señal: qué significa y qué hacer</div>
   <div class="rank-taxonomy">
-    <div class="rank-tax-item red"><div class="rank-tax-icon"><svg viewBox="0 0 24 24"><path d="M5 21V4"/><path d="M5 5h11l-1.8 4L16 13H5"/></svg></div><div><strong>1. Revisión inmediata</strong><span>Revisar primero. Señal fuerte; abrir revisión estructurada.</span></div></div>
-    <div class="rank-tax-item amber"><div class="rank-tax-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><div><strong>2. Revisión selectiva</strong><span>Revisar después de las prioritarias. Gana urgencia si sector, contrato o ubicación aumentan exposición.</span></div></div>
-    <div class="rank-tax-item teal"><div class="rank-tax-icon"><svg viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></div><div><strong>3. Seguimiento mensual</strong><span>Monitorear. Vigilar si la señal se repite o empeora.</span></div></div>
+    <div class="rank-tax-item red"><div class="rank-tax-icon"><svg viewBox="0 0 24 24"><path d="M5 21V4"/><path d="M5 5h11l-1.8 4L16 13H5"/></svg></div><div><strong>1. Señal prioritaria</strong><span>Candidata fuerte: revisar primero y abrir revisión estructurada.</span></div></div>
+    <div class="rank-tax-item amber"><div class="rank-tax-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><div><strong>2. Señal condicionada</strong><span>Relevante si sector, contrato, ubicación o escenario aumentan exposición.</span></div></div>
+    <div class="rank-tax-item teal"><div class="rank-tax-icon"><svg viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></div><div><strong>3. Señal episódica</strong><span>Tiene picos o meses relevantes; vigilar si se repite o empeora.</span></div></div>
     <div class="rank-tax-item steel"><div class="rank-tax-icon"><svg viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h17"/><rect x="7" y="12" width="3" height="4"/><rect x="12" y="9" width="3" height="7"/><rect x="17" y="6" width="3" height="10"/></svg></div><div><strong>4. Contexto base</strong><span>Usar como referencia. No prioritaria; sirve para comparar.</span></div></div>
-    <div class="rank-tax-item purple"><div class="rank-tax-icon"><svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg></div><div><strong>5. Requiere contexto adicional</strong><span>Completar evidencia o cobertura antes de una lectura fuerte.</span></div></div>
+    <div class="rank-tax-item purple"><div class="rank-tax-icon"><svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg></div><div><strong>5. Información por completar</strong><span>Completar evidencia o cobertura antes de una lectura fuerte.</span></div></div>
   </div>
 </div>
 """,
@@ -1012,11 +1013,11 @@ div[data-testid="stDataFrame"] {
             "Low information": "Completar contexto",
         }
         level_labels = {
-            "Priority A": "Revisión inmediata",
-            "Priority B": "Revisión selectiva",
-            "Watchlist": "Seguimiento mensual",
+            "Priority A": "Señal prioritaria",
+            "Priority B": "Señal condicionada",
+            "Watchlist": "Señal episódica",
             "Monitor": "Contexto base",
-            "Low information": "Requiere contexto adicional",
+            "Low information": "Información por completar",
         }
 
         def _stability_label(value: object) -> str:
@@ -1092,7 +1093,7 @@ div[data-testid="stDataFrame"] {
             **{
                 "#": range(start + 1, start + 1 + len(page_df)),
                 "Score de revisión": page_df["decision_priority_score"].round(2),
-                "Nivel de revisión": page_df["due_diligence_priority"].map(level_labels).fillna(page_df["due_diligence_priority_es"]),
+                "Tipo de señal": page_df["due_diligence_priority"].map(level_labels).fillna(page_df["due_diligence_priority_es"]),
                 "Acción recomendada": page_df["due_diligence_priority"].map(action_short).fillna(page_df["recommended_action"]),
                 "Dependencia del criterio": page_df[robust_col].map(_stability_label),
                 "Cobertura analítica": page_df.get("score_coverage_class_es", pd.Series("", index=page_df.index)).map(_coverage_label),
@@ -1104,7 +1105,7 @@ div[data-testid="stDataFrame"] {
                 "#",
                 "barra",
                 "Score de revisión",
-                "Nivel de revisión",
+                "Tipo de señal",
                 "Acción recomendada",
                 "Dependencia del criterio",
                 "Cobertura analítica",
@@ -1115,15 +1116,15 @@ div[data-testid="stDataFrame"] {
 
         def _rank_style(value: object) -> str:
             text = str(value)
-            if text == "Revisión inmediata":
+            if text == "Señal prioritaria":
                 return "background-color: #fde8e6; color: #9d1f17; font-weight: 800; border-radius: 6px"
-            if text == "Revisión selectiva":
+            if text == "Señal condicionada":
                 return "background-color: #fff0cf; color: #a85a00; font-weight: 800; border-radius: 6px"
-            if text == "Seguimiento mensual":
+            if text == "Señal episódica":
                 return "background-color: #dff4f6; color: #087a82; font-weight: 800; border-radius: 6px"
             if text == "Contexto base":
                 return "background-color: #eef2f6; color: #4f5d6f; font-weight: 800; border-radius: 6px"
-            if text == "Requiere contexto adicional":
+            if text == "Información por completar":
                 return "background-color: #f2e8f8; color: #7e3fa1; font-weight: 800; border-radius: 6px"
             if text == "Baja dependencia":
                 return "background-color: #e9f8ef; color: #1f8a5b; font-weight: 800; border-radius: 999px"
@@ -1148,7 +1149,7 @@ div[data-testid="stDataFrame"] {
                 "#": st.column_config.NumberColumn("#", width="small"),
                 "Barra": st.column_config.TextColumn("Barra", width="large"),
                 "Score de revisión": st.column_config.ProgressColumn("Score de revisión", min_value=0, max_value=100, format="%.2f", width="medium"),
-                "Nivel de revisión": st.column_config.TextColumn("Nivel de revisión", width="medium"),
+                "Tipo de señal": st.column_config.TextColumn("Tipo de señal", width="medium"),
                 "Acción recomendada": st.column_config.TextColumn("Acción recomendada", width="medium"),
                 "Dependencia del criterio": st.column_config.TextColumn("Dependencia del criterio", width="small"),
                 "Cobertura analítica": st.column_config.TextColumn("Cobertura", width="small"),
@@ -1762,16 +1763,20 @@ def render_icpi_oanri() -> None:
     )
 
     priority_label_map = {
-        "Priority A": "Revisión inmediata",
-        "Priority B": "Revisión selectiva",
-        "Watchlist": "Seguimiento mensual",
+        "Priority A": "Señal prioritaria",
+        "Priority B": "Señal condicionada",
+        "Watchlist": "Señal episódica",
         "Monitor": "Contexto base",
-        "Low information": "Requiere contexto adicional",
-        "Baja informacion": "Requiere contexto adicional",
-        "Baja información": "Requiere contexto adicional",
-        "Prioridad A": "Revisión inmediata",
-        "Prioridad B": "Revisión selectiva",
+        "Low information": "Información por completar",
+        "Baja informacion": "Información por completar",
+        "Baja información": "Información por completar",
+        "Prioridad A": "Señal prioritaria",
+        "Prioridad B": "Señal condicionada",
+        "Revisión inmediata": "Señal prioritaria",
+        "Revisión selectiva": "Señal condicionada",
+        "Seguimiento mensual": "Señal episódica",
         "Monitorear": "Contexto base",
+        "Requiere contexto adicional": "Información por completar",
     }
 
     def public_priority_label(value: object) -> str:
@@ -1850,7 +1855,7 @@ def render_icpi_oanri() -> None:
         selected_priorities = priority_filter(
             df,
             key="signal_priority",
-            label="Nivel de revisión",
+            label="Tipo de señal",
             placeholder="Todas seleccionadas",
         )
     with filter_cols[1]:
@@ -1911,11 +1916,11 @@ def render_icpi_oanri() -> None:
 <div class="signal-side-card">
   <h3>Cómo leer el mapa</h3>
   <div class="signal-level-list">
-    <div class="signal-level red"><div class="signal-card-icon"><svg viewBox="0 0 24 24"><path d="M5 21V4"/><path d="M5 5h11l-1.8 4L16 13H5"/></svg></div><div><strong>Revisión inmediata</strong><span>Alta prioridad operativa y alto estrés nodal. Abrir revisión estructurada.</span></div></div>
-    <div class="signal-level amber"><div class="signal-card-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><div><strong>Revisión selectiva</strong><span>Candidata relevante. Revisar después de prioritarias o según sector/contrato/ubicación.</span></div></div>
-    <div class="signal-level teal"><div class="signal-card-icon"><svg viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></div><div><strong>Seguimiento mensual</strong><span>Señal que puede ser episódica o sensible. Monitorear recurrencia o deterioro.</span></div></div>
+    <div class="signal-level red"><div class="signal-card-icon"><svg viewBox="0 0 24 24"><path d="M5 21V4"/><path d="M5 5h11l-1.8 4L16 13H5"/></svg></div><div><strong>Señal prioritaria</strong><span>Candidata fuerte: alta prioridad operativa y alto estrés nodal.</span></div></div>
+    <div class="signal-level amber"><div class="signal-card-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><div><strong>Señal condicionada</strong><span>Relevante si sector, contrato, ubicación o escenario aumentan exposición.</span></div></div>
+    <div class="signal-level teal"><div class="signal-card-icon"><svg viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></div><div><strong>Señal episódica</strong><span>Tiene picos o meses relevantes; monitorear recurrencia o deterioro.</span></div></div>
     <div class="signal-level steel"><div class="signal-card-icon"><svg viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h17"/><rect x="7" y="12" width="3" height="4"/><rect x="12" y="9" width="3" height="7"/><rect x="17" y="6" width="3" height="10"/></svg></div><div><strong>Contexto base</strong><span>Sirve como contexto del universo. No requiere revisión prioritaria.</span></div></div>
-    <div class="signal-level purple"><div class="signal-card-icon"><svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg></div><div><strong>Requiere contexto adicional</strong><span>Falta evidencia para interpretar fuerte. Completar contexto antes de concluir.</span></div></div>
+    <div class="signal-level purple"><div class="signal-card-icon"><svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg></div><div><strong>Información por completar</strong><span>Falta contexto para interpretar fuerte. Completar evidencia antes de concluir.</span></div></div>
   </div>
 </div>
 <div class="signal-map-help">
@@ -1944,15 +1949,19 @@ def render_icpi_oanri() -> None:
             "Revisión inmediata": "red",
             "Revisión selectiva": "amber",
             "Seguimiento mensual": "teal",
+            "Señal prioritaria": "red",
+            "Señal condicionada": "amber",
+            "Señal episódica": "teal",
             "Contexto base": "steel",
             "Requiere contexto adicional": "purple",
+            "Información por completar": "purple",
         }.get(label, "steel")
 
     def map_reading(row: pd.Series) -> str:
         high_stress = float(row.get("avg_icpi", 0)) >= median_stress
         high_priority = float(row.get("avg_oanri", 0)) >= median_priority
         label = public_priority_label(row.get("due_diligence_priority_es", row.get("due_diligence_priority", "")))
-        if label == "Revisión inmediata":
+        if label == "Señal prioritaria":
             return "Alta prioridad y alto estrés"
         if high_priority and high_stress:
             return "Alta prioridad y alto estrés"
@@ -1995,7 +2004,7 @@ def render_icpi_oanri() -> None:
         <tr>
           <th>#</th>
           <th>Barra</th>
-          <th>Nivel de revisión</th>
+          <th>Tipo de señal</th>
           <th>Lectura en el mapa</th>
           <th>Estrés nodal prom.</th>
           <th>Prioridad operativa prom.</th>
@@ -2051,7 +2060,7 @@ def render_icpi_oanri() -> None:
     <div class="signal-guide-op">+</div>
     <div class="signal-guide-item"><div class="signal-guide-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><div><strong>Dependencia del criterio</strong><span>Indica cuánto cambia la prioridad al probar supuestos alternativos.</span></div></div>
     <div class="signal-guide-op">=</div>
-    <div class="signal-guide-item"><div class="signal-guide-icon"><svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5"/></svg></div><div><strong>Nivel de revisión</strong><span>Indica qué hacer con cada barra.</span></div></div>
+    <div class="signal-guide-item"><div class="signal-guide-icon"><svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5"/></svg></div><div><strong>Tipo de señal</strong><span>Traduce los datos en lectura ejecutiva.</span></div></div>
     <div class="signal-guide-op">→</div>
     <div class="signal-guide-item"><div class="signal-guide-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M5 21a7 7 0 0 1 14 0"/></svg></div><div><strong>Acción experta</strong><span>La decisión final requiere análisis técnico y contractual.</span></div></div>
   </div>

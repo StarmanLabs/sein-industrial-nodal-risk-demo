@@ -26,8 +26,8 @@ COLUMN_LABELS = {
     "score_months_observed": "Meses score",
     "source_months_observed": "Meses fuente COES",
     "evidence_grade": "Soporte de contexto",
-    "due_diligence_priority": "Categoría de revisión",
-    "due_diligence_priority_es": "Categoría de revisión",
+    "due_diligence_priority": "Tipo de señal",
+    "due_diligence_priority_es": "Tipo de señal",
     "recommended_action": "Acción recomendada",
     "decision_priority_score": "Score de revisión",
     "month": "Mes",
@@ -71,8 +71,8 @@ VALUE_LABELS = {
         "indexed_50pct_spot": "Indexado: 50% spot",
     },
     "decision_tier": {
-        "Priority due diligence": "Revisión inmediata",
-        "Watchlist": "Seguimiento mensual",
+        "Priority due diligence": "Señal prioritaria",
+        "Watchlist": "Señal episódica",
         "Monitor": "Contexto base",
         "Lower relative exposure": "Menor exposición relativa",
     },
@@ -88,16 +88,20 @@ VALUE_LABELS = {
 }
 
 DISPLAY_TEXT_REPLACEMENTS = {
-    "Baja informacion": "Requiere contexto adicional",
-    "Baja información": "Requiere contexto adicional",
-    "Prioridad A": "Revisión inmediata",
-    "Prioridad B": "Revisión selectiva",
-    "Priority A": "Revisión inmediata",
-    "Priority B": "Revisión selectiva",
-    "Watchlist": "Seguimiento mensual",
+    "Baja informacion": "Información por completar",
+    "Baja información": "Información por completar",
+    "Prioridad A": "Señal prioritaria",
+    "Prioridad B": "Señal condicionada",
+    "Priority A": "Señal prioritaria",
+    "Priority B": "Señal condicionada",
+    "Watchlist": "Señal episódica",
     "Monitorear": "Contexto base",
     "Monitor": "Contexto base",
-    "Low information": "Requiere contexto adicional",
+    "Low information": "Información por completar",
+    "Revisión inmediata": "Señal prioritaria",
+    "Revisión selectiva": "Señal condicionada",
+    "Seguimiento mensual": "Señal episódica",
+    "Requiere contexto adicional": "Información por completar",
     "Estres episodico": "Estrés episódico",
     "Estabilidad alta": "Baja dependencia",
     "Robustez alta": "Baja dependencia",
@@ -162,11 +166,11 @@ def present(df: pd.DataFrame) -> pd.DataFrame:
 
 def _style_table(df: pd.DataFrame):
     priority_colors = {
-        "Revisión inmediata": "background-color: #fde8e6; color: #8e2f2a; font-weight: 700",
-        "Revisión selectiva": "background-color: #fff1d7; color: #8a5a14; font-weight: 700",
-        "Seguimiento mensual": "background-color: #e5f2f7; color: #245a73; font-weight: 700",
+        "Señal prioritaria": "background-color: #fde8e6; color: #8e2f2a; font-weight: 700",
+        "Señal condicionada": "background-color: #fff1d7; color: #8a5a14; font-weight: 700",
+        "Señal episódica": "background-color: #e5f2f7; color: #245a73; font-weight: 700",
         "Contexto base": "background-color: #eef2f6; color: #4f5d6f; font-weight: 700",
-        "Requiere contexto adicional": "background-color: #f1f3f5; color: #6b7280; font-weight: 700",
+        "Información por completar": "background-color: #f1f3f5; color: #6b7280; font-weight: 700",
     }
     stability_colors = {
         "Baja dependencia": "color: #287c67; font-weight: 700",

@@ -34,7 +34,7 @@ if df.empty:
 
 section_header(
     "Filtros de cola de decisión",
-    "Ajusta la lista según nivel de revisión, dependencia del criterio o tensión. La tabla mantiene el orden por score de revisión.",
+    "Ajusta la lista según tipo de señal, dependencia del criterio o tensión. La tabla mantiene el orden por score de revisión.",
 )
 filter_cols = st.columns([1.25, 1.05, 1.05])
 with filter_cols[0]:
@@ -95,12 +95,12 @@ with cols[1]:
     metric_card(
         "Cola de revisión",
         f"{priority_ab_count:,.0f}",
-        "revisión inmediata/selectiva",
+        "prioritaria + condicionada",
         kind="warning",
     )
 with cols[2]:
     metric_card(
-        "Seguimiento mensual",
+        "Señal episódica",
         f"{(filtered['due_diligence_priority'] == 'Watchlist').sum():,.0f}",
         "casos episódicos",
         kind="info",
@@ -132,7 +132,7 @@ insight_grid(
         ),
         (
             "Interpretación",
-            "El soporte de contexto indica que la barra es publicable para screening; la categoría de revisión decide dónde mirar primero.",
+            "El soporte de contexto indica que la barra es publicable para screening; el tipo de señal decide dónde mirar primero.",
             "caveat",
         ),
     ]
@@ -148,7 +148,7 @@ section_header(
 if filtered.empty:
     action_panel(
         "Sin resultados para los filtros activos",
-        "Amplía nivel de revisión, dependencia del criterio o tensión para recuperar barras candidatas en la cola de decisión.",
+        "Amplía tipo de señal, dependencia del criterio o tensión para recuperar barras candidatas en la cola de decisión.",
     )
 else:
     priority_table(filtered)
@@ -161,5 +161,5 @@ else:
 
 action_panel(
     "Siguiente paso sugerido",
-    "Toma las primeras barras filtradas y ábrelas en Caso de Estudio. Si la barra también aparece en Exposición Industrial o Seguimiento Mensual, gana prioridad para revisión de contrato y demanda.",
+    "Toma las primeras barras filtradas y ábrelas en Caso de Estudio. Si la barra también aparece en Exposición Industrial o como señal episódica, gana prioridad para revisión de contrato y demanda.",
 )
