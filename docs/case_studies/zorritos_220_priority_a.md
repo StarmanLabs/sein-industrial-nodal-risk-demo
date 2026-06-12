@@ -2,11 +2,11 @@
 
 ## Tipo de Caso
 
-Prioridad A - candidato fuerte
+Señal prioritaria - candidato fuerte
 
 ## Lectura Ejecutiva
 
-`ZORRITOS 220` aparece como **Prioridad A** dentro de la capa producto porque combina una senal relativa ICPI/OANRI relevante con contexto topologico revisado y una recomendacion explicita de due diligence.
+`ZORRITOS 220` aparece como **Señal prioritaria** dentro de la capa producto porque combina una señal relativa de estrés nodal/prioridad operativa relevante con contexto topologico revisado y una recomendacion explicita de due diligence.
 
 Esta lectura no identifica la causa fisica de la senal ni reemplaza revision contractual, topologica o de confiabilidad. Su valor es ordenar la investigacion.
 
@@ -15,18 +15,18 @@ Esta lectura no identifica la causa fisica de la senal ni reemplaza revision con
 | Campo | Valor |
 |---|---|
 | Barra | ZORRITOS 220 |
-| Prioridad | Prioridad A |
+| Tipo de señal | Señal prioritaria |
 | Score de prioridad | 75.39 |
-| ICPI promedio | 76.10 |
-| OANRI promedio | 64.80 |
-| Ranking ICPI | 3 |
-| Ranking OANRI | 3 |
-| Meses de prioridad | 11 |
-| Meses en watchlist | 19 |
+| Estres nodal promedio | 76.10 |
+| Prioridad operativa promedio | 64.80 |
+| Ranking estres nodal | 3 |
+| Ranking prioridad operativa | 3 |
+| Meses de señal prioritaria | 11 |
+| Meses en seguimiento | 19 |
 | Persistencia | Persistente |
 | Estres episodico | Estres episodico alto |
 | Grado de evidencia | A |
-| Robustez | Robustez alta |
+| Estabilidad del resultado | Estable |
 | Driver dominante | price_level |
 
 ## Meses Criticos o de Mayor Senal OANRI
@@ -68,7 +68,7 @@ Para usuarios industriales, el siguiente paso no es asumir un sobrecosto, sino r
 - No predice precios electricos.
 - No calcula montos de facturacion especificos.
 - No realiza estudios electricos de flujo de red o despacho.
-- La robustez se evalua para todo el universo de barras mediante estabilidad de ranking bajo escenarios alternativos de ponderacion. Resultado del caso: Robustez alta (99.35 puntos).
+- La estabilidad del resultado se evalua para todo el universo de barras bajo criterios alternativos del analisis. Resultado del caso: Estable (99.35 puntos). No prueba causalidad ni congestion fisica.
 
 ## Accion Recomendada
 

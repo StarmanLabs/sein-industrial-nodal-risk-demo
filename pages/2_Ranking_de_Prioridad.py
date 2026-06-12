@@ -34,7 +34,7 @@ if df.empty:
 
 section_header(
     "Filtros de cola de decisión",
-    "Ajusta la lista según tipo de señal, dependencia del criterio o tensión. La tabla mantiene el orden por score de revisión.",
+    "Ajusta la lista según tipo de señal, estabilidad del resultado o tensión. La tabla mantiene el orden por score de revisión.",
 )
 filter_cols = st.columns([1.25, 1.05, 1.05])
 with filter_cols[0]:
@@ -43,21 +43,26 @@ with filter_cols[1]:
     selected_robustness = robustness_filter(
         df,
         key="ranking_robustness",
+        label="Estabilidad del resultado",
+        placeholder="Seleccionar estabilidad",
         display_map={
-            "Estabilidad alta": "Baja dependencia",
-            "Robustez alta": "Baja dependencia",
-            "High robustness": "Baja dependencia",
-            "Baja dependencia": "Baja dependencia",
-            "Estabilidad moderada": "Dependencia media",
-            "Robustez moderada": "Dependencia media",
-            "Moderate robustness": "Dependencia media",
-            "Dependencia media": "Dependencia media",
-            "Estabilidad baja": "Alta dependencia",
-            "Robustez baja": "Alta dependencia",
-            "Low robustness": "Alta dependencia",
-            "Alta dependencia": "Alta dependencia",
-            "Fuera de top-list de sensibilidad": "Contextual",
-            "Not covered by sensitivity top-list": "Contextual",
+            "Estabilidad alta": "Estable",
+            "Robustez alta": "Estable",
+            "High robustness": "Estable",
+            "Baja dependencia": "Estable",
+            "Estable": "Estable",
+            "Estabilidad moderada": "Sensible",
+            "Robustez moderada": "Sensible",
+            "Moderate robustness": "Sensible",
+            "Dependencia media": "Sensible",
+            "Sensible": "Sensible",
+            "Estabilidad baja": "Variable",
+            "Robustez baja": "Variable",
+            "Low robustness": "Variable",
+            "Alta dependencia": "Variable",
+            "Fuera de top-list de sensibilidad": "Variable",
+            "Not covered by sensitivity top-list": "Variable",
+            "Variable": "Variable",
         },
     )
 with filter_cols[2]:
@@ -122,7 +127,7 @@ insight_grid(
         ),
         (
             "Hallazgo principal",
-            "La cola combina estrés nodal, prioridad operativa, recurrencia mensual, dependencia del criterio, cobertura analítica y soporte de contexto de activo, conexión, subestación, central o corredor.",
+            "La cola combina estrés nodal, prioridad operativa, recurrencia mensual, estabilidad del resultado, cobertura analítica y soporte de contexto de activo, conexión, subestación, central o corredor.",
             "evidence",
         ),
         (
@@ -148,7 +153,7 @@ section_header(
 if filtered.empty:
     action_panel(
         "Sin resultados para los filtros activos",
-        "Amplía tipo de señal, dependencia del criterio o tensión para recuperar barras candidatas en la cola de decisión.",
+        "Amplía tipo de señal, estabilidad del resultado o tensión para recuperar barras candidatas en la cola de decisión.",
     )
 else:
     priority_table(filtered)

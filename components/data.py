@@ -44,16 +44,36 @@ PRIORITY_EN = {
     "Low information": "Low information",
 }
 
-ROBUSTNESS_ES = {
-    "High robustness": "Baja dependencia",
-    "Moderate robustness": "Dependencia media",
-    "Low robustness": "Alta dependencia",
-    "Robustez alta": "Baja dependencia",
-    "Robustez moderada": "Dependencia media",
-    "Robustez baja": "Alta dependencia",
-    "Estabilidad alta": "Baja dependencia",
-    "Estabilidad moderada": "Dependencia media",
-    "Estabilidad baja": "Alta dependencia",
+RESULT_STABILITY_ES = {
+    "High robustness": "Estable",
+    "Moderate robustness": "Sensible",
+    "Low robustness": "Variable",
+    "Robustez alta": "Estable",
+    "Robustez moderada": "Sensible",
+    "Robustez baja": "Variable",
+    "Estabilidad alta": "Estable",
+    "Estabilidad moderada": "Sensible",
+    "Estabilidad baja": "Variable",
+    "Baja dependencia": "Estable",
+    "Dependencia media": "Sensible",
+    "Alta dependencia": "Variable",
+    "Robusta": "Estable",
+    "robusta": "Estable",
+    "Robusto": "Estable",
+    "robusto": "Estable",
+    "Alta": "Estable",
+    "alta": "Estable",
+    "Media": "Sensible",
+    "media": "Sensible",
+    "Parcial": "Sensible",
+    "parcial": "Sensible",
+    "Baja": "Variable",
+    "baja": "Variable",
+    "Fuera de top-lista": "Variable",
+    "Fuera de top-list de sensibilidad": "Variable",
+    "Not covered by sensitivity top-list": "Variable",
+    "No robusta": "Variable",
+    "no robusta": "Variable",
 }
 
 DRIVER_ES = {
@@ -118,8 +138,11 @@ def _priority_order(value: object) -> int:
     }.get(str(value), 9)
 
 
-def _criterion_dependency_label(value: object) -> str:
-    return ROBUSTNESS_ES.get(str(value), str(value))
+def _result_stability_label(value: object) -> str:
+    text = str(value).strip()
+    if text.lower() in {"", "nan", "none", "na"}:
+        return "No clasificado"
+    return RESULT_STABILITY_ES.get(text, "Sensible")
 
 
 def _parse_month_label(df: pd.DataFrame) -> pd.DataFrame:
@@ -156,12 +179,14 @@ def load_product_layer() -> pd.DataFrame:
         out["due_diligence_priority_es"] = out["due_diligence_priority"].map(
             lambda value: PRIORITY_ES.get(str(value), str(value))
         )
-        out["robustness_flag_es"] = out.get(
-            "dependencia_criterio", out.get("estabilidad_senal", out["robustez"])
-        ).map(
-            _criterion_dependency_label
+        source_stability = out.get(
+            "estabilidad_resultado",
+            out.get("dependencia_criterio", out.get("estabilidad_senal", out.get("robustez", "Sensible"))),
         )
-        out["robustness_flag"] = out["robustez"]
+        if not isinstance(source_stability, pd.Series):
+            source_stability = pd.Series(source_stability, index=out.index)
+        out["robustness_flag_es"] = source_stability.map(_result_stability_label)
+        out["robustness_flag"] = out.get("robustez", out["robustness_flag_es"])
         out["signal_stability_label_es"] = out["robustness_flag_es"]
         out["signal_stability_score"] = out.get("score_estabilidad", pd.NA)
         out["monthly_top20_months"] = out.get("meses_top20_mensual", 0)
@@ -208,10 +233,10 @@ def load_product_layer() -> pd.DataFrame:
         )
         out["robustness_flag"] = out["robustness_label"]
         out["robustness_flag_es"] = out["robustness_flag"].map(
-            lambda value: ROBUSTNESS_ES.get(str(value), str(value))
+            _result_stability_label
         )
         out["signal_stability_label_es"] = out["robustness_flag_es"].map(
-            _criterion_dependency_label
+            _result_stability_label
         )
         out["signal_stability_score"] = pd.NA
         out["monthly_top20_months"] = out.get("watchlist_months", 0)
@@ -411,6 +436,9 @@ def _build_sector_rows() -> pd.DataFrame:
                         "p90_industrial_exposure_score": round(min(100, profile_score * 1.08), 2),
                         "priority_months": int(row.get("priority_months", 0)),
                         "watchlist_months": int(row.get("watchlist_months", 0)),
+                        "signal_stability_label_es": row.get(
+                            "signal_stability_label_es", row.get("robustness_flag_es", "Sensible")
+                        ),
                         "robustness_inclusion_share": 1.0
                         if row.get("robustness_label") == "High robustness"
                         else 0.65,

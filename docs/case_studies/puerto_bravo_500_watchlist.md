@@ -2,11 +2,11 @@
 
 ## Tipo de Caso
 
-Watchlist - candidato episodico
+Señal episodica - candidato episodico
 
 ## Lectura Ejecutiva
 
-`PUERTO BRAVO 500` aparece como **Watchlist** dentro de la capa producto porque combina una senal relativa ICPI/OANRI relevante con contexto topologico revisado y una recomendacion explicita de due diligence.
+`PUERTO BRAVO 500` aparece como **Señal episodica** dentro de la capa producto porque combina una señal relativa de estrés nodal/prioridad operativa relevante con contexto topologico revisado y una recomendacion explicita de due diligence.
 
 Esta lectura no identifica la causa fisica de la senal ni reemplaza revision contractual, topologica o de confiabilidad. Su valor es ordenar la investigacion.
 
@@ -15,18 +15,18 @@ Esta lectura no identifica la causa fisica de la senal ni reemplaza revision con
 | Campo | Valor |
 |---|---|
 | Barra | PUERTO BRAVO 500 |
-| Prioridad | Watchlist |
+| Tipo de señal | Señal episodica |
 | Score de prioridad | 55.05 |
-| ICPI promedio | 54.77 |
-| OANRI promedio | 49.74 |
-| Ranking ICPI | 88 |
-| Ranking OANRI | 95 |
-| Meses de prioridad | 0 |
-| Meses en watchlist | 8 |
+| Estres nodal promedio | 54.77 |
+| Prioridad operativa promedio | 49.74 |
+| Ranking estres nodal | 88 |
+| Ranking prioridad operativa | 95 |
+| Meses de señal prioritaria | 0 |
+| Meses en seguimiento | 8 |
 | Persistencia | Monitorear |
 | Estres episodico | Estres episodico moderado |
 | Grado de evidencia | A |
-| Robustez | Robustez baja |
+| Estabilidad del resultado | Variable |
 | Driver dominante | price_level |
 
 ## Meses Criticos o de Mayor Senal OANRI
@@ -62,7 +62,7 @@ Para usuarios industriales, el siguiente paso no es asumir un sobrecosto, sino r
 - No predice precios electricos.
 - No calcula montos de facturacion especificos.
 - No realiza estudios electricos de flujo de red o despacho.
-- La robustez se evalua para todo el universo de barras mediante estabilidad de ranking bajo escenarios alternativos de ponderacion. Resultado del caso: Robustez baja (48.20 puntos).
+- La estabilidad del resultado se evalua para todo el universo de barras bajo criterios alternativos del analisis. Resultado del caso: Variable (48.20 puntos). No prueba causalidad ni congestion fisica; indica que la lectura debe contrastarse antes de priorizar fuerte.
 
 ## Accion Recomendada
 

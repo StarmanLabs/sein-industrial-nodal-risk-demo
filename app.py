@@ -143,7 +143,7 @@ def render_inicio() -> None:
     decision_flow(
         [
             ("Medir señales", "Captura y normaliza precios marginales, volatilidad, episodios y persistencia por barra."),
-            ("Ordenar prioridad", "Combina estrés nodal, régimen operativo, episodios mensuales, dependencia del criterio y evidencia contextual para priorizar revisión."),
+            ("Ordenar prioridad", "Combina estrés nodal, régimen operativo, episodios mensuales, estabilidad del resultado y evidencia contextual para priorizar revisión."),
             ("Contrastar evidencia", "Valida contrato, sector, ubicación, demanda industrial y soporte técnico antes de decidir."),
         ]
     )
@@ -864,20 +864,23 @@ div[data-testid="stDataFrame"] {
 
     filter_cols = st.columns([1.25, 1.05, 1.05])
     stability_display = {
-        "Estabilidad alta": "Baja dependencia",
-        "Robustez alta": "Baja dependencia",
-        "High robustness": "Baja dependencia",
-        "Baja dependencia": "Baja dependencia",
-        "Estabilidad moderada": "Dependencia media",
-        "Robustez moderada": "Dependencia media",
-        "Moderate robustness": "Dependencia media",
-        "Dependencia media": "Dependencia media",
-        "Estabilidad baja": "Alta dependencia",
-        "Robustez baja": "Alta dependencia",
-        "Low robustness": "Alta dependencia",
-        "Alta dependencia": "Alta dependencia",
-        "Fuera de top-list de sensibilidad": "Contextual",
-        "Not covered by sensitivity top-list": "Contextual",
+        "Estabilidad alta": "Estable",
+        "Robustez alta": "Estable",
+        "High robustness": "Estable",
+        "Baja dependencia": "Estable",
+        "Estable": "Estable",
+        "Estabilidad moderada": "Sensible",
+        "Robustez moderada": "Sensible",
+        "Moderate robustness": "Sensible",
+        "Dependencia media": "Sensible",
+        "Sensible": "Sensible",
+        "Estabilidad baja": "Variable",
+        "Robustez baja": "Variable",
+        "Low robustness": "Variable",
+        "Alta dependencia": "Variable",
+        "Fuera de top-list de sensibilidad": "Variable",
+        "Not covered by sensitivity top-list": "Variable",
+        "Variable": "Variable",
     }
     with filter_cols[0]:
         selected_priorities = priority_filter(
@@ -890,8 +893,8 @@ div[data-testid="stDataFrame"] {
         selected_robustness = robustness_filter(
             df,
             key="ranking_robustness",
-            label="Dependencia del criterio",
-            placeholder="Seleccionar dependencia",
+            label="Estabilidad del resultado",
+            placeholder="Seleccionar estabilidad",
             display_map=stability_display,
         )
     with filter_cols[2]:
@@ -916,16 +919,17 @@ div[data-testid="stDataFrame"] {
         return int((filtered["due_diligence_priority"] == value).sum()) if not filtered.empty else 0
 
     robust_col = "signal_stability_label_es" if "signal_stability_label_es" in filtered.columns else "robustness_flag_es" if "robustness_flag_es" in filtered.columns else "robustness_flag"
-    def _is_low_dependency(value: object) -> bool:
+    def _is_stable_result(value: object) -> bool:
         lower = str(value).lower()
         return (
-            "baja dependencia" in lower
+            "estable" in lower
+            or "baja dependencia" in lower
             or "robustez alta" in lower
             or "estabilidad alta" in lower
             or "high robustness" in lower
         )
 
-    robust_high = int(filtered[robust_col].map(_is_low_dependency).sum()) if robust_col in filtered else 0
+    stable_count = int(filtered[robust_col].map(_is_stable_result).sum()) if robust_col in filtered else 0
     queue_count = int(filtered["due_diligence_priority"].isin(["Priority A", "Priority B"]).sum()) if not filtered.empty else 0
     watch_count = _count_priority("Watchlist")
     immediate_count = _count_priority("Priority A")
@@ -948,7 +952,7 @@ div[data-testid="stDataFrame"] {
       <div class="rank-kpi"><strong>{len(filtered):,.0f}</strong><span>barras visibles</span></div>
       <div class="rank-kpi"><strong>{queue_count:,.0f}</strong><span>en cola principal<br>(inmediata + selectiva)</span></div>
       <div class="rank-kpi"><strong>{watch_count:,.0f}</strong><span>en seguimiento mensual<br>(casos episódicos)</span></div>
-      <div class="rank-kpi"><strong>{robust_high:,.0f}</strong><span>con baja<br>dependencia</span></div>
+      <div class="rank-kpi"><strong>{stable_count:,.0f}</strong><span>con resultado<br>estable</span></div>
       <div class="rank-kpi"><strong>{immediate_count:,.0f}</strong><span>en revisión inmediata</span></div>
     </div>
   </div>
@@ -993,7 +997,7 @@ div[data-testid="stDataFrame"] {
         unsafe_allow_html=True,
     )
     if filtered.empty:
-        action_panel("Sin resultados para los filtros activos", "Amplía nivel de revisión, dependencia del criterio o tensión para recuperar barras candidatas.")
+        action_panel("Sin resultados para los filtros activos", "Amplía tipo de señal, estabilidad del resultado o tensión para recuperar barras candidatas.")
     else:
         page_tools = st.columns([1, 1, 4, 1])
         with page_tools[0]:
@@ -1023,21 +1027,23 @@ div[data-testid="stDataFrame"] {
         def _stability_label(value: object) -> str:
             text = str(value)
             lower = text.lower()
-            if "baja dependencia" in lower:
-                return "Baja dependencia"
-            if "dependencia media" in lower:
-                return "Dependencia media"
-            if "alta dependencia" in lower:
-                return "Alta dependencia"
+            if "estable" in lower or "baja dependencia" in lower:
+                return "Estable"
+            if "sensible" in lower or "dependencia media" in lower:
+                return "Sensible"
+            if "variable" in lower or "alta dependencia" in lower:
+                return "Variable"
             if "alta" in lower or "high" in lower:
-                return "Baja dependencia"
+                return "Estable"
             if "moderada" in lower or "moderate" in lower:
-                return "Dependencia media"
+                return "Sensible"
             if "baja" in lower or "low" in lower:
-                return "Alta dependencia"
+                return "Variable"
             if "fuera" in lower or "not covered" in lower:
-                return "Contextual"
-            return text
+                return "Variable"
+            if lower in {"", "nan", "none"}:
+                return "No clasificado"
+            return "Sensible"
 
         def _coverage_label(value: object) -> str:
             lower = str(value).lower()
@@ -1055,7 +1061,7 @@ div[data-testid="stDataFrame"] {
 
         def _executive_reason(row: pd.Series) -> str:
             priority = str(row.get("due_diligence_priority", ""))
-            stability = _stability_label(row.get(robust_col, ""))
+            result_stability = _stability_label(row.get(robust_col, ""))
             persistence = str(row.get("persistence_category_es", row.get("persistence_category", "")))
             priority_months_value = int(row.get("priority_months", 0) or 0)
             watchlist_months_value = int(row.get("watchlist_months", 0) or 0)
@@ -1066,12 +1072,12 @@ div[data-testid="stDataFrame"] {
             if priority == "Priority A":
                 if persistence == "Persistente":
                     return "Alta señal + persistencia"
-                if stability == "Baja dependencia":
-                    return "Alta señal + baja dependencia"
+                if result_stability == "Estable":
+                    return "Alta señal + resultado estable"
                 return "Alta prioridad operativa"
             if priority == "Priority B":
-                if stability == "Baja dependencia" and priority_months_value >= 8:
-                    return "Señal relevante + baja dependencia"
+                if result_stability == "Estable" and priority_months_value >= 8:
+                    return "Señal relevante + resultado estable"
                 if priority_months_value > 0 and watchlist_months_value > 0:
                     return "Recurrencia mensual + contexto"
                 if float(row.get("avg_icpi", 0) or 0) >= float(row.get("avg_oanri", 0) or 0):
@@ -1095,7 +1101,7 @@ div[data-testid="stDataFrame"] {
                 "Score de revisión": page_df["decision_priority_score"].round(2),
                 "Tipo de señal": page_df["due_diligence_priority"].map(level_labels).fillna(page_df["due_diligence_priority_es"]),
                 "Acción recomendada": page_df["due_diligence_priority"].map(action_short).fillna(page_df["recommended_action"]),
-                "Dependencia del criterio": page_df[robust_col].map(_stability_label),
+                "Estabilidad del resultado": page_df[robust_col].map(_stability_label),
                 "Cobertura analítica": page_df.get("score_coverage_class_es", pd.Series("", index=page_df.index)).map(_coverage_label),
                 "Estrés nodal prom.": page_df["avg_icpi"].round(2),
                 "Prioridad operativa prom.": page_df["avg_oanri"].round(2),
@@ -1107,7 +1113,7 @@ div[data-testid="stDataFrame"] {
                 "Score de revisión",
                 "Tipo de señal",
                 "Acción recomendada",
-                "Dependencia del criterio",
+                "Estabilidad del resultado",
                 "Cobertura analítica",
                 "Estrés nodal prom.",
                 "Prioridad operativa prom.",
@@ -1126,11 +1132,11 @@ div[data-testid="stDataFrame"] {
                 return "background-color: #eef2f6; color: #4f5d6f; font-weight: 800; border-radius: 6px"
             if text == "Información por completar":
                 return "background-color: #f2e8f8; color: #7e3fa1; font-weight: 800; border-radius: 6px"
-            if text == "Baja dependencia":
+            if text == "Estable":
                 return "background-color: #e9f8ef; color: #1f8a5b; font-weight: 800; border-radius: 999px"
-            if text == "Dependencia media":
+            if text == "Sensible":
                 return "background-color: #fff3df; color: #c47a16; font-weight: 800; border-radius: 999px"
-            if text in {"Alta dependencia", "Contextual"}:
+            if text in {"Variable", "No clasificado"}:
                 return "background-color: #eef2f6; color: #64748b; font-weight: 800; border-radius: 999px"
             if text == "Completa":
                 return "background-color: #e9f8ef; color: #1f8a5b; font-weight: 800; border-radius: 999px"
@@ -1151,7 +1157,7 @@ div[data-testid="stDataFrame"] {
                 "Score de revisión": st.column_config.ProgressColumn("Score de revisión", min_value=0, max_value=100, format="%.2f", width="medium"),
                 "Tipo de señal": st.column_config.TextColumn("Tipo de señal", width="medium"),
                 "Acción recomendada": st.column_config.TextColumn("Acción recomendada", width="medium"),
-                "Dependencia del criterio": st.column_config.TextColumn("Dependencia del criterio", width="small"),
+                "Estabilidad del resultado": st.column_config.TextColumn("Estabilidad del resultado", width="small"),
                 "Cobertura analítica": st.column_config.TextColumn("Cobertura", width="small"),
                 "Estrés nodal prom.": st.column_config.NumberColumn("Estrés nodal prom.", format="%.2f", width="small"),
                 "Prioridad operativa prom.": st.column_config.NumberColumn("Prioridad operativa prom.", format="%.2f", width="small"),
@@ -1162,8 +1168,8 @@ div[data-testid="stDataFrame"] {
     st.markdown(
         """
 <div class="rank-bottom-notes">
-  <div><span class="exec-icon exec-icon-shield" aria-hidden="true"></span><div class="rank-note-copy"><strong>Nota metodológica:</strong><p>Esta priorización combina señales de precio, recurrencia mensual, dependencia del criterio y contexto del sistema. No sustituye análisis técnico, contractual u operativo.</p></div></div>
-  <div><span class="exec-icon exec-icon-info" aria-hidden="true"></span><div class="rank-note-copy"><strong>Cómo leer la escala:</strong><p>Baja dependencia = la barra mantiene prioridad bajo criterios alternativos; alta dependencia/contextual = requiere contrastar episodios, sector y evidencia antes de priorizar.</p></div></div>
+  <div><span class="exec-icon exec-icon-shield" aria-hidden="true"></span><div class="rank-note-copy"><strong>Nota metodológica:</strong><p>Esta priorización combina señales de precio, recurrencia mensual, estabilidad del resultado y contexto del sistema. No sustituye análisis técnico, contractual u operativo.</p></div></div>
+  <div><span class="exec-icon exec-icon-info" aria-hidden="true"></span><div class="rank-note-copy"><strong>Cómo leer la escala:</strong><p>Estable = la barra sigue apareciendo como relevante bajo criterios alternativos; sensible o variable = conviene contrastar episodios, sector y evidencia antes de priorizar fuerte.</p></div></div>
 </div>
 """,
         unsafe_allow_html=True,
@@ -1801,20 +1807,23 @@ def render_icpi_oanri() -> None:
         )
 
     stability_display = {
-        "Estabilidad alta": "Baja dependencia",
-        "Robustez alta": "Baja dependencia",
-        "High robustness": "Baja dependencia",
-        "Baja dependencia": "Baja dependencia",
-        "Estabilidad moderada": "Dependencia media",
-        "Robustez moderada": "Dependencia media",
-        "Moderate robustness": "Dependencia media",
-        "Dependencia media": "Dependencia media",
-        "Estabilidad baja": "Alta dependencia",
-        "Robustez baja": "Alta dependencia",
-        "Low robustness": "Alta dependencia",
-        "Alta dependencia": "Alta dependencia",
-        "Fuera de top-list de sensibilidad": "Contextual",
-        "Not covered by sensitivity top-list": "Contextual",
+        "Estabilidad alta": "Estable",
+        "Robustez alta": "Estable",
+        "High robustness": "Estable",
+        "Baja dependencia": "Estable",
+        "Estable": "Estable",
+        "Estabilidad moderada": "Sensible",
+        "Robustez moderada": "Sensible",
+        "Moderate robustness": "Sensible",
+        "Dependencia media": "Sensible",
+        "Sensible": "Sensible",
+        "Estabilidad baja": "Variable",
+        "Robustez baja": "Variable",
+        "Low robustness": "Variable",
+        "Alta dependencia": "Variable",
+        "Fuera de top-list de sensibilidad": "Variable",
+        "Not covered by sensitivity top-list": "Variable",
+        "Variable": "Variable",
     }
     stability_col_name = (
         "signal_stability_label_es"
@@ -1862,7 +1871,7 @@ def render_icpi_oanri() -> None:
         selected_robustness = robustness_filter(
             df,
             key="signal_stability",
-            label="Dependencia del criterio",
+            label="Estabilidad del resultado",
             placeholder="Todas seleccionadas",
             display_map=stability_display,
         )
@@ -1934,7 +1943,7 @@ def render_icpi_oanri() -> None:
         )
 
     if filtered.empty:
-        chart_slot.warning("Sin barras para los filtros activos. Amplía el nivel de revisión, dependencia del criterio o tensión.")
+        chart_slot.warning("Sin barras para los filtros activos. Amplía el tipo de señal, estabilidad del resultado o tensión.")
         candidate_rows = pd.DataFrame()
     else:
         chart_slot.plotly_chart(icpi_oanri_scatter(filtered), use_container_width=True)
@@ -2058,7 +2067,7 @@ def render_icpi_oanri() -> None:
     <div class="signal-guide-op">+</div>
     <div class="signal-guide-item"><div class="signal-guide-icon"><svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.5 2.9 8.5 7 10 4.1-1.5 7-5.5 7-10V6l-7-3Z"/><path d="M9 13h6"/></svg></div><div><strong>Prioridad operativa</strong><span>Indica dónde el sistema resulta más relevante.</span></div></div>
     <div class="signal-guide-op">+</div>
-    <div class="signal-guide-item"><div class="signal-guide-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><div><strong>Dependencia del criterio</strong><span>Indica cuánto cambia la prioridad al probar supuestos alternativos.</span></div></div>
+    <div class="signal-guide-item"><div class="signal-guide-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><div><strong>Estabilidad del resultado</strong><span>Indica si la barra sigue siendo relevante bajo criterios alternativos.</span></div></div>
     <div class="signal-guide-op">=</div>
     <div class="signal-guide-item"><div class="signal-guide-icon"><svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5"/></svg></div><div><strong>Tipo de señal</strong><span>Traduce los datos en lectura ejecutiva.</span></div></div>
     <div class="signal-guide-op">→</div>
@@ -2184,7 +2193,7 @@ def render_exposicion() -> None:
     )
     section_header("Ranking sector-barra", "Bajo supuestos explícitos de exposición, esta combinación sector-barra merece mayor prioridad de due diligence.")
     st.plotly_chart(sector_exposure_bar_chart(filtered), use_container_width=True)
-    compact_table(filtered.head(50), ["sector", "contract_type", "barra", "avg_industrial_exposure_score", "p90_industrial_exposure_score", "priority_months", "watchlist_months", "robustness_inclusion_share", "dominant_driver", "profile_priority_score"])
+    compact_table(filtered.head(50), ["sector", "contract_type", "barra", "avg_industrial_exposure_score", "p90_industrial_exposure_score", "priority_months", "watchlist_months", "signal_stability_label_es", "dominant_driver", "profile_priority_score"])
     if not contract_df.empty:
         section_header("Sensibilidad contractual")
         selected_contract_df = contract_df[contract_df["sector"] == sector] if sector else contract_df
@@ -2266,7 +2275,7 @@ def render_caso() -> None:
     section_header("Due-diligence checklist")
     c1, c2 = st.columns(2)
     with c1:
-        action_panel("Validaciones analíticas", "1. Confirmar si la señal es persistente o episódica. 2. Revisar meses con mayor prioridad operativa. 3. Comparar ranking de estrés nodal y prioridad operativa. 4. Verificar dependencia del criterio, episodios y evidencia.")
+        action_panel("Validaciones analíticas", "1. Confirmar si la señal es persistente o episódica. 2. Revisar meses con mayor prioridad operativa. 3. Comparar ranking de estrés nodal y prioridad operativa. 4. Verificar estabilidad del resultado, episodios y evidencia.")
     with c2:
         action_panel("Preguntas de negocio", "1. ¿Existe demanda industrial cercana? 2. ¿La exposición es spot, indexada o cubierta? 3. ¿La evidencia topológica soporta revisión adicional? 4. ¿Hay indicadores de confiabilidad relevantes?")
 

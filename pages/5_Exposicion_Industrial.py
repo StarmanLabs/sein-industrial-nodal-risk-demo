@@ -95,7 +95,7 @@ else:
             "p90_industrial_exposure_score",
             "priority_months",
             "watchlist_months",
-            "robustness_inclusion_share",
+            "signal_stability_label_es",
             "dominant_driver",
             "profile_priority_score",
         ],

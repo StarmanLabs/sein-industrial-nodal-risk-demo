@@ -1,5 +1,5 @@
 {
-  "date_created_utc": "2026-06-08T21:32:23.930640+00:00",
+  "date_created_utc": "2026-06-12T19:50:00.206357+00:00",
   "public_scope": "217-barra sanitized portfolio layer",
   "source_layer_description": [
     "validated private barra-level product layer",
@@ -35,8 +35,7 @@
       "ranking_prioridad_operativa",
       "score_revision",
       "prioridad",
-      "robustez",
-      "dependencia_criterio",
+      "estabilidad_resultado",
       "score_estabilidad",
       "meses_top20_mensual",
       "share_top20_mensual",

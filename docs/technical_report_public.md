@@ -10,5 +10,5 @@ The product is an audited decision-support system for industrial exposure to nod
 
 ## Public Case Studies
 
-- ZORRITOS 220: strong priority candidate.
-- PUERTO BRAVO 500: watchlist candidate requiring cautious interpretation.
+- ZORRITOS 220: strong señal prioritaria candidate.
+- PUERTO BRAVO 500: señal episodica candidate requiring cautious interpretation.

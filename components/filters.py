@@ -92,8 +92,8 @@ def evidence_filter(df: pd.DataFrame, key: str = "evidence") -> list[str]:
 def robustness_filter(
     df: pd.DataFrame,
     key: str = "robustness",
-    label: str = "Dependencia del criterio",
-    placeholder: str = "Seleccionar dependencia",
+    label: str = "Estabilidad del resultado",
+    placeholder: str = "Seleccionar estabilidad",
     display_map: dict[str, str] | None = None,
 ) -> list[str]:
     column = (
