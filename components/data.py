@@ -45,6 +45,12 @@ PRIORITY_EN = {
 }
 
 RESULT_STABILITY_ES = {
+    "Estable": "Estable",
+    "estable": "Estable",
+    "Sensible": "Sensible",
+    "sensible": "Sensible",
+    "Variable": "Variable",
+    "variable": "Variable",
     "High robustness": "Estable",
     "Moderate robustness": "Sensible",
     "Low robustness": "Variable",
