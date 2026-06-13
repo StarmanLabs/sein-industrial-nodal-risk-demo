@@ -3,6 +3,7 @@
 import sys
 from pathlib import Path
 
+import pandas as pd
 import streamlit as st
 
 APP_DIR = Path(__file__).resolve().parents[1]
@@ -49,13 +50,24 @@ if watchlist.empty:
     st.error("La capa de seguimiento mensual no está disponible.")
     st.stop()
 
+priority_col = next((column for column in ["Prioridad operativa", "OANRI_v10", "prioridad_operativa"] if column in watchlist.columns), None)
+stress_col = next((column for column in ["Estrés nodal", "ICPI_v8", "estres_nodal"] if column in watchlist.columns), None)
+if priority_col is None or stress_col is None:
+    st.error("La vista mensual requiere columnas de estrés nodal y prioridad operativa.")
+    st.stop()
+
 section_header(
     "Filtros temporales y de prioridad",
     "Ordena el mapa por prioridad del producto para ver primero las barras más relevantes. Cada fila es una barra y cada columna es un mes.",
 )
 filter_cols = st.columns([1.1, 1.2])
 with filter_cols[0]:
-    selected_priorities = priority_filter(profiles, key="watchlist_priority") if not profiles.empty else []
+    selected_priorities = priority_filter(
+        profiles,
+        key="watchlist_priority",
+        label="Tipo de señal",
+        placeholder="Todas las categorías",
+    ) if not profiles.empty else []
 with filter_cols[1]:
     top_n = st.slider("Barras visibles en heatmap", min_value=10, max_value=50, value=25, step=5)
 
@@ -78,7 +90,7 @@ with cols[1]:
 with cols[2]:
     metric_card("Observaciones top", f"{len(watchlist):,.0f}", "barra-mes")
 with cols[3]:
-    metric_card("Máx. prioridad operativa", f"{watchlist['Prioridad operativa'].max():.1f}", "episodio más alto", kind="warning")
+    metric_card("Máx. prioridad operativa", f"{pd.to_numeric(watchlist[priority_col], errors='coerce').max():.1f}", "episodio más alto", kind="warning")
 
 insight_grid(
     [
@@ -127,8 +139,8 @@ compact_table(
     [
         "month",
         "barra",
-        "Estrés nodal",
-        "Prioridad operativa",
+        stress_col,
+        priority_col,
         "ranking_mensual_v10",
         "decision_tier",
         "primary_driver",

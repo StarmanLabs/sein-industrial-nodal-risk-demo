@@ -2094,8 +2094,128 @@ def classify_pattern(rows) -> str:
     return "Señal baja o intermitente: útil como referencia de contexto dentro del universo analítico."
 
 
+def _watch_col(data: pd.DataFrame, candidates: list[str]) -> str | None:
+    return next((column for column in candidates if column in data.columns), None)
+
+
+def _monthly_delta_labels(data: pd.DataFrame, value_col: str, threshold: float = 0.25) -> dict[str, str]:
+    if data.empty or value_col not in data.columns or "month" not in data.columns:
+        return {}
+    work = data[["barra", "month", value_col]].dropna().copy()
+    if work.empty:
+        return {}
+    work = work.sort_values(["barra", "month"])
+    last_two = work.groupby("barra", group_keys=False).tail(2)
+    labels: dict[str, str] = {}
+    for barra, rows in last_two.groupby("barra"):
+        if len(rows) < 2:
+            labels[str(barra)] = "Sin comparación"
+            continue
+        values = pd.to_numeric(rows[value_col], errors="coerce").to_list()
+        if len(values) < 2 or pd.isna(values[-1]) or pd.isna(values[-2]):
+            labels[str(barra)] = "Sin comparación"
+        elif values[-1] - values[-2] > threshold:
+            labels[str(barra)] = "↑ Aumentó"
+        elif values[-2] - values[-1] > threshold:
+            labels[str(barra)] = "↓ Disminuyó"
+        else:
+            labels[str(barra)] = "→ Se mantuvo"
+    return labels
+
+
+def _watch_category_label(value: object) -> str:
+    text = str(value).strip()
+    return {
+        "Priority due diligence": "Prioritaria",
+        "Priority A": "Prioritaria",
+        "Priority B": "Condicionada",
+        "Watchlist": "En seguimiento",
+        "Monitor": "Contexto base",
+        "Lower relative exposure": "Contexto base",
+        "Prioridad de revisión": "Prioritaria",
+        "Seguimiento": "En seguimiento",
+        "Monitorear": "Contexto base",
+        "Menor exposición relativa": "Contexto base",
+        "Señal prioritaria": "Prioritaria",
+        "Señal condicionada": "Condicionada",
+        "Señal episódica": "En seguimiento",
+        "Contexto base": "Contexto base",
+        "Información por completar": "Información por completar",
+    }.get(text, text if text else "No clasificado")
+
+
+def _render_watchlist_table(table_df: pd.DataFrame, full_df: pd.DataFrame) -> None:
+    if table_df.empty:
+        st.markdown(
+            '<div class="watch-empty">No hay barras para los filtros activos. Prueba ampliar el tipo de señal o seleccionar otra barra.</div>',
+            unsafe_allow_html=True,
+        )
+        return
+
+    display = table_df.copy()
+    rename = {
+        "month_label": "Mes",
+        "barra": "Barra",
+        "stress": "Estrés nodal prom.",
+        "priority": "Prioridad operativa prom.",
+        "rank": "Ranking mensual",
+        "reading": "Lectura recomendada",
+        "stability": "Estabilidad del resultado",
+        "driver": "Driver principal",
+        "evolution": "Evolución vs. mes anterior",
+    }
+    display = display.rename(columns=rename)
+    for column in ["Estrés nodal prom.", "Prioridad operativa prom."]:
+        if column in display.columns:
+            display[column] = pd.to_numeric(display[column], errors="coerce").map(lambda value: f"{value:.2f}" if pd.notna(value) else "")
+
+    def _style(row: pd.Series) -> list[str]:
+        styles = [""] * len(row)
+        for idx, column in enumerate(row.index):
+            value = str(row[column])
+            if column == "Lectura recomendada":
+                if value == "Prioritaria":
+                    styles[idx] = "background-color:#fde8e6;color:#9f2f2a;font-weight:800;border-radius:6px;"
+                elif value == "Condicionada":
+                    styles[idx] = "background-color:#fff0cf;color:#a85f00;font-weight:800;border-radius:6px;"
+                elif value == "En seguimiento":
+                    styles[idx] = "background-color:#dff4f6;color:#087a82;font-weight:800;border-radius:6px;"
+            if column == "Estabilidad del resultado":
+                if value == "Estable":
+                    styles[idx] = "background-color:#e7f7ed;color:#147a44;font-weight:800;border-radius:6px;"
+                elif value == "Sensible":
+                    styles[idx] = "background-color:#fff0cf;color:#a85f00;font-weight:800;border-radius:6px;"
+                elif value == "Variable":
+                    styles[idx] = "background-color:#edf2f7;color:#526174;font-weight:800;border-radius:6px;"
+        return styles
+
+    st.dataframe(
+        display.style.apply(_style, axis=1),
+        use_container_width=True,
+        hide_index=True,
+        height=360,
+        column_config={
+            "Mes": st.column_config.TextColumn("Mes", width="small"),
+            "Barra": st.column_config.TextColumn("Barra", width="medium"),
+            "Lectura recomendada": st.column_config.TextColumn("Lectura recomendada", width="medium"),
+            "Estabilidad del resultado": st.column_config.TextColumn("Estabilidad del resultado", width="medium"),
+            "Evolución vs. mes anterior": st.column_config.TextColumn("Evolución vs. mes anterior", width="medium"),
+        },
+    )
+    left, right = st.columns([1, 1])
+    with left:
+        st.caption(f"Mostrando {len(display):,.0f} de {len(full_df):,.0f} observaciones filtradas.")
+    with right:
+        st.download_button(
+            "Descargar tabla CSV",
+            full_df.to_csv(index=False).encode("utf-8"),
+            file_name="seguimiento_mensual_filtrado.csv",
+            mime="text/csv",
+            width="stretch",
+        )
+
+
 def render_watchlist() -> None:
-    page_header("Seguimiento Mensual", "¿Cuándo aparecen episodios de estrés y son persistentes o episódicos?")
     watchlist = load_watchlist()
     panel = load_monthly_panel()
     profiles = load_product_layer()
@@ -2103,49 +2223,167 @@ def render_watchlist() -> None:
         st.error("La capa de seguimiento mensual no está disponible.")
         st.stop()
 
-    def _first_available(columns: list[str], data: pd.DataFrame) -> str | None:
-        return next((column for column in columns if column in data.columns), None)
+    watchlist_priority_col = _watch_col(watchlist, ["Prioridad operativa", "OANRI_v10", "prioridad_operativa"])
+    watchlist_stress_col = _watch_col(watchlist, ["Estrés nodal", "ICPI_v8", "estres_nodal"])
+    if watchlist_priority_col is None or watchlist_stress_col is None:
+        st.error("La vista mensual requiere columnas de estrés nodal y prioridad operativa.")
+        st.stop()
 
-    watchlist_priority_col = _first_available(["Prioridad operativa", "OANRI_v10", "prioridad_operativa"], watchlist)
-    watchlist_stress_col = _first_available(["Estrés nodal", "ICPI_v8", "estres_nodal"], watchlist)
+    st.markdown(
+        """
+<div class="watch-header">
+  <div>
+    <div class="exec-kicker">PANEL DE SOPORTE A DECISIONES</div>
+    <h1>Seguimiento Mensual</h1>
+    <p>Pregunta de decisión: ¿Qué barras requieren seguimiento mensual por señales de corto y/o mediano plazo?</p>
+  </div>
+  <div class="watch-caveat">
+    <div class="exec-icon exec-icon-info"></div>
+    <div>
+      <strong>En esta vista puedes monitorear la evolución mensual de las señales para entender si se mantienen, aumentan o disminuyen.</strong>
+      <span>No predice precios ni prueba congestión física.</span>
+    </div>
+  </div>
+</div>
+""",
+        unsafe_allow_html=True,
+    )
 
-    filter_cols = st.columns([1.1, 1.2])
+    filter_cols = st.columns([1.1, 1])
     with filter_cols[0]:
-        selected_priorities = priority_filter(profiles, key="watchlist_priority")
-    with filter_cols[1]:
-        top_n = st.slider("Barras visibles en heatmap", min_value=10, max_value=50, value=25, step=5)
+        selected_priorities = priority_filter(
+            profiles,
+            key="watchlist_priority",
+            label="Tipo de señal",
+            placeholder="Todas las categorías",
+        )
     filtered_profiles = profiles[profiles["due_diligence_priority"].isin(selected_priorities)] if selected_priorities else profiles
-    ordered_barras = filtered_profiles.sort_values("decision_priority_score", ascending=False)["barra"].head(top_n).tolist()
+    candidate_barras = filtered_profiles.sort_values("decision_priority_score", ascending=False)["barra"].dropna().astype(str).tolist()
+    with filter_cols[1]:
+        selected_label = st.selectbox(
+            "Barra o ubicación en el mapa",
+            ["Todas"] + candidate_barras,
+            key="watchlist_barra_select",
+        )
+
+    top_n = 25
+    ordered_barras = candidate_barras[:top_n]
+    if selected_label != "Todas":
+        ordered_barras = [selected_label] + [barra for barra in ordered_barras if barra != selected_label]
+        ordered_barras = ordered_barras[:top_n]
     heatmap_data = watchlist[watchlist["barra"].isin(ordered_barras)]
 
-    cols = st.columns(4)
-    with cols[0]:
-        metric_card("Barras en mapa", f"{heatmap_data['barra'].nunique():,.0f}", "top por prioridad", kind="info")
-    with cols[1]:
-        metric_card("Meses en seguimiento", f"{watchlist['month'].nunique():,.0f}", "cobertura mensual")
-    with cols[2]:
-        metric_card("Observaciones top", f"{len(watchlist):,.0f}", "barra-mes")
-    with cols[3]:
-        max_priority = pd.to_numeric(watchlist[watchlist_priority_col], errors="coerce").max() if watchlist_priority_col else float("nan")
-        metric_card("Máx. prioridad operativa", f"{max_priority:.1f}", "episodio más alto", kind="warning")
+    latest_month = watchlist["month"].max()
+    prev_month = watchlist.loc[watchlist["month"] < latest_month, "month"].max()
+    filtered_watchlist = watchlist[watchlist["barra"].isin(candidate_barras)]
+    latest_rows = filtered_watchlist[filtered_watchlist["month"] == latest_month].copy()
+    prev_rows = filtered_watchlist[filtered_watchlist["month"] == prev_month].copy() if pd.notna(prev_month) else pd.DataFrame()
+    latest_priority = latest_rows.set_index("barra")[watchlist_priority_col] if not latest_rows.empty else pd.Series(dtype=float)
+    prev_priority = prev_rows.set_index("barra")[watchlist_priority_col] if not prev_rows.empty else pd.Series(dtype=float)
+    deltas = (latest_priority - prev_priority.reindex(latest_priority.index)).dropna()
+    up_count = int((deltas > 0.25).sum())
+    down_count = int((deltas < -0.25).sum())
+    active_count = int(filtered_profiles["due_diligence_priority"].isin(["Priority A", "Priority B"]).sum()) if not filtered_profiles.empty else 0
+    month_top_count = int((pd.to_numeric(latest_rows.get("ranking_mensual_v10", pd.Series(dtype=float)), errors="coerce") <= 20).sum()) if not latest_rows.empty else 0
 
-    section_header("Mapa mensual de seguimiento", "Color más intenso significa prioridad operativa mensual más alta. Filas repetidamente intensas sugieren persistencia; bloques aislados sugieren episodios puntuales.")
-    st.plotly_chart(watchlist_heatmap(heatmap_data, order=ordered_barras), use_container_width=True)
-    section_header("Lectura por barra")
-    selected_barra = barra_selector(heatmap_data, key="watchlist_barra")
-    if selected_barra and not panel.empty:
-        selected_rows = panel[panel["barra"] == selected_barra].sort_values("month")
-        action_panel("Interpretación automática", classify_pattern(selected_rows))
-        st.plotly_chart(barra_month_line(panel, selected_barra), use_container_width=True)
+    st.markdown(
+        f"""
+<div class="watch-kpi-band">
+  <div class="watch-kpi hot"><span>Barras en seguimiento</span><strong>{len(filtered_profiles):,.0f}</strong><em>universo filtrado</em></div>
+  <div class="watch-kpi"><span>Barras con señal activa</span><strong>{active_count:,.0f}</strong><em>en cola principal</em></div>
+  <div class="watch-kpi"><span>Señales en aumento</span><strong>{up_count:,.0f}</strong><em>vs. mes anterior</em></div>
+  <div class="watch-kpi"><span>Señales en disminución</span><strong>{down_count:,.0f}</strong><em>vs. mes anterior</em></div>
+  <div class="watch-kpi warm"><span>Priorizadas este mes</span><strong>{month_top_count:,.0f}</strong><em>requieren revisión</em></div>
+</div>
+""",
+        unsafe_allow_html=True,
+    )
 
-    section_header("Top mensual de señales")
-    top_columns = ["month", "barra"]
-    if watchlist_stress_col:
-        top_columns.append(watchlist_stress_col)
-    if watchlist_priority_col:
-        top_columns.append(watchlist_priority_col)
-    top_columns.extend(["ranking_mensual_v10", "decision_tier", "primary_driver"])
-    compact_table(watchlist.sort_values(["month", "ranking_mensual_v10"]).head(120), top_columns)
+    chart_cols = st.columns([0.95, 0.95, 0.58])
+    with chart_cols[0]:
+        st.markdown(
+            '<div class="watch-block-title">Mapa de calor mensual de señales: prioridad operativa <span>Colores más cálidos indican mayor prioridad mensual.</span></div>',
+            unsafe_allow_html=True,
+        )
+        st.plotly_chart(watchlist_heatmap(heatmap_data, order=ordered_barras), use_container_width=True)
+    with chart_cols[1]:
+        selected_barra = selected_label if selected_label != "Todas" else (ordered_barras[0] if ordered_barras else None)
+        if selected_barra and not panel.empty:
+            st.markdown(
+                f'<div class="watch-block-title">Evolución mensual de señal - {escape(str(selected_barra))}<span>Compara estrés nodal relativo y prioridad operativa.</span></div>',
+                unsafe_allow_html=True,
+            )
+            selected_rows = panel[panel["barra"] == selected_barra].sort_values("month")
+            st.plotly_chart(barra_month_line(panel, selected_barra), use_container_width=True)
+            st.markdown(
+                f'<div class="watch-pattern">{escape(classify_pattern(selected_rows))}</div>',
+                unsafe_allow_html=True,
+            )
+    with chart_cols[2]:
+        st.markdown(
+            """
+<div class="watch-side-card">
+  <h3>Cómo leer esta vista</h3>
+  <div class="watch-guide-row red"><span>▦</span><div><strong>Mapa de calor</strong><p>Muestra la intensidad mensual de prioridad operativa. Colores cálidos = mayor prioridad.</p></div></div>
+  <div class="watch-guide-row blue"><span>↗</span><div><strong>Evolución mensual</strong><p>Compara cómo se mueven estrés nodal y prioridad operativa de una barra.</p></div></div>
+  <div class="watch-guide-row teal"><span>☷</span><div><strong>Top mensual</strong><p>Lista las barras más relevantes del último mes disponible.</p></div></div>
+  <div class="watch-guide-row green"><span>◇</span><div><strong>Estabilidad del resultado</strong><p>Indica si la lectura se mantiene al probar criterios alternativos.</p></div></div>
+</div>
+<div class="watch-side-card note">
+  <h3>Importante</h3>
+  <ul>
+    <li>Esta vista no predice precios ni congestión.</li>
+    <li>Las señales son insumos para revisión experta.</li>
+    <li>Úsala para detectar persistencia, cambios y oportunidad de seguimiento.</li>
+  </ul>
+</div>
+<div class="watch-quick">
+  <h3>Guía rápida</h3>
+  <div><span>⚖</span><b>Señales</b><em>Se miden cada mes.</em></div>
+  <div><span>↗</span><b>Evolución</b><em>Se observa la tendencia mensual.</em></div>
+  <div><span>◇</span><b>Prioridad</b><em>Se revisan las barras más relevantes.</em></div>
+  <div><span>◎</span><b>Acción</b><em>Se decide revisión experta.</em></div>
+</div>
+""",
+            unsafe_allow_html=True,
+        )
+
+    st.markdown('<div class="watch-section-title">Top mensual de señales</div>', unsafe_allow_html=True)
+    stability_by_barra = (
+        profiles.set_index("barra")["signal_stability_label_es"].to_dict()
+        if "signal_stability_label_es" in profiles.columns
+        else {}
+    )
+    evolution_by_barra = _monthly_delta_labels(filtered_watchlist, watchlist_priority_col)
+    top_month = (
+        latest_rows.sort_values("ranking_mensual_v10", ascending=True).head(10)
+        if "ranking_mensual_v10" in latest_rows.columns
+        else latest_rows.sort_values(watchlist_priority_col, ascending=False).head(10)
+    ).copy()
+    table_df = pd.DataFrame(
+        {
+            "month_label": top_month["month"].dt.strftime("%Y-%m") if "month" in top_month else "",
+            "barra": top_month["barra"],
+            "stress": pd.to_numeric(top_month[watchlist_stress_col], errors="coerce"),
+            "priority": pd.to_numeric(top_month[watchlist_priority_col], errors="coerce"),
+            "rank": pd.to_numeric(top_month.get("ranking_mensual_v10", pd.Series(index=top_month.index)), errors="coerce").astype("Int64"),
+            "reading": top_month.get("prioridad_barra", top_month.get("decision_tier", pd.Series(index=top_month.index))).map(_watch_category_label),
+            "stability": top_month["barra"].map(stability_by_barra).fillna("No clasificado"),
+            "driver": top_month.get("primary_driver", pd.Series(index=top_month.index)).fillna("Nivel de precio"),
+            "evolution": top_month["barra"].map(evolution_by_barra).fillna("Sin comparación"),
+        }
+    )
+    _render_watchlist_table(table_df, filtered_watchlist)
+
+    st.markdown(
+        """
+<div class="watch-method-note">
+  <strong>Notas metodológicas</strong>
+  <span>Esta página combina promedios mensuales de estrés nodal y prioridad operativa. La estabilidad del resultado ayuda a distinguir señales que se mantienen bajo criterios alternativos. No se usa para causalidad, predicción de congestión ni cálculo de facturas.</span>
+</div>
+""",
+        unsafe_allow_html=True,
+    )
 
 
 def render_exposicion() -> None:
