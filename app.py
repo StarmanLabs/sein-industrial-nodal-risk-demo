@@ -2231,6 +2231,54 @@ def render_watchlist() -> None:
 
     st.markdown(
         """
+<style>
+.block-container:has(.watch-page) {
+  width: 100% !important;
+  max-width: none !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: 2rem !important;
+  padding-right: 2rem !important;
+}
+
+.watch-page {
+  width: 100%;
+  margin: 0.15rem 0 0.65rem 0;
+}
+
+.watch-main-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 0.26fr);
+  gap: 1rem;
+  align-items: start;
+  margin-top: 0.55rem;
+}
+
+.watch-line-shell {
+  margin-top: 0.9rem;
+}
+
+.watch-side-card {
+  margin-top: 0 !important;
+}
+
+@media (max-width: 1150px) {
+  .block-container:has(.watch-page) {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+  .watch-main-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+<div class="watch-page"></div>
+""",
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        """
 <div class="watch-header">
   <div>
     <div class="exec-kicker">PANEL DE SOPORTE A DECISIONES</div>
@@ -2299,27 +2347,16 @@ def render_watchlist() -> None:
         unsafe_allow_html=True,
     )
 
-    chart_cols = st.columns([0.95, 0.95, 0.58])
-    with chart_cols[0]:
+    selected_barra = selected_label if selected_label != "Todas" else (ordered_barras[0] if ordered_barras else None)
+    st.markdown('<div class="watch-main-grid">', unsafe_allow_html=True)
+    heatmap_col, side_col = st.columns([2.35, 0.82], gap="medium")
+    with heatmap_col:
         st.markdown(
-            '<div class="watch-block-title">Mapa de calor mensual de señales: prioridad operativa <span>Colores más cálidos indican mayor prioridad mensual.</span></div>',
+            '<div class="watch-block-title">Mapa de calor mensual de señales: prioridad operativa <span>Colores más cálidos indican mayor prioridad mensual. Filas repetidamente intensas sugieren persistencia; bloques aislados sugieren episodios puntuales.</span></div>',
             unsafe_allow_html=True,
         )
         st.plotly_chart(watchlist_heatmap(heatmap_data, order=ordered_barras), use_container_width=True)
-    with chart_cols[1]:
-        selected_barra = selected_label if selected_label != "Todas" else (ordered_barras[0] if ordered_barras else None)
-        if selected_barra and not panel.empty:
-            st.markdown(
-                f'<div class="watch-block-title">Evolución mensual de señal - {escape(str(selected_barra))}<span>Compara estrés nodal relativo y prioridad operativa.</span></div>',
-                unsafe_allow_html=True,
-            )
-            selected_rows = panel[panel["barra"] == selected_barra].sort_values("month")
-            st.plotly_chart(barra_month_line(panel, selected_barra), use_container_width=True)
-            st.markdown(
-                f'<div class="watch-pattern">{escape(classify_pattern(selected_rows))}</div>',
-                unsafe_allow_html=True,
-            )
-    with chart_cols[2]:
+    with side_col:
         st.markdown(
             """
 <div class="watch-side-card">
@@ -2337,16 +2374,24 @@ def render_watchlist() -> None:
     <li>Úsala para detectar persistencia, cambios y oportunidad de seguimiento.</li>
   </ul>
 </div>
-<div class="watch-quick">
-  <h3>Guía rápida</h3>
-  <div><span>⚖</span><b>Señales</b><em>Se miden cada mes.</em></div>
-  <div><span>↗</span><b>Evolución</b><em>Se observa la tendencia mensual.</em></div>
-  <div><span>◇</span><b>Prioridad</b><em>Se revisan las barras más relevantes.</em></div>
-  <div><span>◎</span><b>Acción</b><em>Se decide revisión experta.</em></div>
-</div>
 """,
             unsafe_allow_html=True,
         )
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    if selected_barra and not panel.empty:
+        st.markdown('<div class="watch-line-shell">', unsafe_allow_html=True)
+        st.markdown(
+            f'<div class="watch-block-title">Evolución mensual de señal - {escape(str(selected_barra))}<span>Compara estrés nodal relativo y prioridad operativa en el tiempo para distinguir persistencia, deterioro o episodios puntuales.</span></div>',
+            unsafe_allow_html=True,
+        )
+        selected_rows = panel[panel["barra"] == selected_barra].sort_values("month")
+        st.plotly_chart(barra_month_line(panel, selected_barra), use_container_width=True)
+        st.markdown(
+            f'<div class="watch-pattern">{escape(classify_pattern(selected_rows))}</div>',
+            unsafe_allow_html=True,
+        )
+        st.markdown("</div>", unsafe_allow_html=True)
 
     st.markdown('<div class="watch-section-title">Top mensual de señales</div>', unsafe_allow_html=True)
     stability_by_barra = (
