@@ -305,7 +305,9 @@ def barra_month_line(df: pd.DataFrame, barra: str):
         annotation_position="top left",
     )
     fig.update_traces(line={"width": 3}, marker={"size": 7})
-    return apply_chart_style(fig, height=420)
+    fig = apply_chart_style(fig, height=320)
+    fig.update_layout(title_text="", margin={"l": 30, "r": 18, "t": 28, "b": 46})
+    return fig
 
 
 def barra_profile_score_bars(row: pd.Series):
@@ -412,7 +414,11 @@ def watchlist_heatmap(df: pd.DataFrame, order: list[str] | None = None):
     )
     fig.update_xaxes(title="Mes", type="category")
     fig.update_yaxes(title="Barra")
-    return apply_chart_style(fig, height=560)
+    fig = apply_chart_style(fig, height=390)
+    fig.update_layout(title_text="", margin={"l": 84, "r": 16, "t": 18, "b": 46})
+    fig.update_xaxes(tickangle=0, tickfont={"size": 10})
+    fig.update_yaxes(tickfont={"size": 10})
+    return fig
 
 
 def sector_exposure_bar_chart(df: pd.DataFrame, n: int = 15):

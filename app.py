@@ -2123,6 +2123,27 @@ def _monthly_delta_labels(data: pd.DataFrame, value_col: str, threshold: float =
     return labels
 
 
+def _monthly_delta_labels_for_month(data: pd.DataFrame, value_col: str, month: pd.Timestamp, threshold: float = 0.25) -> dict[str, str]:
+    if data.empty or value_col not in data.columns or "month" not in data.columns:
+        return {}
+    selected_month = pd.Timestamp(month)
+    previous_month = data.loc[data["month"] < selected_month, "month"].max()
+    if pd.isna(previous_month):
+        return {}
+    current = data[data["month"] == selected_month].set_index("barra")[value_col]
+    previous = data[data["month"] == previous_month].set_index("barra")[value_col]
+    deltas = pd.to_numeric(current, errors="coerce") - pd.to_numeric(previous.reindex(current.index), errors="coerce")
+    labels: dict[str, str] = {}
+    for barra, value in deltas.dropna().items():
+        if value > threshold:
+            labels[str(barra)] = "↑ Aumentó"
+        elif value < -threshold:
+            labels[str(barra)] = "↓ Disminuyó"
+        else:
+            labels[str(barra)] = "→ Se mantuvo"
+    return labels
+
+
 def _watch_category_label(value: object) -> str:
     text = str(value).strip()
     return {
@@ -2165,6 +2186,18 @@ def _render_watchlist_table(table_df: pd.DataFrame, full_df: pd.DataFrame) -> No
         "evolution": "Evolución vs. mes anterior",
     }
     display = display.rename(columns=rename)
+    preferred_order = [
+        "Mes",
+        "Barra",
+        "Ranking mensual",
+        "Lectura recomendada",
+        "Evolución vs. mes anterior",
+        "Estabilidad del resultado",
+        "Prioridad operativa prom.",
+        "Estrés nodal prom.",
+        "Driver principal",
+    ]
+    display = display[[column for column in preferred_order if column in display.columns]]
     for column in ["Estrés nodal prom.", "Prioridad operativa prom."]:
         if column in display.columns:
             display[column] = pd.to_numeric(display[column], errors="coerce").map(lambda value: f"{value:.2f}" if pd.notna(value) else "")
@@ -2204,11 +2237,11 @@ def _render_watchlist_table(table_df: pd.DataFrame, full_df: pd.DataFrame) -> No
     )
     left, right = st.columns([1, 1])
     with left:
-        st.caption(f"Mostrando {len(display):,.0f} de {len(full_df):,.0f} observaciones filtradas.")
+        st.caption(f"Mostrando {len(display):,.0f} filas del ranking mensual seleccionado.")
     with right:
         st.download_button(
             "Descargar tabla CSV",
-            full_df.to_csv(index=False).encode("utf-8"),
+            display.to_csv(index=False).encode("utf-8"),
             file_name="seguimiento_mensual_filtrado.csv",
             mime="text/csv",
             width="stretch",
@@ -2237,8 +2270,8 @@ def render_watchlist() -> None:
   max-width: none !important;
   margin-left: 0 !important;
   margin-right: 0 !important;
-  padding-left: 2rem !important;
-  padding-right: 2rem !important;
+  padding-left: 1.45rem !important;
+  padding-right: 1.45rem !important;
 }
 
 .watch-page {
@@ -2248,18 +2281,33 @@ def render_watchlist() -> None:
 
 .watch-main-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(320px, 0.26fr);
-  gap: 1rem;
+  grid-template-columns: minmax(0, 1fr) minmax(360px, 0.34fr);
+  gap: 0.9rem;
   align-items: start;
   margin-top: 0.55rem;
 }
 
 .watch-line-shell {
-  margin-top: 0.9rem;
+  margin-top: 0.75rem;
 }
 
 .watch-side-card {
   margin-top: 0 !important;
+  padding: 0.82rem !important;
+}
+
+.watch-side-card.note {
+  margin-top: 0.65rem !important;
+}
+
+.watch-guide-row {
+  margin-bottom: 0.45rem !important;
+  padding: 0.58rem 0.65rem !important;
+}
+
+.watch-filter-row [data-testid="stSelectbox"],
+.watch-filter-row [data-testid="stMultiSelect"] {
+  margin-bottom: 0 !important;
 }
 
 @media (max-width: 1150px) {
@@ -2297,7 +2345,10 @@ def render_watchlist() -> None:
         unsafe_allow_html=True,
     )
 
-    filter_cols = st.columns([1.1, 1])
+    available_months = sorted(watchlist["month"].dropna().dt.strftime("%Y-%m").unique().tolist())
+    default_month_idx = len(available_months) - 1 if available_months else 0
+    st.markdown('<div class="watch-filter-row">', unsafe_allow_html=True)
+    filter_cols = st.columns([1.65, 0.78, 0.78], gap="medium")
     with filter_cols[0]:
         selected_priorities = priority_filter(
             profiles,
@@ -2313,15 +2364,24 @@ def render_watchlist() -> None:
             ["Todas"] + candidate_barras,
             key="watchlist_barra_select",
         )
+    with filter_cols[2]:
+        selected_month_label = st.selectbox(
+            "Mes de análisis",
+            available_months,
+            index=default_month_idx,
+            key="watchlist_month_select",
+        )
+    st.markdown("</div>", unsafe_allow_html=True)
+    selected_month = pd.to_datetime(f"{selected_month_label}-01", errors="coerce") if selected_month_label else watchlist["month"].max()
 
-    top_n = 25
+    top_n = 18
     ordered_barras = candidate_barras[:top_n]
     if selected_label != "Todas":
         ordered_barras = [selected_label] + [barra for barra in ordered_barras if barra != selected_label]
         ordered_barras = ordered_barras[:top_n]
     heatmap_data = watchlist[watchlist["barra"].isin(ordered_barras)]
 
-    latest_month = watchlist["month"].max()
+    latest_month = selected_month if pd.notna(selected_month) else watchlist["month"].max()
     prev_month = watchlist.loc[watchlist["month"] < latest_month, "month"].max()
     filtered_watchlist = watchlist[watchlist["barra"].isin(candidate_barras)]
     latest_rows = filtered_watchlist[filtered_watchlist["month"] == latest_month].copy()
@@ -2331,16 +2391,19 @@ def render_watchlist() -> None:
     deltas = (latest_priority - prev_priority.reindex(latest_priority.index)).dropna()
     up_count = int((deltas > 0.25).sum())
     down_count = int((deltas < -0.25).sum())
-    active_count = int(filtered_profiles["due_diligence_priority"].isin(["Priority A", "Priority B"]).sum()) if not filtered_profiles.empty else 0
+    active_barras = latest_rows.loc[
+        pd.to_numeric(latest_rows.get("ranking_mensual_v10", pd.Series(index=latest_rows.index)), errors="coerce") <= 20,
+        "barra",
+    ].nunique() if not latest_rows.empty else 0
     month_top_count = int((pd.to_numeric(latest_rows.get("ranking_mensual_v10", pd.Series(dtype=float)), errors="coerce") <= 20).sum()) if not latest_rows.empty else 0
 
     st.markdown(
         f"""
 <div class="watch-kpi-band">
-  <div class="watch-kpi hot"><span>Barras en seguimiento</span><strong>{len(filtered_profiles):,.0f}</strong><em>universo filtrado</em></div>
-  <div class="watch-kpi"><span>Barras con señal activa</span><strong>{active_count:,.0f}</strong><em>en cola principal</em></div>
-  <div class="watch-kpi"><span>Señales en aumento</span><strong>{up_count:,.0f}</strong><em>vs. mes anterior</em></div>
-  <div class="watch-kpi"><span>Señales en disminución</span><strong>{down_count:,.0f}</strong><em>vs. mes anterior</em></div>
+  <div class="watch-kpi hot"><span>Barras observadas</span><strong>{len(filtered_profiles):,.0f}</strong><em>universo filtrado</em></div>
+  <div class="watch-kpi"><span>Barras con señal activa</span><strong>{active_barras:,.0f}</strong><em>en el mes seleccionado</em></div>
+  <div class="watch-kpi"><span>Aumentaron vs. mes previo</span><strong>{up_count:,.0f}</strong><em>señales en aumento</em></div>
+  <div class="watch-kpi"><span>Disminuyeron vs. mes previo</span><strong>{down_count:,.0f}</strong><em>señales en disminución</em></div>
   <div class="watch-kpi warm"><span>Priorizadas este mes</span><strong>{month_top_count:,.0f}</strong><em>requieren revisión</em></div>
 </div>
 """,
@@ -2361,17 +2424,17 @@ def render_watchlist() -> None:
             """
 <div class="watch-side-card">
   <h3>Cómo leer esta vista</h3>
-  <div class="watch-guide-row red"><span>▦</span><div><strong>Mapa de calor</strong><p>Muestra la intensidad mensual de prioridad operativa. Colores cálidos = mayor prioridad.</p></div></div>
-  <div class="watch-guide-row blue"><span>↗</span><div><strong>Evolución mensual</strong><p>Compara cómo se mueven estrés nodal y prioridad operativa de una barra.</p></div></div>
-  <div class="watch-guide-row teal"><span>☷</span><div><strong>Top mensual</strong><p>Lista las barras más relevantes del último mes disponible.</p></div></div>
-  <div class="watch-guide-row green"><span>◇</span><div><strong>Estabilidad del resultado</strong><p>Indica si la lectura se mantiene al probar criterios alternativos.</p></div></div>
+  <div class="watch-guide-row red"><span>▦</span><div><strong>Mapa de calor</strong><p>Prioridad operativa por barra y mes. Rojo = mayor prioridad relativa.</p></div></div>
+  <div class="watch-guide-row blue"><span>↗</span><div><strong>Evolución mensual</strong><p>Compara estrés nodal relativo y prioridad operativa en el tiempo.</p></div></div>
+  <div class="watch-guide-row teal"><span>☷</span><div><strong>Top mensual</strong><p>Barras con mayor prioridad según métricas combinadas del mes.</p></div></div>
+  <div class="watch-guide-row green"><span>◇</span><div><strong>Estabilidad del resultado</strong><p>Indica persistencia de la señal bajo criterios alternativos.</p></div></div>
 </div>
 <div class="watch-side-card note">
   <h3>Importante</h3>
   <ul>
-    <li>Esta vista no predice precios ni congestión.</li>
-    <li>Las señales son insumos para revisión experta.</li>
-    <li>Úsala para detectar persistencia, cambios y oportunidad de seguimiento.</li>
+    <li>Esta vista no predice precios ni prueba congestión.</li>
+    <li>Las señales son insumos para revisión experta y decisión operativa.</li>
+    <li>Úsala para detectar persistencia, cambios u oportunidades de seguimiento.</li>
   </ul>
 </div>
 """,
@@ -2393,13 +2456,13 @@ def render_watchlist() -> None:
         )
         st.markdown("</div>", unsafe_allow_html=True)
 
-    st.markdown('<div class="watch-section-title">Top mensual de señales</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="watch-section-title">Top mensual de señales — {escape(str(selected_month_label))}</div>', unsafe_allow_html=True)
     stability_by_barra = (
         profiles.set_index("barra")["signal_stability_label_es"].to_dict()
         if "signal_stability_label_es" in profiles.columns
         else {}
     )
-    evolution_by_barra = _monthly_delta_labels(filtered_watchlist, watchlist_priority_col)
+    evolution_by_barra = _monthly_delta_labels_for_month(filtered_watchlist, watchlist_priority_col, latest_month)
     top_month = (
         latest_rows.sort_values("ranking_mensual_v10", ascending=True).head(10)
         if "ranking_mensual_v10" in latest_rows.columns
