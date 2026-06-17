@@ -2437,14 +2437,6 @@ def render_watchlist() -> None:
   <div class="watch-guide-row teal"><span>☷</span><div><strong>Top mensual</strong><p>Barras con mayor prioridad según métricas combinadas del mes.</p></div></div>
   <div class="watch-guide-row green"><span>◇</span><div><strong>Estabilidad del resultado</strong><p>Indica persistencia de la señal bajo criterios alternativos.</p></div></div>
 </div>
-<div class="watch-side-card note">
-  <h3>Importante</h3>
-  <ul>
-    <li>Esta vista no predice precios ni prueba congestión.</li>
-    <li>Las señales son insumos para revisión experta y decisión operativa.</li>
-    <li>Úsala para detectar persistencia, cambios u oportunidades de seguimiento.</li>
-  </ul>
-</div>
 """,
             unsafe_allow_html=True,
         )
