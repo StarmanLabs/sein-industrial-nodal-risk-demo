@@ -405,6 +405,9 @@ def watchlist_heatmap(df: pd.DataFrame, order: list[str] | None = None):
     if order:
         ordered_index = [barra for barra in order if barra in data.index]
         data = data.loc[ordered_index]
+    month_labels = list(data.columns)
+    tick_step = 3 if len(month_labels) > 24 else 2 if len(month_labels) > 14 else 1
+    tick_values = month_labels[::tick_step]
     fig = px.imshow(
         data,
         aspect="auto",
@@ -412,12 +415,21 @@ def watchlist_heatmap(df: pd.DataFrame, order: list[str] | None = None):
         title="Mapa de calor mensual de seguimiento - prioridad operativa",
         labels={"color": "Prioridad operativa"},
     )
-    fig.update_xaxes(title="Mes", type="category")
-    fig.update_yaxes(title="Barra")
-    fig = apply_chart_style(fig, height=390)
-    fig.update_layout(title_text="", margin={"l": 84, "r": 16, "t": 18, "b": 46})
-    fig.update_xaxes(tickangle=0, tickfont={"size": 10})
-    fig.update_yaxes(tickfont={"size": 10})
+    fig.update_traces(xgap=1, ygap=1)
+    fig.update_xaxes(
+        title="Mes",
+        type="category",
+        tickmode="array",
+        tickvals=tick_values,
+        ticktext=tick_values,
+        tickangle=0,
+        tickfont={"size": 10},
+        automargin=True,
+    )
+    fig.update_yaxes(title="Barra", tickfont={"size": 10}, automargin=True)
+    fig = apply_chart_style(fig, height=335)
+    fig.update_layout(title_text="", margin={"l": 84, "r": 12, "t": 10, "b": 34})
+    fig.update_coloraxes(colorbar={"thickness": 10, "len": 0.72, "y": 0.5})
     return fig
 
 

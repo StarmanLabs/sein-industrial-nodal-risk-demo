@@ -2310,6 +2310,14 @@ def render_watchlist() -> None:
   margin-bottom: 0 !important;
 }
 
+.block-container:has(.watch-page) [data-testid="stPlotlyChart"] {
+  padding: 0.45rem 0.55rem 0.05rem 0.55rem !important;
+}
+
+.block-container:has(.watch-page) [data-testid="stPlotlyChart"] > div {
+  min-height: 0 !important;
+}
+
 @media (max-width: 1150px) {
   .block-container:has(.watch-page) {
     padding-left: 1rem !important;
