@@ -22,7 +22,6 @@ from components.data import (
     load_monthly_panel,
     load_product_layer,
     load_sector_profiles,
-    load_simulator_sample,
     load_system_regime,
     load_watchlist,
 )
@@ -2495,19 +2494,375 @@ def render_watchlist() -> None:
 
 
 def render_exposicion() -> None:
-    page_header("Exposición Industrial", "¿Qué combinaciones sector-barra-contrato merecen revisión bajo supuestos explícitos?")
     sector_df = load_sector_profiles()
     contract_df = load_contract_scenarios()
-    sample = load_simulator_sample()
     if sector_df.empty:
         st.error("Los perfiles sector-barra no están disponibles.")
         st.stop()
 
-    left, right = st.columns(2)
-    with left:
-        sector = sector_selector(sector_df)
-    with right:
-        contract = contract_selector(sector_df)
+    st.markdown(
+        """
+<style>
+.block-container:has(.exposure-page) {
+  width: 100% !important;
+  max-width: none !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: 1.45rem !important;
+  padding-right: 1.45rem !important;
+}
+
+.exposure-page { width: 100%; margin: 0.15rem 0 0.65rem 0; }
+
+.exposure-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(350px, 0.36fr);
+  gap: 1.2rem;
+  align-items: start;
+  margin: 0.35rem 0 0.85rem 0;
+}
+
+.exposure-header h1 {
+  color: #102033;
+  font-size: clamp(2.15rem, 3.9vw, 3.15rem);
+  line-height: 1;
+  margin: 0.2rem 0 0 0;
+  font-weight: 880;
+}
+
+.exposure-caveat {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 0.85rem;
+  align-items: center;
+  border: 1px solid #d8e3ea;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.90);
+  padding: 0.95rem 1rem;
+  box-shadow: 0 10px 26px rgba(16,32,51,0.045);
+}
+
+.exposure-caveat strong,
+.exposure-caveat span {
+  display: block;
+  color: #102033;
+  font-size: 0.82rem;
+  line-height: 1.38;
+}
+
+.exposure-caveat span {
+  color: #314258;
+  margin-top: 0.18rem;
+  font-weight: 720;
+}
+
+.exposure-section-label {
+  color: #102033;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin: 0.8rem 0 0.4rem 0;
+}
+
+.exposure-card {
+  border: 1px solid #d8e3ea;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 0.85rem 0.95rem;
+  box-shadow: 0 8px 22px rgba(16,32,51,0.035);
+}
+
+.exposure-filter-card [data-testid="stSelectbox"] { margin-bottom: 0 !important; }
+
+.exposure-selected {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid #cfe2ec;
+  border-radius: 8px;
+  background: #f8fcfd;
+  color: #26384d;
+  font-size: 0.82rem;
+  font-weight: 720;
+  padding: 0.62rem 0.75rem;
+  margin-top: 0.7rem;
+}
+
+.exposure-selected b { color: #102033; }
+.exposure-selected span:first-child { color: #1f8a5b; font-weight: 950; }
+
+.exposure-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.exposure-kpi {
+  min-height: 112px;
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr);
+  gap: 0.82rem;
+  align-items: center;
+  border: 1px solid #d8e3ea;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 0.95rem 1rem;
+  box-shadow: 0 8px 22px rgba(16,32,51,0.035);
+}
+
+.exposure-kpi.hot { background: linear-gradient(180deg, #fff8ef 0%, #ffffff 100%); }
+.exposure-kpi.soft { background: linear-gradient(180deg, #f7fcfd 0%, #ffffff 100%); }
+
+.exposure-kpi-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  color: #087a82;
+  background: #e6f7f8;
+  font-size: 1.35rem;
+  font-weight: 900;
+}
+
+.exposure-kpi.hot .exposure-kpi-icon { color: #c47a16; background: #fff0cf; }
+.exposure-kpi.risk .exposure-kpi-icon { color: #b23a2e; background: #fde8e6; }
+.exposure-kpi.good .exposure-kpi-icon { color: #1f8a5b; background: #e7f7ed; }
+.exposure-kpi.purple .exposure-kpi-icon { color: #6d4aa2; background: #f0e9f8; }
+
+.exposure-kpi span {
+  display: block;
+  color: #526174;
+  font-size: 0.70rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 850;
+}
+
+.exposure-kpi strong {
+  display: block;
+  color: #102033;
+  font-size: 1.85rem;
+  line-height: 1;
+  font-weight: 880;
+  margin-top: 0.4rem;
+}
+
+.exposure-kpi em {
+  display: block;
+  color: #314258;
+  font-style: normal;
+  font-size: 0.78rem;
+  margin-top: 0.38rem;
+}
+
+.exposure-insight-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.exposure-insight {
+  border: 1px solid #d8e3ea;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 0.95rem 1rem;
+  min-height: 132px;
+  box-shadow: 0 8px 22px rgba(16,32,51,0.035);
+}
+
+.exposure-insight strong {
+  display: block;
+  color: #102033;
+  font-size: 0.86rem;
+  margin-bottom: 0.42rem;
+}
+
+.exposure-insight p {
+  color: #314258;
+  font-size: 0.80rem;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.exposure-insight .dot {
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  display: inline-grid;
+  place-items: center;
+  margin-right: 0.4rem;
+  color: white;
+  background: #164a63;
+  font-weight: 900;
+}
+
+.exposure-chart-title,
+.exposure-table-title {
+  color: #102033;
+  font-size: 0.96rem;
+  font-weight: 900;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  margin: 0.9rem 0 0.32rem 0;
+}
+
+.exposure-chart-title span,
+.exposure-table-title span {
+  display: block;
+  color: #526174;
+  font-size: 0.76rem;
+  font-weight: 620;
+  letter-spacing: 0;
+  text-transform: none;
+  margin-top: 0.22rem;
+}
+
+.exposure-bottom-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(360px, 0.92fr);
+  gap: 0.9rem;
+  align-items: stretch;
+  margin-top: 0.85rem;
+}
+
+.exposure-reading-card {
+  border: 1px solid #d8e3ea;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 0.95rem 1rem;
+  box-shadow: 0 8px 22px rgba(16,32,51,0.035);
+  margin-bottom: 0.75rem;
+}
+
+.exposure-reading-card h3 {
+  color: #102033;
+  font-size: 1rem;
+  margin: 0 0 0.5rem 0;
+}
+
+.exposure-reading-card p,
+.exposure-reading-card li {
+  color: #314258;
+  font-size: 0.80rem;
+  line-height: 1.45;
+}
+
+.exposure-reading-card ul {
+  margin: 0.25rem 0 0 0;
+  padding-left: 1rem;
+}
+
+.exposure-notes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem 1.2rem;
+  border: 1px solid #d8e3ea;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #314258;
+  font-size: 0.78rem;
+  line-height: 1.42;
+  padding: 0.9rem 1rem;
+  margin-top: 0.55rem;
+}
+
+.exposure-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.65rem;
+  align-items: center;
+  margin-top: 0.85rem;
+}
+
+.exposure-rank-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 1.05rem;
+  border-radius: 8px;
+  background: #164a63;
+  color: #ffffff !important;
+  text-decoration: none !important;
+  font-weight: 850;
+  font-size: 0.86rem;
+}
+
+.block-container:has(.exposure-page) [data-testid="stPlotlyChart"] {
+  padding: 0.50rem 0.62rem 0.08rem 0.62rem !important;
+}
+
+@media (max-width: 1150px) {
+  .block-container:has(.exposure-page) {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+  .exposure-header,
+  .exposure-bottom-grid {
+    grid-template-columns: 1fr;
+  }
+  .exposure-kpi-grid,
+  .exposure-insight-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+</style>
+<div class="exposure-page"></div>
+""",
+        unsafe_allow_html=True,
+    )
+
+    sectors = sorted(sector_df["sector"].dropna().unique()) if "sector" in sector_df else []
+    contracts = sorted(sector_df["contract_type"].dropna().unique()) if "contract_type" in sector_df else []
+    sector_label_to_value = {SECTOR_LABELS.get(value, value): value for value in sectors}
+    contract_label_to_value = {CONTRACT_LABELS.get(value, value): value for value in contracts}
+
+    st.markdown(
+        """
+<div class="exposure-header">
+  <div>
+    <div class="exec-kicker">PANEL DE SOPORTE A DECISIONES</div>
+    <h1>Exposición Industrial</h1>
+  </div>
+  <div class="exposure-caveat">
+    <div class="exec-icon exec-icon-info" aria-hidden="true"></div>
+    <div>
+      <strong>Esta vista no predice precios ni congestión física.</strong>
+      <span>Mide exposición industrial relativa para priorizar revisión y negociación contractual.</span>
+    </div>
+  </div>
+</div>
+""",
+        unsafe_allow_html=True,
+    )
+
+    st.markdown('<div class="exposure-section-label">1. Configuración del escenario</div>', unsafe_allow_html=True)
+    st.markdown('<div class="exposure-card exposure-filter-card">', unsafe_allow_html=True)
+    selector_cols = st.columns(2, gap="medium")
+    with selector_cols[0]:
+        selected_sector_label = st.selectbox(
+            "Arquetipo industrial",
+            list(sector_label_to_value.keys()),
+            key="exposure_sector",
+        )
+    with selector_cols[1]:
+        selected_contract_label = st.selectbox(
+            "Arquetipo contractual",
+            list(contract_label_to_value.keys()),
+            key="exposure_contract",
+        )
+    sector = sector_label_to_value[selected_sector_label]
+    contract = contract_label_to_value[selected_contract_label]
+    st.markdown(
+        f"""
+<div class="exposure-selected"><span>✓</span><div>Escenario seleccionado: <b>{escape(selected_sector_label)}</b> <span>|</span> <b>{escape(selected_contract_label)}</b></div></div>
+</div>
+""",
+        unsafe_allow_html=True,
+    )
+
     filtered = sector_df.copy()
     if sector:
         filtered = filtered[filtered["sector"] == sector]
@@ -2517,36 +2872,134 @@ def render_exposicion() -> None:
     sector_label = SECTOR_LABELS.get(sector, sector) if sector else "Todos los sectores"
     contract_label = CONTRACT_LABELS.get(contract, contract) if contract else "Todos los contratos"
 
-    cols = st.columns(4)
-    with cols[0]:
-        metric_card("Perfiles filtrados", f"{len(filtered):,.0f}", "sector-contrato-barra", kind="info")
-    with cols[1]:
-        metric_card("Barras únicas", f"{filtered['barra'].nunique():,.0f}", "candidatas")
-    with cols[2]:
-        metric_card("Score promedio", f"{filtered['avg_industrial_exposure_score'].mean():.1f}", "exposición media", kind="warning")
-    with cols[3]:
-        metric_card("Score p90", f"{filtered['p90_industrial_exposure_score'].mean():.1f}", "cola del escenario", kind="danger")
-
     leader = filtered.iloc[0] if not filtered.empty else None
-    leader_text = f"Bajo {sector_label} y {contract_label}, {leader['barra']} lidera el escenario con score {leader['profile_priority_score']:.1f}." if leader is not None else "No hay combinaciones para el filtro activo."
-    insight_grid(
-        [
-            ("Pregunta de decisión", "¿Qué combinación sector-barra debe revisarse primero bajo supuestos explícitos de exposición?", "decision"),
-            ("Hallazgo principal", leader_text, "evidence"),
-            ("Acción recomendada", "Revisar cobertura contractual, participación spot, demanda mensual y sensibilidad operativa del sector seleccionado.", "action"),
-            ("Caveat metodológico", "Los escenarios son salidas de screening basadas en supuestos; se interpretan como cola de revisión, no como forecast de factura.", "caveat"),
-        ]
+    stable_pct = (
+        filtered["signal_stability_label_es"].astype(str).str.contains("Estable", case=False, na=False).mean() * 100
+        if "signal_stability_label_es" in filtered and not filtered.empty
+        else 0
     )
-    section_header("Ranking sector-barra", "Bajo supuestos explícitos de exposición, esta combinación sector-barra merece mayor prioridad de due diligence.")
+    avg_exposure = filtered["avg_industrial_exposure_score"].mean() if not filtered.empty else 0
+    p90_exposure = filtered["p90_industrial_exposure_score"].mean() if not filtered.empty else 0
+    avg_priority_months = filtered["priority_months"].mean() if "priority_months" in filtered and not filtered.empty else 0
+    leader_text = (
+        f"Bajo {sector_label} y {contract_label}, {leader['barra']} lidera el escenario con score {leader['profile_priority_score']:.1f}."
+        if leader is not None
+        else "No hay combinaciones para el filtro activo."
+    )
+
+    st.markdown('<div class="exposure-section-label">2. Resumen del escenario</div>', unsafe_allow_html=True)
+    st.markdown(
+        f"""
+<div class="exposure-kpi-grid">
+  <div class="exposure-kpi soft"><div class="exposure-kpi-icon">▥</div><div><span>Combinaciones evaluadas</span><strong>{len(filtered):,.0f}</strong><em>sector-contrato-barra</em></div></div>
+  <div class="exposure-kpi soft"><div class="exposure-kpi-icon">⌖</div><div><span>Barras candidatas</span><strong>{filtered['barra'].nunique():,.0f}</strong><em>candidatas</em></div></div>
+  <div class="exposure-kpi hot"><div class="exposure-kpi-icon">↗</div><div><span>Exposición promedio del escenario</span><strong>{avg_exposure:.1f}</strong><em>exposición media</em></div></div>
+  <div class="exposure-kpi risk"><div class="exposure-kpi-icon">◎</div><div><span>Cola alta del escenario (P90)</span><strong>{p90_exposure:.1f}</strong><em>cola del escenario</em></div></div>
+  <div class="exposure-kpi purple"><div class="exposure-kpi-icon">▦</div><div><span>Meses revisión inmediata prom.</span><strong>{avg_priority_months:.1f}</strong><em>meses</em></div></div>
+  <div class="exposure-kpi good"><div class="exposure-kpi-icon">◇</div><div><span>Perfiles estables</span><strong>{stable_pct:.0f}%</strong><em>resultados estables</em></div></div>
+</div>
+""",
+        unsafe_allow_html=True,
+    )
+
+    st.markdown('<div class="exposure-section-label">3. Insights del escenario</div>', unsafe_allow_html=True)
+    st.markdown(
+        f"""
+<div class="exposure-insight-grid">
+  <div class="exposure-insight"><strong><span class="dot">?</span>Pregunta de decisión</strong><p>¿Qué combinaciones sector-barra deben revisarse primero bajo supuestos explícitos de exposición?</p></div>
+  <div class="exposure-insight"><strong><span class="dot">↗</span>Hallazgo del escenario</strong><p>{escape(leader_text)}</p></div>
+  <div class="exposure-insight"><strong><span class="dot">✓</span>Acción recomendada</strong><p>Revisar covenants contractuales, participación spot, demanda mensual y sensibilidad operativa del sector seleccionado.</p></div>
+  <div class="exposure-insight"><strong><span class="dot">!</span>Caveat metodológico</strong><p>Los escenarios son salidas de screening basadas en supuestos; no forecast de factura ni valoración financiera.</p></div>
+</div>
+""",
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        '<div class="exposure-chart-title">4. Barras con mayor exposición bajo el escenario seleccionado'
+        '<span>Un mayor score indica mayor prioridad de revisión bajo el escenario seleccionado, no mayor monto real de factura.</span></div>',
+        unsafe_allow_html=True,
+    )
     st.plotly_chart(sector_exposure_bar_chart(filtered), use_container_width=True)
-    compact_table(filtered.head(50), ["sector", "contract_type", "barra", "avg_industrial_exposure_score", "p90_industrial_exposure_score", "priority_months", "watchlist_months", "signal_stability_label_es", "dominant_driver", "profile_priority_score"])
-    if not contract_df.empty:
-        section_header("Sensibilidad contractual")
-        selected_contract_df = contract_df[contract_df["sector"] == sector] if sector else contract_df
-        st.plotly_chart(contract_comparison_chart(selected_contract_df), use_container_width=True)
-    if not sample.empty:
-        st.download_button("Descargar muestra del simulador", sample.head(500).to_csv(index=False).encode("utf-8"), file_name="industrial_exposure_sample.csv", mime="text/csv")
-    action_panel("Lectura del escenario", "Una combinación con mayor score merece más atención porque reúne señal nodal, prioridad mensual, participación spot, consumo y supuestos sectoriales. Es un screening bajo supuestos explícitos: no debe interpretarse como forecast de factura ni valorización financiera.")
+
+    st.markdown('<div class="exposure-table-title">5. Top combinaciones candidatas</div>', unsafe_allow_html=True)
+    top_table = filtered.head(10).copy()
+    table = pd.DataFrame(
+        {
+            "Barra": top_table["barra"],
+            "Score exposición prom.": top_table["avg_industrial_exposure_score"].round(2),
+            "Score exposición p90": top_table["p90_industrial_exposure_score"].round(2),
+            "Meses revisión inmediata": top_table["priority_months"].astype("Int64"),
+            "Meses seguimiento": top_table["watchlist_months"].astype("Int64"),
+            "Estabilidad del resultado": top_table["signal_stability_label_es"].fillna("No clasificado"),
+        }
+    )
+    st.dataframe(
+        table,
+        hide_index=True,
+        use_container_width=True,
+        height=315,
+        column_config={
+            "Score exposición prom.": st.column_config.NumberColumn(format="%.2f"),
+            "Score exposición p90": st.column_config.NumberColumn(format="%.2f"),
+        },
+    )
+
+    st.markdown('<div class="exposure-section-label">6. Sensibilidad y lectura del escenario</div>', unsafe_allow_html=True)
+    bottom_left, bottom_right = st.columns([1.05, 0.95], gap="medium")
+    with bottom_left:
+        st.markdown(
+            '<div class="exposure-chart-title" style="margin-top:0;">Sensibilidad por tipo de contrato'
+            '<span>Exposición promedio por arquetipo contractual bajo el escenario seleccionado.</span></div>',
+            unsafe_allow_html=True,
+        )
+        if not contract_df.empty:
+            selected_contract_df = contract_df[contract_df["sector"] == sector] if sector else contract_df
+            st.plotly_chart(contract_comparison_chart(selected_contract_df), use_container_width=True)
+    with bottom_right:
+        st.markdown(
+            f"""
+<div class="exposure-reading-card">
+  <h3>Lectura del escenario</h3>
+  <p>Una combinación con mayor score merece más atención porque reúne señal nodal, prioridad mensual, participación spot, consumo y supuestos sectoriales. Es un screening bajo supuestos explícitos: no debe interpretarse como forecast de factura ni valoración financiera.</p>
+</div>
+<div class="exposure-reading-card">
+  <h3>Acciones sugeridas</h3>
+  <ul>
+    <li>Priorizar revisión de contratos en los perfiles con mayor exposición.</li>
+    <li>Evaluar alternativa de mezcla spot y PPA para reducir cola de riesgos.</li>
+    <li>Completar lectura de meses de revisión inmediata y perfiles sensibles.</li>
+    <li>Monitorear resultados si cambian los supuestos del escenario.</li>
+  </ul>
+</div>
+""",
+            unsafe_allow_html=True,
+        )
+
+    st.markdown('<div class="exposure-section-label">7. Notas importantes</div>', unsafe_allow_html=True)
+    st.markdown(
+        """
+<div class="exposure-notes">
+  <div>Los scores son relativos dentro del universo filtrado.</div>
+  <div>Sirven para priorizar revisión contractual y gestión de flexibilidad.</div>
+  <div>No predice precios futuros ni congestión física.</div>
+  <div>Basado en supuestos explícitos definidos para el escenario.</div>
+</div>
+""",
+        unsafe_allow_html=True,
+    )
+
+    action_cols = st.columns([1, 1, 1.2])
+    with action_cols[1]:
+        st.download_button(
+            "Descargar tabla CSV",
+            filtered.to_csv(index=False).encode("utf-8"),
+            file_name="industrial_exposure_filtered.csv",
+            mime="text/csv",
+            width="stretch",
+        )
+    with action_cols[2]:
+        st.markdown('<a class="exposure-rank-link" href="?page=Ranking%20de%20Prioridad">Ver Ranking de Prioridad →</a>', unsafe_allow_html=True)
 
 
 def render_caso() -> None:

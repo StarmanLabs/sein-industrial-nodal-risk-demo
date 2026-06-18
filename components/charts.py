@@ -445,9 +445,9 @@ def sector_exposure_bar_chart(df: pd.DataFrame, n: int = 15):
         orientation="h",
         color="avg_industrial_exposure_score",
         color_continuous_scale=HEAT_SCALE,
-        title="Top combinaciones sector-barra del escenario seleccionado",
+        title=None,
         labels={
-            "profile_priority_score": "Score de prioridad del perfil",
+            "profile_priority_score": "Score de exposición promedio",
             "avg_industrial_exposure_score": "Exposición promedio",
             "barra": "Barra",
         },
@@ -465,9 +465,12 @@ def sector_exposure_bar_chart(df: pd.DataFrame, n: int = 15):
         marker_line_width=0,
         text=data["profile_priority_score"].map(lambda value: f"{value:.1f}"),
         textposition="outside",
-        hovertemplate="<b>%{y}</b><br>Score perfil: %{x:.1f}<extra></extra>",
+        hovertemplate="<b>%{y}</b><br>Score de exposición: %{x:.1f}<extra></extra>",
     )
-    return apply_chart_style(fig, height=500)
+    fig = apply_chart_style(fig, height=470)
+    fig.update_layout(title_text="", margin={"l": 130, "r": 40, "t": 14, "b": 44})
+    fig.update_coloraxes(colorbar={"title": "Exposición<br>promedio", "thickness": 10, "len": 0.72})
+    return fig
 
 
 def contract_comparison_chart(df: pd.DataFrame):
@@ -482,7 +485,7 @@ def contract_comparison_chart(df: pd.DataFrame):
         orientation="h",
         color="spot_share",
         color_continuous_scale=STRESS_SCALE,
-        title="Sensibilidad comparada por arquetipo contractual",
+        title=None,
         labels={
             "avg_exposure_score": "Score promedio de exposición",
             "contract_type": "Contrato",
@@ -491,5 +494,8 @@ def contract_comparison_chart(df: pd.DataFrame):
         hover_data=["unique_barras", "monthly_mwh", "p90_exposure_score", "priority_rows"],
     )
     fig.update_traces(marker_line_width=0, hovertemplate="<b>%{y}</b><br>Score prom.: %{x:.1f}<extra></extra>")
-    return apply_chart_style(fig, height=360)
+    fig = apply_chart_style(fig, height=300)
+    fig.update_layout(title_text="", margin={"l": 150, "r": 18, "t": 10, "b": 42})
+    fig.update_coloraxes(colorbar={"title": "Participación<br>spot", "thickness": 9, "len": 0.72})
+    return fig
 
