@@ -434,20 +434,21 @@ def watchlist_heatmap(df: pd.DataFrame, order: list[str] | None = None):
 
 
 def sector_exposure_bar_chart(df: pd.DataFrame, n: int = 15):
-    data = df.nlargest(n, "profile_priority_score").sort_values("profile_priority_score")
+    score_col = "avg_industrial_exposure_score"
+    data = df.nlargest(n, score_col).sort_values(score_col)
     data = data.copy()
     data["sector_label"] = data["sector"].map(lambda value: SECTOR_LABELS.get(value, value))
     data["contract_label"] = data["contract_type"].map(lambda value: CONTRACT_LABELS.get(value, value))
     fig = px.bar(
         data,
-        x="profile_priority_score",
+        x=score_col,
         y="barra",
         orientation="h",
-        color="avg_industrial_exposure_score",
+        color=score_col,
         color_continuous_scale=HEAT_SCALE,
         title=None,
         labels={
-            "profile_priority_score": "Score de exposición promedio",
+            score_col: "Score de exposición prom.",
             "avg_industrial_exposure_score": "Exposición promedio",
             "barra": "Barra",
         },
@@ -463,12 +464,13 @@ def sector_exposure_bar_chart(df: pd.DataFrame, n: int = 15):
     )
     fig.update_traces(
         marker_line_width=0,
-        text=data["profile_priority_score"].map(lambda value: f"{value:.1f}"),
+        text=data[score_col].map(lambda value: f"{value:.1f}"),
         textposition="outside",
-        hovertemplate="<b>%{y}</b><br>Score de exposición: %{x:.1f}<extra></extra>",
+        hovertemplate="<b>%{y}</b><br>Score de exposición prom.: %{x:.1f}<extra></extra>",
     )
     fig = apply_chart_style(fig, height=470)
     fig.update_layout(title_text="", margin={"l": 130, "r": 40, "t": 14, "b": 44})
+    fig.update_yaxes(categoryorder="array", categoryarray=data["barra"].tolist())
     fig.update_coloraxes(colorbar={"title": "Exposición<br>promedio", "thickness": 10, "len": 0.72})
     return fig
 
@@ -496,6 +498,7 @@ def contract_comparison_chart(df: pd.DataFrame):
     fig.update_traces(marker_line_width=0, hovertemplate="<b>%{y}</b><br>Score prom.: %{x:.1f}<extra></extra>")
     fig = apply_chart_style(fig, height=300)
     fig.update_layout(title_text="", margin={"l": 150, "r": 18, "t": 10, "b": 42})
+    fig.update_yaxes(categoryorder="array", categoryarray=data["contract_label"].tolist())
     fig.update_coloraxes(colorbar={"title": "Participación<br>spot", "thickness": 9, "len": 0.72})
     return fig
 

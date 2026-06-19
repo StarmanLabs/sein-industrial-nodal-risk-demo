@@ -474,7 +474,7 @@ def load_contract_scenarios() -> pd.DataFrame:
             monthly_mwh=("monthly_mwh", "mean"),
             spot_share=("spot_share", "mean"),
             avg_exposure_score=("avg_industrial_exposure_score", "mean"),
-            p90_exposure_score=("p90_industrial_exposure_score", "quantile"),
+            p90_exposure_score=("avg_industrial_exposure_score", lambda values: values.quantile(0.90)),
             priority_rows=("priority_months", "sum"),
             watchlist_rows=("watchlist_months", "sum"),
         )

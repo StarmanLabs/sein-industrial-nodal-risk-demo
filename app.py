@@ -2868,21 +2868,28 @@ def render_exposicion() -> None:
         filtered = filtered[filtered["sector"] == sector]
     if contract:
         filtered = filtered[filtered["contract_type"] == contract]
-    filtered = filtered.sort_values("profile_priority_score", ascending=False)
+    scenario_score_col = "avg_industrial_exposure_score"
+    filtered = filtered.sort_values(scenario_score_col, ascending=False)
     sector_label = SECTOR_LABELS.get(sector, sector) if sector else "Todos los sectores"
     contract_label = CONTRACT_LABELS.get(contract, contract) if contract else "Todos los contratos"
 
     leader = filtered.iloc[0] if not filtered.empty else None
     stable_pct = (
-        filtered["signal_stability_label_es"].astype(str).str.contains("Estable", case=False, na=False).mean() * 100
+        filtered["signal_stability_label_es"].astype(str).str.strip().eq("Estable").mean() * 100
         if "signal_stability_label_es" in filtered and not filtered.empty
         else 0
     )
-    avg_exposure = filtered["avg_industrial_exposure_score"].mean() if not filtered.empty else 0
-    p90_exposure = filtered["p90_industrial_exposure_score"].mean() if not filtered.empty else 0
+    score_series = pd.to_numeric(filtered[scenario_score_col], errors="coerce") if not filtered.empty else pd.Series(dtype=float)
+    avg_exposure = score_series.mean() if not score_series.empty else 0
+    p90_exposure = score_series.quantile(0.90) if not score_series.empty else 0
     avg_priority_months = filtered["priority_months"].mean() if "priority_months" in filtered and not filtered.empty else 0
+    combo_count = (
+        filtered[["sector", "contract_type", "barra"]].drop_duplicates().shape[0]
+        if {"sector", "contract_type", "barra"}.issubset(filtered.columns)
+        else len(filtered)
+    )
     leader_text = (
-        f"Bajo {sector_label} y {contract_label}, {leader['barra']} lidera el escenario con score {leader['profile_priority_score']:.1f}."
+        f"Bajo {sector_label} y {contract_label}, {leader['barra']} lidera el escenario con score de exposición {leader[scenario_score_col]:.1f}."
         if leader is not None
         else "No hay combinaciones para el filtro activo."
     )
@@ -2891,7 +2898,7 @@ def render_exposicion() -> None:
     st.markdown(
         f"""
 <div class="exposure-kpi-grid">
-  <div class="exposure-kpi soft"><div class="exposure-kpi-icon">▥</div><div><span>Combinaciones evaluadas</span><strong>{len(filtered):,.0f}</strong><em>sector-contrato-barra</em></div></div>
+  <div class="exposure-kpi soft"><div class="exposure-kpi-icon">▥</div><div><span>Combinaciones evaluadas</span><strong>{combo_count:,.0f}</strong><em>sector-contrato-barra</em></div></div>
   <div class="exposure-kpi soft"><div class="exposure-kpi-icon">⌖</div><div><span>Barras candidatas</span><strong>{filtered['barra'].nunique():,.0f}</strong><em>candidatas</em></div></div>
   <div class="exposure-kpi hot"><div class="exposure-kpi-icon">↗</div><div><span>Exposición promedio del escenario</span><strong>{avg_exposure:.1f}</strong><em>exposición media</em></div></div>
   <div class="exposure-kpi risk"><div class="exposure-kpi-icon">◎</div><div><span>Cola alta del escenario (P90)</span><strong>{p90_exposure:.1f}</strong><em>cola del escenario</em></div></div>
@@ -2917,7 +2924,7 @@ def render_exposicion() -> None:
 
     st.markdown(
         '<div class="exposure-chart-title">4. Barras con mayor exposición bajo el escenario seleccionado'
-        '<span>Un mayor score indica mayor prioridad de revisión bajo el escenario seleccionado, no mayor monto real de factura.</span></div>',
+        '<span>Un mayor score indica mayor prioridad relativa de revisión bajo el escenario seleccionado, no mayor monto real de factura.</span></div>',
         unsafe_allow_html=True,
     )
     st.plotly_chart(sector_exposure_bar_chart(filtered), use_container_width=True)
@@ -2967,7 +2974,7 @@ def render_exposicion() -> None:
   <h3>Acciones sugeridas</h3>
   <ul>
     <li>Priorizar revisión de contratos en los perfiles con mayor exposición.</li>
-    <li>Evaluar alternativa de mezcla spot y PPA para reducir cola de riesgos.</li>
+    <li>Evaluar alternativas de mezcla spot y PPA como supuestos de exposición, no como recomendación automática.</li>
     <li>Completar lectura de meses de revisión inmediata y perfiles sensibles.</li>
     <li>Monitorear resultados si cambian los supuestos del escenario.</li>
   </ul>
@@ -2990,10 +2997,27 @@ def render_exposicion() -> None:
     )
 
     action_cols = st.columns([1, 1, 1.2])
+    download_df = pd.DataFrame()
+    if not filtered.empty:
+        download_df = pd.DataFrame(
+            {
+                "Sector industrial": filtered["sector"].map(lambda value: SECTOR_LABELS.get(value, value)),
+                "Arquetipo contractual": filtered["contract_type"].map(lambda value: CONTRACT_LABELS.get(value, value)),
+                "Barra": filtered["barra"],
+                "Score exposición prom.": pd.to_numeric(filtered["avg_industrial_exposure_score"], errors="coerce").round(2),
+                "Score exposición p90": pd.to_numeric(filtered["p90_industrial_exposure_score"], errors="coerce").round(2),
+                "Meses revisión inmediata": pd.to_numeric(filtered["priority_months"], errors="coerce").fillna(0).astype(int),
+                "Meses seguimiento": pd.to_numeric(filtered["watchlist_months"], errors="coerce").fillna(0).astype(int),
+                "Estabilidad del resultado": filtered["signal_stability_label_es"].fillna("No clasificado"),
+                "Participación spot asumida": pd.to_numeric(filtered["spot_share"], errors="coerce").round(2),
+                "Consumo mensual supuesto MWh": pd.to_numeric(filtered["monthly_mwh"], errors="coerce").round(0).astype("Int64"),
+                "Driver principal": filtered["dominant_driver"].fillna("No clasificado"),
+            }
+        )
     with action_cols[1]:
         st.download_button(
             "Descargar tabla CSV",
-            filtered.to_csv(index=False).encode("utf-8"),
+            download_df.to_csv(index=False).encode("utf-8"),
             file_name="industrial_exposure_filtered.csv",
             mime="text/csv",
             width="stretch",
