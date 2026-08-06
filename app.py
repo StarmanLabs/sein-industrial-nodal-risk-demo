@@ -3239,7 +3239,21 @@ PAGES = {
 }
 page_names = list(PAGES.keys())
 query_page = st.query_params.get("page", "Inicio")
-default_page_index = page_names.index(query_page) if query_page in PAGES else 0
-selected_page = st.sidebar.radio("Página", page_names, index=default_page_index, label_visibility="collapsed")
+query_page = query_page if query_page in PAGES else "Inicio"
+
+# Keep custom links, browser history and the sidebar selector on the same route.
+if st.session_state.get("_last_query_page") != query_page:
+    st.session_state["selected_product_page"] = query_page
+    st.session_state["_last_query_page"] = query_page
+
+selected_page = st.sidebar.radio(
+    "Página",
+    page_names,
+    key="selected_product_page",
+    label_visibility="collapsed",
+)
+if st.query_params.get("page", "Inicio") != selected_page:
+    st.query_params["page"] = selected_page
+    st.session_state["_last_query_page"] = selected_page
 product_sidebar_footer()
 PAGES[selected_page]()

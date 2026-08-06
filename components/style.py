@@ -777,12 +777,35 @@ h2, h3 {
   justify-content: space-between;
   align-items: center;
   background: rgba(2, 24, 38, 0.42);
+  text-decoration: none !important;
+  cursor: pointer;
+  transition: transform 160ms ease, background-color 160ms ease, border-color 160ms ease;
+}
+
+.sein-hero-action:hover,
+.sein-hero-action:focus-visible {
+  color: #ffffff;
+  border-color: #23d3d3;
+  background: rgba(12, 64, 78, 0.72);
+  transform: translateY(-1px);
+  text-decoration: none !important;
+}
+
+.sein-hero-action:focus-visible {
+  outline: 3px solid rgba(35, 211, 211, 0.42);
+  outline-offset: 3px;
 }
 
 .sein-hero-action.primary {
   border-color: transparent;
   background: linear-gradient(90deg, #18b7b7, #22d3d3);
   color: #052132;
+}
+
+.sein-hero-action.primary:hover,
+.sein-hero-action.primary:focus-visible {
+  color: #052132;
+  background: linear-gradient(90deg, #22c8c8, #55e4e4);
 }
 
 .sein-section-title {

@@ -138,9 +138,9 @@ def hero_header(title: str, body: str, kicker: str = "SEIN Industrial Nodal Risk
     <div class="sein-hero-body">{escape(body)}</div>
     <div class="sein-hero-proof">Identifica qué barras revisar primero, por qué aparecen y qué evidencia falta contrastar.</div>
     <div class="sein-hero-actions">
-      <div class="sein-hero-action primary">Ver resumen ejecutivo <span>→</span></div>
-      <div class="sein-hero-action">Abrir ranking <span>→</span></div>
-      <div class="sein-hero-action">Analizar caso <span>→</span></div>
+      <a class="sein-hero-action primary" href="?page=Resumen%20Ejecutivo" target="_self">Ver resumen ejecutivo <span>→</span></a>
+      <a class="sein-hero-action" href="?page=Ranking%20de%20Prioridad" target="_self">Abrir ranking <span>→</span></a>
+      <a class="sein-hero-action" href="?page=Caso%20de%20Estudio" target="_self">Analizar caso <span>→</span></a>
     </div>
   </div>
   <div class="sein-hero-visual" aria-hidden="true">
@@ -257,13 +257,18 @@ def use_path_panel(items: list[tuple[str, str]]) -> None:
         '<svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg>',
         '<svg viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9Z"/><path d="M14 3v6h6M9 15h5M9 18h3"/></svg>',
     ]
+    destinations = [
+        "?page=Resumen%20Ejecutivo",
+        "?page=Ranking%20de%20Prioridad",
+        "?page=Caso%20de%20Estudio",
+    ]
     rendered_items = "\n".join(
         f"""
   <div class="sein-use-step">
     <div class="sein-use-icon {['summary', 'ranking', 'case'][index - 1]}">{icons[index - 1]}</div>
     <span>{escape(label)}</span>
     <p>{escape(body)}</p>
-    <a>{['Ir al resumen', 'Abrir ranking', 'Ver caso'][index - 1]} <strong>→</strong></a>
+    <a href="{destinations[index - 1]}" target="_self">{['Ir al resumen', 'Abrir ranking', 'Ver caso'][index - 1]} <strong>→</strong></a>
   </div>
 """
         for index, (label, body) in enumerate(items, start=1)
