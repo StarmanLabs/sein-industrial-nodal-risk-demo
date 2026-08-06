@@ -1,6 +1,7 @@
 ﻿from __future__ import annotations
 
 from html import escape
+from urllib.parse import quote_plus
 
 import pandas as pd
 import streamlit as st
@@ -246,7 +247,7 @@ def render_resumen() -> None:
     </div>
     <div class="exec-next-steps">
       <div class="exec-section-kicker">¿Qué hacer ahora?</div>
-      <div class="exec-step"><strong>1</strong><span><b>Abrir ranking</b><br>Filtrar revisión inmediata y selectiva.</span></div>
+      <div class="exec-step"><strong>1</strong><span><b>Abrir ranking</b><br>Filtrar señales prioritarias y condicionadas.</span></div>
       <div class="exec-step"><strong>2</strong><span><b>Contrastar contexto</b><br>Exposición industrial y evidencia topológica.</span></div>
       <div class="exec-step"><strong>3</strong><span><b>Bajar a caso de estudio</b><br>Entender por qué una barra merece atención.</span></div>
     </div>
@@ -314,7 +315,7 @@ def render_resumen() -> None:
         )
         chart_col, note_col = st.columns([4.3, 1.2])
         with chart_col:
-            st.plotly_chart(system_regime_line(regime), use_container_width=True)
+            st.plotly_chart(system_regime_line(regime), width="stretch")
         with note_col:
             st.html(
                 """
@@ -949,10 +950,10 @@ div[data-testid="stDataFrame"] {
     <div class="rank-summary-kpis">
       <div class="rank-summary-title">Con los filtros actuales:</div>
       <div class="rank-kpi"><strong>{len(filtered):,.0f}</strong><span>barras visibles</span></div>
-      <div class="rank-kpi"><strong>{queue_count:,.0f}</strong><span>en cola principal<br>(inmediata + selectiva)</span></div>
-      <div class="rank-kpi"><strong>{watch_count:,.0f}</strong><span>en seguimiento mensual<br>(casos episódicos)</span></div>
+      <div class="rank-kpi"><strong>{queue_count:,.0f}</strong><span>en cola principal<br>(prioritarias + condicionadas)</span></div>
+      <div class="rank-kpi"><strong>{watch_count:,.0f}</strong><span>con señal episódica<br>(seguimiento mensual)</span></div>
       <div class="rank-kpi"><strong>{stable_count:,.0f}</strong><span>con resultado<br>estable</span></div>
-      <div class="rank-kpi"><strong>{immediate_count:,.0f}</strong><span>en revisión inmediata</span></div>
+      <div class="rank-kpi"><strong>{immediate_count:,.0f}</strong><span>con señal<br>prioritaria</span></div>
     </div>
   </div>
   <div class="rank-start-box">
@@ -965,7 +966,7 @@ div[data-testid="stDataFrame"] {
   </div>
   <div class="rank-next-box">
     <span class="exec-icon exec-icon-case" aria-hidden="true"></span>
-    <div><strong>Siguiente paso recomendado:</strong><p>{escape(next_action)}</p><a class="rank-next-button" href="?page=Caso%20de%20Estudio">Abrir caso de estudio →</a></div>
+    <div><strong>Siguiente paso recomendado:</strong><p>{escape(next_action)}</p><a class="rank-next-button" href="?page=Caso%20de%20Estudio&amp;barra={quote_plus(top_barras[0])}">Abrir caso de estudio →</a></div>
   </div>
 </div>
 """,
@@ -1750,7 +1751,7 @@ def render_icpi_oanri() -> None:
       </div>
       <div>
         <h3>Contexto del mapa</h3>
-        <p>Cada punto es una barra del SEIN. Su posición combina estrés nodal promedio y prioridad operativa promedio. El color indica el nivel de revisión recomendado.</p>
+        <p>Cada punto es una barra del SEIN. El eje X resume su señal local de precio; el eje Y muestra esa misma base leída bajo el régimen operativo del sistema. El color indica la acción de revisión sugerida.</p>
         <small>Periodo: {escape(start_month)} a {escape(end_month)} · Universo mostrado: {df['barra'].nunique():,.0f} barras</small>
       </div>
     </div>
@@ -1932,9 +1933,10 @@ def render_icpi_oanri() -> None:
   </div>
 </div>
 <div class="signal-map-help">
-  <strong>¿En qué se diferencia del Ranking de Prioridad?</strong>
-  <p><b>Mapa de Señales:</b> muestra dónde se ubican las barras según estrés nodal y prioridad operativa.</p>
-  <p><b>Ranking de Prioridad:</b> ordena las barras para decidir qué revisar primero.</p>
+  <strong>¿Qué aporta el segundo eje?</strong>
+  <p><b>Estrés nodal:</b> resume intensidad, volatilidad y episodios de la señal local.</p>
+  <p><b>Prioridad operativa:</b> parte de esa señal y la ajusta según los meses de mayor presión del sistema. Por eso ambos ejes están relacionados; interesa observar qué barras ganan o pierden relevancia con el ajuste.</p>
+  <p><b>Ranking:</b> añade recurrencia, estabilidad y contexto para decidir qué revisar primero.</p>
   <a href="?page=Ranking%20de%20Prioridad">→ Ir a Ranking de Prioridad</a>
 </div>
 """,
@@ -1945,7 +1947,7 @@ def render_icpi_oanri() -> None:
         chart_slot.warning("Sin barras para los filtros activos. Amplía el tipo de señal, estabilidad del resultado o tensión.")
         candidate_rows = pd.DataFrame()
     else:
-        chart_slot.plotly_chart(icpi_oanri_scatter(filtered), use_container_width=True)
+        chart_slot.plotly_chart(icpi_oanri_scatter(filtered), width="stretch")
         candidate_rows = (
             filtered.sort_values("decision_priority_score", ascending=False)
             .head(10)
@@ -1994,7 +1996,7 @@ def render_icpi_oanri() -> None:
                 f"<td class='metric'>{float(row['avg_icpi']):.2f}</td>"
                 f"<td class='metric'>{float(row['avg_oanri']):.2f}</td>"
                 f"<td class='metric'>{float(row['decision_priority_score']):.2f}</td>"
-                "<td class='num'><a class='signal-table-action' href='?page=Caso%20de%20Estudio'>↗</a></td>"
+                f"<td class='num'><a class='signal-table-action' href='?page=Caso%20de%20Estudio&amp;barra={quote_plus(str(row['barra']))}'>↗</a></td>"
                 "</tr>"
             )
         table_rows = "\n".join(rendered_rows)
@@ -2042,7 +2044,7 @@ def render_icpi_oanri() -> None:
   <div><svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.5 2.9 8.5 7 10 4.1-1.5 7-5.5 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-5"/></svg></div>
   <div>
     <strong>Notas metodológicas</strong>
-    <span>Este mapa combina promedios mensuales de estrés nodal y prioridad operativa. Las señales se clasifican en niveles de revisión para orientar atención experta. No se usan para pruebas de causalidad ni predicción de congestión.</span>
+    <span>Los ejes comparten una base de precios marginales: no son señales independientes. El mapa permite observar cómo cambia la lectura local al incorporar el régimen operativo; la clasificación final también considera recurrencia, estabilidad y contexto.</span>
   </div>
 </div>
 """,
@@ -2062,9 +2064,9 @@ def render_icpi_oanri() -> None:
 <div class="signal-guide">
   <div class="signal-guide-title">Guía rápida: cómo se combinan las señales</div>
   <div class="signal-guide-flow">
-    <div class="signal-guide-item"><div class="signal-guide-icon"><svg viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h17"/><path d="m7 15 4-4 3 3 5-7"/></svg></div><div><strong>Estrés nodal</strong><span>Indica dónde se concentra la tensión relativa en la red.</span></div></div>
-    <div class="signal-guide-op">+</div>
-    <div class="signal-guide-item"><div class="signal-guide-icon"><svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.5 2.9 8.5 7 10 4.1-1.5 7-5.5 7-10V6l-7-3Z"/><path d="M9 13h6"/></svg></div><div><strong>Prioridad operativa</strong><span>Indica dónde el sistema resulta más relevante.</span></div></div>
+    <div class="signal-guide-item"><div class="signal-guide-icon"><svg viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h17"/><path d="m7 15 4-4 3 3 5-7"/></svg></div><div><strong>Estrés nodal</strong><span>Resume la señal local relativa de cada barra.</span></div></div>
+    <div class="signal-guide-op">→</div>
+    <div class="signal-guide-item"><div class="signal-guide-icon"><svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.5 2.9 8.5 7 10 4.1-1.5 7-5.5 7-10V6l-7-3Z"/><path d="M9 13h6"/></svg></div><div><strong>Ajuste operativo</strong><span>Relee la señal bajo meses de presión del sistema.</span></div></div>
     <div class="signal-guide-op">+</div>
     <div class="signal-guide-item"><div class="signal-guide-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><div><strong>Estabilidad del resultado</strong><span>Indica si la barra sigue siendo relevante bajo criterios alternativos.</span></div></div>
     <div class="signal-guide-op">=</div>
@@ -2223,7 +2225,7 @@ def _render_watchlist_table(table_df: pd.DataFrame, full_df: pd.DataFrame) -> No
 
     st.dataframe(
         display.style.apply(_style, axis=1),
-        use_container_width=True,
+        width="stretch",
         hide_index=True,
         height=360,
         column_config={
@@ -2396,22 +2398,22 @@ def render_watchlist() -> None:
     latest_priority = latest_rows.set_index("barra")[watchlist_priority_col] if not latest_rows.empty else pd.Series(dtype=float)
     prev_priority = prev_rows.set_index("barra")[watchlist_priority_col] if not prev_rows.empty else pd.Series(dtype=float)
     deltas = (latest_priority - prev_priority.reindex(latest_priority.index)).dropna()
-    up_count = int((deltas > 0.25).sum())
-    down_count = int((deltas < -0.25).sum())
+    delta_threshold = 0.25
+    up_count = int((deltas > delta_threshold).sum())
+    down_count = int((deltas < -delta_threshold).sum())
+    median_delta = float(deltas.median()) if not deltas.empty else 0.0
     active_barras = latest_rows.loc[
         pd.to_numeric(latest_rows.get("ranking_mensual_v10", pd.Series(index=latest_rows.index)), errors="coerce") <= 20,
         "barra",
     ].nunique() if not latest_rows.empty else 0
-    month_top_count = int((pd.to_numeric(latest_rows.get("ranking_mensual_v10", pd.Series(dtype=float)), errors="coerce") <= 20).sum()) if not latest_rows.empty else 0
-
     st.markdown(
         f"""
 <div class="watch-kpi-band">
   <div class="watch-kpi hot"><span>Barras observadas</span><strong>{len(filtered_profiles):,.0f}</strong><em>universo filtrado</em></div>
-  <div class="watch-kpi"><span>Barras con señal activa</span><strong>{active_barras:,.0f}</strong><em>en el mes seleccionado</em></div>
-  <div class="watch-kpi"><span>Aumentaron vs. mes previo</span><strong>{up_count:,.0f}</strong><em>señales en aumento</em></div>
-  <div class="watch-kpi"><span>Disminuyeron vs. mes previo</span><strong>{down_count:,.0f}</strong><em>señales en disminución</em></div>
-  <div class="watch-kpi warm"><span>Priorizadas este mes</span><strong>{month_top_count:,.0f}</strong><em>requieren revisión</em></div>
+  <div class="watch-kpi"><span>En zona mensual</span><strong>{active_barras:,.0f}</strong><em>Top 20 del mes, incluidos empates</em></div>
+  <div class="watch-kpi"><span>Subieron</span><strong>{up_count:,.0f}</strong><em>más de +{delta_threshold:.2f} puntos</em></div>
+  <div class="watch-kpi"><span>Bajaron</span><strong>{down_count:,.0f}</strong><em>más de -{delta_threshold:.2f} puntos</em></div>
+  <div class="watch-kpi warm"><span>Cambio mediano</span><strong>{median_delta:+.1f}</strong><em>puntos vs. mes anterior</em></div>
 </div>
 """,
         unsafe_allow_html=True,
@@ -2425,7 +2427,7 @@ def render_watchlist() -> None:
             '<div class="watch-block-title">Mapa de calor mensual de señales: prioridad operativa <span>Colores más cálidos indican mayor prioridad mensual. Filas repetidamente intensas sugieren persistencia; bloques aislados sugieren episodios puntuales.</span></div>',
             unsafe_allow_html=True,
         )
-        st.plotly_chart(watchlist_heatmap(heatmap_data, order=ordered_barras), use_container_width=True)
+        st.plotly_chart(watchlist_heatmap(heatmap_data, order=ordered_barras), width="stretch")
     with side_col:
         st.markdown(
             """
@@ -2433,8 +2435,8 @@ def render_watchlist() -> None:
   <h3>Cómo leer esta vista</h3>
   <div class="watch-guide-row red"><span>▦</span><div><strong>Mapa de calor</strong><p>Prioridad operativa por barra y mes. Rojo = mayor prioridad relativa.</p></div></div>
   <div class="watch-guide-row blue"><span>↗</span><div><strong>Evolución mensual</strong><p>Compara estrés nodal relativo y prioridad operativa en el tiempo.</p></div></div>
-  <div class="watch-guide-row teal"><span>☷</span><div><strong>Top mensual</strong><p>Barras con mayor prioridad según métricas combinadas del mes.</p></div></div>
-  <div class="watch-guide-row green"><span>◇</span><div><strong>Estabilidad del resultado</strong><p>Indica persistencia de la señal bajo criterios alternativos.</p></div></div>
+  <div class="watch-guide-row teal"><span>☷</span><div><strong>Zona mensual</strong><p>Top 20 relativo del mes, incluidos empates. Sirve para seguimiento, no como corte metodológico del universo.</p></div></div>
+  <div class="watch-guide-row green"><span>◇</span><div><strong>Estabilidad del resultado</strong><p>Indica si la lectura se mantiene al probar criterios alternativos; no mide persistencia temporal.</p></div></div>
 </div>
 """,
             unsafe_allow_html=True,
@@ -2448,7 +2450,7 @@ def render_watchlist() -> None:
             unsafe_allow_html=True,
         )
         selected_rows = panel[panel["barra"] == selected_barra].sort_values("month")
-        st.plotly_chart(barra_month_line(panel, selected_barra), use_container_width=True)
+        st.plotly_chart(barra_month_line(panel, selected_barra), width="stretch")
         st.markdown(
             f'<div class="watch-pattern">{escape(classify_pattern(selected_rows))}</div>',
             unsafe_allow_html=True,
@@ -2486,7 +2488,7 @@ def render_watchlist() -> None:
         """
 <div class="watch-method-note">
   <strong>Notas metodológicas</strong>
-  <span>Esta página combina promedios mensuales de estrés nodal y prioridad operativa. La estabilidad del resultado ayuda a distinguir señales que se mantienen bajo criterios alternativos. No se usa para causalidad, predicción de congestión ni cálculo de facturas.</span>
+  <span>Los conteos de subida y bajada comparan la prioridad operativa con el mes anterior y exigen un cambio mayor a ±0.25 puntos. Un movimiento amplio del universo puede reflejar el régimen mensual del sistema; la estabilidad del resultado evalúa otra cosa: si la lectura se mantiene bajo criterios alternativos.</span>
 </div>
 """,
         unsafe_allow_html=True,
@@ -2647,6 +2649,12 @@ def render_exposicion() -> None:
   line-height: 1;
   font-weight: 880;
   margin-top: 0.4rem;
+}
+
+.exposure-kpi.leader strong {
+  font-size: 1.18rem;
+  line-height: 1.12;
+  overflow-wrap: anywhere;
 }
 
 .exposure-kpi em {
@@ -2891,17 +2899,18 @@ def render_exposicion() -> None:
         if leader is not None
         else "No hay combinaciones para el filtro activo."
     )
+    leader_name = str(leader["barra"]) if leader is not None else "Sin resultado"
 
     st.markdown('<div class="exposure-section-label">2. Resumen del escenario</div>', unsafe_allow_html=True)
     st.markdown(
         f"""
 <div class="exposure-kpi-grid">
-  <div class="exposure-kpi soft"><div class="exposure-kpi-icon">▥</div><div><span>Combinaciones evaluadas</span><strong>{combo_count:,.0f}</strong><em>sector-contrato-barra</em></div></div>
-  <div class="exposure-kpi soft"><div class="exposure-kpi-icon">⌖</div><div><span>Barras candidatas</span><strong>{filtered['barra'].nunique():,.0f}</strong><em>candidatas</em></div></div>
+  <div class="exposure-kpi soft"><div class="exposure-kpi-icon">▥</div><div><span>Barras evaluadas</span><strong>{combo_count:,.0f}</strong><em>para el escenario seleccionado</em></div></div>
+  <div class="exposure-kpi soft leader"><div class="exposure-kpi-icon">⌖</div><div><span>Barra líder</span><strong>{escape(leader_name)}</strong><em>mayor score relativo</em></div></div>
   <div class="exposure-kpi hot"><div class="exposure-kpi-icon">↗</div><div><span>Exposición promedio del escenario</span><strong>{avg_exposure:.1f}</strong><em>exposición media</em></div></div>
-  <div class="exposure-kpi risk"><div class="exposure-kpi-icon">◎</div><div><span>Cola alta del escenario (P90)</span><strong>{p90_exposure:.1f}</strong><em>cola del escenario</em></div></div>
-  <div class="exposure-kpi purple"><div class="exposure-kpi-icon">▦</div><div><span>Meses revisión inmediata prom.</span><strong>{avg_priority_months:.1f}</strong><em>meses</em></div></div>
-  <div class="exposure-kpi good"><div class="exposure-kpi-icon">◇</div><div><span>Perfiles estables</span><strong>{stable_pct:.0f}%</strong><em>resultados estables</em></div></div>
+  <div class="exposure-kpi risk"><div class="exposure-kpi-icon">◎</div><div><span>Umbral del 10% superior</span><strong>{p90_exposure:.1f}</strong><em>percentil 90 (P90)</em></div></div>
+  <div class="exposure-kpi purple"><div class="exposure-kpi-icon">▦</div><div><span>Meses con señal prioritaria</span><strong>{avg_priority_months:.1f}</strong><em>promedio de 36 meses</em></div></div>
+  <div class="exposure-kpi good"><div class="exposure-kpi-icon">◇</div><div><span>Resultados estables</span><strong>{stable_pct:.0f}%</strong><em>mantienen lectura ante otros criterios</em></div></div>
 </div>
 """,
         unsafe_allow_html=True,
@@ -2925,7 +2934,7 @@ def render_exposicion() -> None:
         '<span>Un mayor score indica mayor prioridad relativa de revisión bajo el escenario seleccionado, no mayor monto real de factura.</span></div>',
         unsafe_allow_html=True,
     )
-    st.plotly_chart(sector_exposure_bar_chart(filtered), use_container_width=True)
+    st.plotly_chart(sector_exposure_bar_chart(filtered), width="stretch")
 
     st.markdown('<div class="exposure-table-title">5. Top combinaciones candidatas</div>', unsafe_allow_html=True)
     top_table = filtered.head(10).copy()
@@ -2933,8 +2942,8 @@ def render_exposicion() -> None:
         {
             "Barra": top_table["barra"],
             "Score exposición prom.": top_table["avg_industrial_exposure_score"].round(2),
-            "Score exposición p90": top_table["p90_industrial_exposure_score"].round(2),
-            "Meses revisión inmediata": top_table["priority_months"].astype("Int64"),
+            "Escenario alto (P90)": top_table["p90_industrial_exposure_score"].round(2),
+            "Meses señal prioritaria": top_table["priority_months"].astype("Int64"),
             "Meses seguimiento": top_table["watchlist_months"].astype("Int64"),
             "Estabilidad del resultado": top_table["signal_stability_label_es"].fillna("No clasificado"),
         }
@@ -2942,11 +2951,11 @@ def render_exposicion() -> None:
     st.dataframe(
         table,
         hide_index=True,
-        use_container_width=True,
+        width="stretch",
         height=315,
         column_config={
             "Score exposición prom.": st.column_config.NumberColumn(format="%.2f"),
-            "Score exposición p90": st.column_config.NumberColumn(format="%.2f"),
+            "Escenario alto (P90)": st.column_config.NumberColumn(format="%.2f"),
         },
     )
 
@@ -2960,20 +2969,20 @@ def render_exposicion() -> None:
         )
         if not contract_df.empty:
             selected_contract_df = contract_df[contract_df["sector"] == sector] if sector else contract_df
-            st.plotly_chart(contract_comparison_chart(selected_contract_df), use_container_width=True)
+            st.plotly_chart(contract_comparison_chart(selected_contract_df), width="stretch")
     with bottom_right:
         st.markdown(
             f"""
 <div class="exposure-reading-card">
   <h3>Lectura del escenario</h3>
-  <p>Una combinación con mayor score merece más atención porque reúne señal nodal, prioridad mensual, participación spot, consumo y supuestos sectoriales. Es un screening bajo supuestos explícitos: no debe interpretarse como forecast de factura ni valoración financiera.</p>
+  <p>Una combinación con mayor score merece más atención porque reúne señal nodal, prioridad mensual, participación spot, consumo y supuestos sectoriales. El score pondera prioridad operativa (35%), costo incremental relativo (25%), cola sectorial (hasta 20%), criticidad y confiabilidad sectorial (hasta 10%) y estabilidad del resultado (10%).</p>
 </div>
 <div class="exposure-reading-card">
   <h3>Acciones sugeridas</h3>
   <ul>
     <li>Priorizar revisión de contratos en los perfiles con mayor exposición.</li>
     <li>Evaluar alternativas de mezcla spot y PPA como supuestos de exposición, no como recomendación automática.</li>
-    <li>Completar lectura de meses de revisión inmediata y perfiles sensibles.</li>
+    <li>Completar lectura de meses con señal prioritaria y resultados sensibles.</li>
     <li>Monitorear resultados si cambian los supuestos del escenario.</li>
   </ul>
 </div>
@@ -3003,8 +3012,8 @@ def render_exposicion() -> None:
                 "Arquetipo contractual": filtered["contract_type"].map(lambda value: CONTRACT_LABELS.get(value, value)),
                 "Barra": filtered["barra"],
                 "Score exposición prom.": pd.to_numeric(filtered["avg_industrial_exposure_score"], errors="coerce").round(2),
-                "Score exposición p90": pd.to_numeric(filtered["p90_industrial_exposure_score"], errors="coerce").round(2),
-                "Meses revisión inmediata": pd.to_numeric(filtered["priority_months"], errors="coerce").fillna(0).astype(int),
+                "Escenario alto (P90)": pd.to_numeric(filtered["p90_industrial_exposure_score"], errors="coerce").round(2),
+                "Meses señal prioritaria": pd.to_numeric(filtered["priority_months"], errors="coerce").fillna(0).astype(int),
                 "Meses seguimiento": pd.to_numeric(filtered["watchlist_months"], errors="coerce").fillna(0).astype(int),
                 "Estabilidad del resultado": filtered["signal_stability_label_es"].fillna("No clasificado"),
                 "Participación spot asumida": pd.to_numeric(filtered["spot_share"], errors="coerce").round(2),
@@ -3025,17 +3034,11 @@ def render_exposicion() -> None:
 
 
 def render_caso() -> None:
-    page_header("Caso de Estudio por Barra", "¿Por qué esta barra merece atención?")
     profiles = load_product_layer()
     panel = load_monthly_panel()
     if profiles.empty:
         st.error("La capa producto no está disponible.")
         st.stop()
-    barra = barra_selector(profiles, key="case_barra")
-    if not barra:
-        st.stop()
-    row = profiles[profiles["barra"] == barra].iloc[0]
-    priority_label = row.get("due_diligence_priority_es", row["due_diligence_priority"])
 
     def _clean(value: object, fallback: str = "No disponible en la capa producto") -> str:
         text = "" if value is None else str(value).strip()
@@ -3043,62 +3046,185 @@ def render_caso() -> None:
             return fallback
         return humanize_analytical_text(text)
 
-    cols = st.columns(5)
-    with cols[0]:
-        metric_card("Categoría", priority_label, "decisión sugerida", kind="warning")
-    with cols[1]:
-        metric_card("Score", f"{row['decision_priority_score']:.1f}", "0-100 relativo", kind="warning")
-    with cols[2]:
-        metric_card("Rank estrés", f"{row['rank_icpi']:.0f}", "1 = mayor señal", kind="info")
-    with cols[3]:
-        metric_card("Rank prioridad", f"{row['rank_oanri']:.0f}", "1 = mayor prioridad", kind="info")
-    with cols[4]:
-        metric_card("Soporte", row["evidence_grade"], "contexto revisado", kind="good")
+    ordered_barras = (
+        profiles.sort_values("decision_priority_score", ascending=False)["barra"]
+        .dropna()
+        .astype(str)
+        .drop_duplicates()
+        .tolist()
+    )
+    requested_barra = st.query_params.get("barra")
+    default_index = ordered_barras.index(requested_barra) if requested_barra in ordered_barras else 0
 
-    decision_summary_card(
-        priority_label,
-        f"{row['decision_priority_score']:.1f}/100",
-        row["priority_reason"],
-        row["recommended_action"],
-        (
-            f"Soporte de contexto {row['evidence_grade']}; "
-            f"{humanize_analytical_text(row.get('signal_stability_label_es', row.get('robustness_flag_es', row['robustness_flag'])))}; "
-            f"{humanize_analytical_text(row.get('score_coverage_class_es', 'cobertura analítica no clasificada'))}."
-        ),
+    st.markdown(
+        """
+<style>
+.block-container:has(.case-page) {
+  width: 100% !important;
+  max-width: none !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: 1.45rem !important;
+  padding-right: 1.45rem !important;
+}
+.case-page { width: 100%; margin: 0.15rem 0 0.65rem 0; }
+.case-header { display:grid; grid-template-columns:minmax(0,1fr) minmax(330px,.36fr); gap:1rem; align-items:start; margin:.35rem 0 .8rem; }
+.case-header h1 { color:#102033; font-size:clamp(2.1rem,3.8vw,3.05rem); line-height:1; margin:.2rem 0 .35rem; font-weight:880; }
+.case-header p { margin:0; color:#526174; font-size:1rem; }
+.case-intro { display:grid; grid-template-columns:38px minmax(0,1fr); gap:.75rem; align-items:center; border:1px solid #d8e3ea; border-radius:8px; background:#fff; padding:.85rem 1rem; color:#173b57; }
+.case-intro b { display:block; margin-bottom:.2rem; }
+.case-intro span { color:#526174; font-size:.88rem; line-height:1.4; }
+.case-intro-icon { width:34px; height:34px; border-radius:50%; display:grid; place-items:center; background:#e7f7f7; color:#087a82; font-size:1.1rem; font-weight:900; }
+.case-kpi-grid { display:grid; grid-template-columns:1.18fr repeat(5,minmax(0,1fr)); border:1px solid #d8e3ea; border-radius:8px; background:#fff; overflow:hidden; margin:.8rem 0; }
+.case-kpi { min-width:0; padding:.9rem 1rem; border-right:1px solid #d8e3ea; }
+.case-kpi:last-child { border-right:0; }
+.case-kpi span { display:block; color:#64748b; text-transform:uppercase; font-size:.68rem; font-weight:800; letter-spacing:.04em; }
+.case-kpi strong { display:block; color:#102033; font-size:1.55rem; line-height:1.08; margin:.35rem 0; overflow-wrap:anywhere; }
+.case-kpi:first-child strong { font-size:1.25rem; }
+.case-kpi em { display:block; color:#64748b; font-size:.76rem; font-style:normal; line-height:1.3; }
+.case-decision { display:grid; grid-template-columns:minmax(235px,.65fr) minmax(0,1.65fr); border:1px solid #d8e3ea; border-radius:8px; background:#fff; overflow:hidden; margin:.8rem 0 1rem; }
+.case-decision-band { padding:1.15rem; color:#fff; background:#667085; }
+.case-decision-band.priority { background:#b23a2e; }
+.case-decision-band.conditioned { background:#c47a16; }
+.case-decision-band.episodic { background:#087a82; }
+.case-decision-band.context { background:#526174; }
+.case-decision-band.incomplete { background:#7e3fa1; }
+.case-decision-band span { display:block; text-transform:uppercase; font-size:.7rem; font-weight:800; letter-spacing:.05em; opacity:.9; }
+.case-decision-band strong { display:block; font-size:1.55rem; line-height:1.08; margin:.55rem 0; }
+.case-decision-band p { margin:.8rem 0 0; font-size:.86rem; line-height:1.45; }
+.case-decision-body { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); }
+.case-decision-item { padding:1rem 1.05rem; border-right:1px solid #e1e8ee; }
+.case-decision-item:last-child { border-right:0; }
+.case-decision-item h3 { margin:0 0 .45rem; color:#102033; font-size:1rem; }
+.case-decision-item p { margin:0; color:#3c4858; font-size:.88rem; line-height:1.5; }
+.case-section-title { color:#102033; font-size:1.12rem; font-weight:850; margin:1rem 0 .55rem; }
+.case-context-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:.7rem; }
+.case-context-card { border:1px solid #d8e3ea; border-radius:8px; background:#fff; padding:.9rem; min-height:118px; }
+.case-context-card b { display:block; color:#0b6671; font-size:.78rem; margin-bottom:.4rem; text-transform:uppercase; }
+.case-context-card span { color:#3c4858; font-size:.87rem; line-height:1.48; }
+.case-context-wide { border:1px solid #cfe1e8; border-left:4px solid #0b7c86; border-radius:8px; background:#f8fcfd; padding:.9rem 1rem; margin:.75rem 0; }
+.case-context-wide b { color:#102033; }
+.case-context-wide p { margin:.3rem 0 0; color:#3c4858; line-height:1.5; }
+.case-check-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.8rem; margin:.6rem 0; }
+.case-check { border:1px solid #d8e3ea; border-radius:8px; background:#fff; padding:1rem; }
+.case-check h3 { margin:0 0 .55rem; color:#102033; font-size:1rem; }
+.case-check ol { margin:.2rem 0 0 1.15rem; padding:0; color:#3c4858; font-size:.88rem; line-height:1.55; }
+.case-scope-note { border:1px solid #d8e3ea; border-radius:8px; background:#f8fafc; padding:.75rem 1rem; color:#526174; font-size:.83rem; margin-top:.75rem; }
+@media(max-width:1150px){
+  .case-kpi-grid{grid-template-columns:repeat(3,minmax(0,1fr));}
+  .case-kpi:nth-child(3){border-right:0;}
+  .case-decision{grid-template-columns:1fr;}
+  .case-context-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+}
+@media(max-width:760px){
+  .case-header,.case-decision-body,.case-context-grid,.case-check-grid{grid-template-columns:1fr;}
+  .case-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .case-decision-item{border-right:0;border-bottom:1px solid #e1e8ee;}
+}
+</style>
+<div class="case-page"></div>
+<div class="case-header">
+  <div><div class="exec-kicker">PANEL DE SOPORTE A DECISIONES</div><h1>Caso de Estudio por Barra</h1><p>Pregunta de decisión: ¿qué explica su posición y cuál es el siguiente contraste útil?</p></div>
+  <div class="case-intro"><div class="case-intro-icon">i</div><div><b>Ficha ejecutiva de revisión</b><span>Integra señal, evolución mensual, estabilidad del resultado y contexto oficial de la barra seleccionada.</span></div></div>
+</div>
+""",
+        unsafe_allow_html=True,
     )
-    section_header("Contexto actual de la barra")
+
+    barra = st.selectbox("Barra", ordered_barras, index=default_index, key="case_barra")
+    row = profiles[profiles["barra"].astype(str) == barra].iloc[0]
+    priority_label = _clean(row.get("due_diligence_priority_es", row.get("due_diligence_priority")), "Contexto base")
+    stability_label = _clean(row.get("signal_stability_label_es", row.get("robustness_flag_es")), "No clasificado")
+    score_months = int(float(row.get("score_months_observed", 0) or 0))
+    source_months = int(float(row.get("source_months_observed", row.get("coes_price_key_months_observed", 0)) or 0))
+    coverage_ratio = f"{score_months}/{source_months}" if source_months else str(score_months)
     price_window = f"{_clean(row.get('coes_price_key_first_month'), 'sin inicio')} a {_clean(row.get('coes_price_key_last_month'), 'sin fin')}"
-    insight_grid(
-        [
-            ("Activo o conexión relevante", _clean(row.get("topology_context_asset"), row["barra"]), "decision"),
-            ("Tipo de contexto", f"{_clean(row.get('topology_context_type_es'))}. Rol: {_clean(row.get('evidence_family_es'))}.", "evidence"),
-            (
-                "Cobertura analítica",
-                "Periodo fuente: "
-                f"{price_window}; meses efectivos de score: {_clean(row.get('score_months_observed'), '0')}; "
-                f"meses de fuente COES: {_clean(row.get('source_months_observed', row.get('coes_price_key_months_observed')), '0')}.",
-                "action",
-            ),
-            ("Límite de lectura", _clean(row.get("decision_claim_boundary")), "caveat"),
-        ]
+    priority_class = {
+        "Señal prioritaria": "priority",
+        "Señal condicionada": "conditioned",
+        "Señal episódica": "episodic",
+        "Contexto base": "context",
+        "Información por completar": "incomplete",
+    }.get(priority_label, "context")
+    category_meaning = {
+        "Señal prioritaria": "La combinación de intensidad, recurrencia y estabilidad la ubica en la primera cola de revisión.",
+        "Señal condicionada": "La señal es relevante y gana prioridad cuando sector, contrato, ubicación o escenario elevan la exposición.",
+        "Señal episódica": "La relevancia aparece en meses concretos; conviene vigilar recurrencia y cambios recientes.",
+        "Contexto base": "Permanece como referencia comparable y puede ganar prioridad si cambia la señal o aparece nueva evidencia.",
+        "Información por completar": "Antes de una lectura fuerte conviene completar cobertura o contexto específico.",
+    }.get(priority_label, "La barra permanece dentro del universo comparable para revisión contextual.")
+    coverage_text = (
+        f"Los {score_months} meses disponibles entran al score y coinciden con los {source_months} meses de fuente COES."
+        if source_months and score_months == source_months
+        else f"La fuente COES conserva {source_months} meses; {score_months} cumplen las condiciones efectivas del score. La diferencia no significa que falten archivos."
     )
-    action_panel("Por qué este contexto importa", _clean(row.get("topology_context_summary")))
-    section_header("Componentes de la señal", "Scores en escala relativa 0-100. Valores más altos indican mayor intensidad dentro del universo analizado.")
-    left, right = st.columns(2)
-    with left:
-        st.plotly_chart(barra_profile_score_bars(row), use_container_width=True)
-    with right:
+    topology_summary = _clean(row.get("topology_context_summary"), "Contexto oficial revisado disponible para la barra.")
+    recommended_action = _clean(row.get("recommended_action"), "Contrastar contrato, demanda y contexto operativo antes de decidir.")
+    evidence_family = _clean(
+        row.get("public_evidence_family_es", row.get("evidence_family_es")),
+        "Contexto técnico revisado",
+    )
+    accepted_sources = int(float(row.get("accepted_evidence_sources", 0) or 0))
+    reviewed_sources = int(float(row.get("reviewed_evidence_sources", accepted_sources) or accepted_sources))
+    context_advisory = _clean(
+        row.get("context_advisory_es"),
+        "Sin advertencia contextual adicional registrada.",
+    )
+
+    st.markdown(
+        f"""
+<div class="case-kpi-grid">
+  <div class="case-kpi"><span>Tipo de señal</span><strong>{escape(priority_label)}</strong><em>lectura recomendada</em></div>
+  <div class="case-kpi"><span>Score de revisión</span><strong>{float(row['decision_priority_score']):.1f}</strong><em>escala relativa 0-100</em></div>
+  <div class="case-kpi"><span>Rank estrés nodal</span><strong>{float(row['rank_icpi']):.0f}</strong><em>1 = mayor señal local</em></div>
+  <div class="case-kpi"><span>Rank prioridad operativa</span><strong>{float(row['rank_oanri']):.0f}</strong><em>1 = mayor prioridad</em></div>
+  <div class="case-kpi"><span>Estabilidad del resultado</span><strong>{escape(stability_label)}</strong><em>ante criterios alternativos</em></div>
+  <div class="case-kpi"><span>Cobertura efectiva</span><strong>{escape(coverage_ratio)}</strong><em>meses score / fuente COES</em></div>
+</div>
+<div class="case-decision">
+  <div class="case-decision-band {priority_class}"><span>Lectura recomendada</span><strong>{escape(priority_label)}</strong><p>Score {float(row['decision_priority_score']):.1f}/100 dentro del universo de 217 barras.</p></div>
+  <div class="case-decision-body">
+    <div class="case-decision-item"><h3>Qué indica</h3><p>{escape(category_meaning)}</p></div>
+    <div class="case-decision-item"><h3>Por qué es relevante hoy</h3><p>{escape(topology_summary)}</p></div>
+    <div class="case-decision-item"><h3>Siguiente contraste</h3><p>{escape(recommended_action)}</p></div>
+  </div>
+</div>
+<div class="case-section-title">Contexto actual de la barra</div>
+<div class="case-context-grid">
+  <div class="case-context-card"><b>Activo o conexión</b><span>{escape(_clean(row.get('topology_context_asset'), barra))}</span></div>
+  <div class="case-context-card"><b>Tipo y función</b><span>{escape(_clean(row.get('topology_context_type_es')))}.</span></div>
+  <div class="case-context-card"><b>Soporte contextual</b><span>{escape(evidence_family)} · {accepted_sources} de {reviewed_sources} fuentes revisadas aceptadas.</span></div>
+  <div class="case-context-card"><b>Periodo y cobertura</b><span>{float(row.get('nivel_tension_kv', 0)):.1f} kV · {escape(price_window)}. {escape(coverage_text)}</span></div>
+</div>
+<div class="case-context-wide"><b>Qué aportó el mapeo</b><p>Conectó la llave de precios COES con un activo, subestación, central, industria o corredor documentado. Esa capa permite formular preguntas específicas de contrato, demanda, ubicación y operación; no cambia el precio observado ni el score.</p></div>
+<div class="case-context-wide"><b>Advertencia específica del contexto</b><p>{escape(context_advisory)}</p></div>
+""",
+        unsafe_allow_html=True,
+    )
+
+    st.markdown('<div class="case-section-title">Componentes de la señal</div>', unsafe_allow_html=True)
+    chart_left, chart_right = st.columns(2, gap="medium")
+    with chart_left:
+        st.plotly_chart(barra_profile_score_bars(row), width="stretch")
+    with chart_right:
         if not panel.empty:
-            st.plotly_chart(barra_component_profile(panel, barra), use_container_width=True)
-    section_header("Evolución mensual")
+            st.plotly_chart(barra_component_profile(panel, barra), width="stretch")
+
+    st.markdown('<div class="case-section-title">Evolución mensual</div>', unsafe_allow_html=True)
     if not panel.empty:
-        st.plotly_chart(barra_month_line(panel, barra), use_container_width=True)
-    section_header("Due-diligence checklist")
-    c1, c2 = st.columns(2)
-    with c1:
-        action_panel("Validaciones analíticas", "1. Confirmar si la señal es persistente o episódica. 2. Revisar meses con mayor prioridad operativa. 3. Comparar ranking de estrés nodal y prioridad operativa. 4. Verificar estabilidad del resultado, episodios y evidencia.")
-    with c2:
-        action_panel("Preguntas de negocio", "1. ¿Existe demanda industrial cercana? 2. ¿La exposición es spot, indexada o cubierta? 3. ¿La evidencia topológica soporta revisión adicional? 4. ¿Hay indicadores de confiabilidad relevantes?")
+        st.plotly_chart(barra_month_line(panel, barra), width="stretch")
+
+    st.markdown(
+        """
+<div class="case-section-title">Checklist de revisión</div>
+<div class="case-check-grid">
+  <div class="case-check"><h3>Validaciones analíticas</h3><ol><li>Distinguir persistencia de episodios puntuales.</li><li>Revisar los meses que elevaron la prioridad operativa.</li><li>Comparar señal local y ajuste por régimen del sistema.</li><li>Confirmar estabilidad y cobertura efectiva del score.</li></ol></div>
+  <div class="case-check"><h3>Preguntas de negocio y operación</h3><ol><li>¿Existe demanda industrial vinculada o cercana?</li><li>¿La exposición contractual es spot, indexada o cubierta?</li><li>¿El activo o corredor mapeado justifica revisión técnica adicional?</li><li>¿Hay indicadores de confiabilidad u operación relevantes?</li></ol></div>
+</div>
+<div class="case-scope-note">Esta ficha ordena evidencia para revisión experta. La conclusión final se contrasta con contrato, demanda, operación, confiabilidad y documentación técnica específica de la barra.</div>
+""",
+        unsafe_allow_html=True,
+    )
 
 
 product_sidebar()

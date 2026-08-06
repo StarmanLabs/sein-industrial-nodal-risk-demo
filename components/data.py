@@ -173,6 +173,17 @@ def load_product_layer() -> pd.DataFrame:
         out["topology_context_asset"] = out["contexto_topologico"]
         out["topology_context_type_es"] = out["tipo_contexto"]
         out["evidence_family_es"] = out.get("rol_evidencia", "Contexto público revisado")
+        out["public_evidence_family_es"] = out.get(
+            "familia_evidencia", out["evidence_family_es"]
+        )
+        out["accepted_evidence_sources"] = out.get("fuentes_aceptadas", 0)
+        out["reviewed_evidence_sources"] = out.get("fuentes_revisadas", 0)
+        out["context_audit_status_es"] = out.get(
+            "estado_auditoria_contexto", "Contexto aceptado para screening"
+        )
+        out["context_advisory_es"] = out.get(
+            "advertencia_contextual", "Sin advertencia contextual adicional registrada."
+        )
         out["avg_icpi"] = out["estres_nodal"]
         out["avg_oanri"] = out["prioridad_operativa"]
         out["p90_oanri"] = out.get("prioridad_operativa_p90", out["avg_oanri"])
@@ -202,7 +213,7 @@ def load_product_layer() -> pd.DataFrame:
             "lectura_zona_mensual",
             "El Top 20 mensual se usa como zona ejecutiva de seguimiento, no como universo metodologico.",
         )
-        out["evidence_grade"] = out["soporte_evidencia"]
+        out["evidence_grade"] = out.get("soporte_evidencia", "Contexto revisado")
         out["priority_reason"] = out.get("resumen_contexto", "")
         out["recommended_action"] = out["accion_recomendada"]
         out["decision_claim_boundary"] = out["limite_interpretacion"]

@@ -97,12 +97,12 @@ left, right = st.columns(2)
 with left:
     st.plotly_chart(
         top_bar_chart(profiles, "avg_oanri", "barra", "Top 10 barras por prioridad operativa"),
-        use_container_width=True,
+        width="stretch",
     )
 with right:
     st.plotly_chart(
         top_bar_chart(profiles, "avg_icpi", "barra", "Top 10 barras por estrés nodal"),
-        use_container_width=True,
+        width="stretch",
     )
 
 if not regime.empty:
@@ -110,7 +110,7 @@ if not regime.empty:
         "Régimen operativo mensual",
         "Contexto sistémico usado para interpretar cuándo una señal nodal gana relevancia operativa.",
     )
-    st.plotly_chart(system_regime_line(regime), use_container_width=True)
+    st.plotly_chart(system_regime_line(regime), width="stretch")
 
 action_panel(
     "Lectura ejecutiva",

@@ -8,10 +8,10 @@ The product supports industrial due diligence by identifying barras with elevate
 
 The private pipeline processes COES marginal-price files into a monthly barra-level panel. The product layer then connects:
 
-1. ICPI: relative nodal marginal-price stress.
-2. OANRI: system-regime adjusted prioritization signal.
-3. Signal stability evidence: all-bar rank stability, scenario sensitivity and quality flags.
-4. Reviewed topology context: evidence grade and permitted use.
+1. **Estrés nodal:** intensidad relativa de la señal de precio marginal de cada barra frente al universo comparable.
+2. **Prioridad operativa:** la misma base de precios leída bajo el régimen mensual del sistema.
+3. **Estabilidad del resultado:** cuánto cambia la relevancia de una barra al probar criterios alternativos.
+4. **Contexto topológico revisado:** tipo de activo o conexión, familia de evidencia, cantidad de fuentes aceptadas y advertencias específicas.
 5. Industrial scenarios: sector and contract archetype assumptions.
 
 ## Interpretation
@@ -20,11 +20,11 @@ The indicators are screening tools. They help decide where to investigate deeper
 
 ## Index Audit
 
-The project includes a reproducible index audit in `docs/index_methodology_audit.md`. It validates coverage, score ranges, ICPI/OANRI relationships, threshold sensitivity, reference-price sensitivity, component correlations and all-bar signal stability.
+The project includes a reproducible index audit in `docs/index_methodology_audit.md`. It validates coverage, score ranges, relationships between the two public signals, threshold sensitivity, reference-price sensitivity, component correlations and all-bar result stability.
 
 Key interpretation:
 
-- ICPI is a relative nodal price-stress score.
-- OANRI is a system-regime-adjusted prioritization score.
-- Signal stability is not the same as data validity.
-- Low stability means the barra is less stable as a priority candidate under alternative scoring assumptions, not that the COES price data is invalid.
+- Estrés nodal y prioridad operativa son señales descriptivas relativas, no probabilidades.
+- Estabilidad del resultado no equivale a validez del dato.
+- Un resultado variable significa que la posición depende más del criterio analítico; no invalida los precios COES.
+- El grado A funciona como control interno de publicación para las 217 barras. La interfaz muestra dimensiones que sí discriminan entre casos: familia de evidencia, fuentes aceptadas, alcance temporal y advertencias.

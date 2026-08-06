@@ -121,7 +121,7 @@ section_header(
     "Mapa mensual de seguimiento",
     "Léelo de izquierda a derecha. Si una barra mantiene colores fuertes en varios meses, no es ruido visual: es una candidata para seguimiento mensual.",
 )
-st.plotly_chart(watchlist_heatmap(heatmap_data, order=ordered_barras), use_container_width=True)
+st.plotly_chart(watchlist_heatmap(heatmap_data, order=ordered_barras), width="stretch")
 
 section_header(
     "Lectura por barra",
@@ -131,7 +131,7 @@ selected_barra = barra_selector(heatmap_data, key="watchlist_barra")
 if selected_barra and not panel.empty:
     selected_rows = panel[panel["barra"] == selected_barra].sort_values("month")
     action_panel("Interpretación automática", classify_pattern(selected_rows))
-    st.plotly_chart(barra_month_line(panel, selected_barra), use_container_width=True)
+    st.plotly_chart(barra_month_line(panel, selected_barra), width="stretch")
 
 section_header("Top mensual de señales")
 compact_table(

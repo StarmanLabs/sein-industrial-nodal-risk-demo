@@ -316,8 +316,8 @@ def barra_profile_score_bars(row: pd.Series):
             "Métrica": [
                 "Estrés nodal promedio",
                 "Prioridad operativa promedio",
-                "Prioridad operativa p90",
-                "Score prioridad",
+                "Prioridad operativa alta (P90)",
+                "Score de revisión",
             ],
             "Valor": [
                 row.get("avg_icpi", 0),

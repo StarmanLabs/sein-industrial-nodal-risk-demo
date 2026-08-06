@@ -1,25 +1,29 @@
 # Dashboard Walkthrough
 
-## 1. Executive Overview
+## 1. Inicio
 
-Shows the scale of the analytical panel, highest OANRI and ICPI candidates, and system-regime context.
+Explains the product, analytical universe and recommended route through the decision system.
 
-## 2. Barra Priority Ranking
+## 2. Executive Overview
 
-Turns analytical indicators into a due-diligence worklist with priority, evidence grade, caveat, and recommended action.
+Shows the scale of the analytical panel, the highest operational-priority and nodal-stress candidates, and monthly system-regime context.
 
-## 3. ICPI vs OANRI
+## 3. Barra Priority Ranking
 
-Compares pure relative nodal stress with system-regime adjusted prioritization.
+Turns analytical indicators into a due-diligence worklist with review score, signal type, result stability and recommended action.
 
-## 4. Monthly Watchlist
+## 4. Signal Map
+
+Compares relative nodal stress with system-regime adjusted operational priority and explains why both axes are related.
+
+## 5. Monthly Monitoring
 
 Shows when stress episodes appear and whether they are persistent or episodic.
 
-## 5. Industrial Exposure Scenario
+## 6. Industrial Exposure Scenario
 
 Reviews sector and contract archetypes under explicit exposure assumptions.
 
-## 6. Barra Case Study
+## 7. Barra Case Study
 
-Explains why a selected barra deserves attention and what should be reviewed next.
+Explains why a selected barra deserves attention, what the topology mapping contributes, how many contextual sources were accepted and what should be reviewed next.

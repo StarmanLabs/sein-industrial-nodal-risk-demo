@@ -1,5 +1,5 @@
 {
-  "date_created_utc": "2026-06-19T06:41:02.204871+00:00",
+  "date_created_utc": "2026-08-06T06:39:29.250717+00:00",
   "public_scope": "217-barra sanitized portfolio layer",
   "source_layer_description": [
     "validated private barra-level product layer",
@@ -27,6 +27,11 @@
       "contexto_topologico",
       "tipo_contexto",
       "rol_evidencia",
+      "familia_evidencia",
+      "fuentes_aceptadas",
+      "fuentes_revisadas",
+      "estado_auditoria_contexto",
+      "advertencia_contextual",
       "resumen_contexto",
       "estres_nodal",
       "prioridad_operativa",
@@ -41,7 +46,6 @@
       "share_top20_mensual",
       "zona_mensual",
       "lectura_zona_mensual",
-      "soporte_evidencia",
       "driver_principal",
       "persistencia",
       "meses_prioridad",
@@ -74,8 +78,7 @@
       "precio_promedio",
       "precio_p95",
       "volatilidad",
-      "horas_criticas",
-      "soporte_evidencia"
+      "horas_criticas"
     ],
     "monthly_system_context_demo": [
       "mes_periodo",

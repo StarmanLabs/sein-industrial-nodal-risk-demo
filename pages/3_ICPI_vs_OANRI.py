@@ -98,7 +98,7 @@ section_header(
     "Mapa de señal estrés nodal/prioridad operativa",
     "Visual principal del producto: separa estrés nodal relativo de prioridad ajustada por régimen.",
 )
-st.plotly_chart(icpi_oanri_scatter(df), use_container_width=True)
+st.plotly_chart(icpi_oanri_scatter(df), width="stretch")
 
 section_header("Cómo leer los cuadrantes")
 decision_matrix(
@@ -142,7 +142,7 @@ compact_table(
         "avg_oanri",
         "decision_priority_score",
         "robustness_flag_es",
-        "evidence_grade",
+        "accepted_evidence_sources",
         "due_diligence_priority_es",
     ],
 )

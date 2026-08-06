@@ -2,11 +2,11 @@
 
 ## Tipo de Caso
 
-Señal episodica - candidato episodico
+Señal episódica - seguimiento mensual
 
 ## Lectura Ejecutiva
 
-`PUERTO BRAVO 500` aparece como **Señal episodica** dentro de la capa producto porque combina una señal relativa de estrés nodal/prioridad operativa relevante con contexto topologico revisado y una recomendacion explicita de due diligence.
+`PUERTO BRAVO 500` aparece como **Watchlist** dentro de la capa producto porque combina estrés nodal, prioridad operativa, estabilidad del resultado y contexto topológico revisado.
 
 Esta lectura no identifica la causa fisica de la senal ni reemplaza revision contractual, topologica o de confiabilidad. Su valor es ordenar la investigacion.
 
@@ -15,23 +15,23 @@ Esta lectura no identifica la causa fisica de la senal ni reemplaza revision con
 | Campo | Valor |
 |---|---|
 | Barra | PUERTO BRAVO 500 |
-| Tipo de señal | Señal episodica |
-| Score de prioridad | 55.05 |
-| Estres nodal promedio | 54.77 |
+| Prioridad | Watchlist |
+| Score de revisión | 55.05 |
+| Estrés nodal promedio | 54.77 |
 | Prioridad operativa promedio | 49.74 |
-| Ranking estres nodal | 88 |
-| Ranking prioridad operativa | 95 |
-| Meses de señal prioritaria | 0 |
-| Meses en seguimiento | 8 |
+| Ranking de estrés nodal | 88 |
+| Ranking de prioridad operativa | 95 |
+| Meses de prioridad | 0 |
+| Meses en watchlist | 8 |
 | Persistencia | Monitorear |
 | Estres episodico | Estres episodico moderado |
-| Grado de evidencia | A |
-| Estabilidad del resultado | Variable |
+| Soporte contextual | Contexto geográfico oficial directo; 1 de 1 fuentes revisadas aceptadas |
+| Estabilidad del resultado | Estabilidad baja |
 | Driver dominante | price_level |
 
-## Meses Criticos o de Mayor Senal OANRI
+## Meses críticos o de mayor prioridad operativa
 
-| month | ICPI_v8 | OANRI_v10 | ranking_mensual_v10 | decision_tier | primary_driver | system_regime_v10_0_1 |
+| Mes | Estrés nodal | Prioridad operativa | Ranking mensual | Lectura mensual | Driver principal | Régimen del sistema |
 | --- | --- | --- | --- | --- | --- | --- |
 | 2023-05 | 60.35 | 78.34 | 65.0 | Watchlist | stress_premium | 0.97 |
 | 2023-11 | 60.37 | 75.65 | 70.0 | Watchlist | stress_premium | 0.92 |
@@ -61,8 +61,8 @@ Para usuarios industriales, el siguiente paso no es asumir un sobrecosto, sino r
 - No prueba congestion fisica.
 - No predice precios electricos.
 - No calcula montos de facturacion especificos.
-- No realiza estudios electricos de flujo de red o despacho.
-- La estabilidad del resultado se evalua para todo el universo de barras bajo criterios alternativos del analisis. Resultado del caso: Variable (48.20 puntos). No prueba causalidad ni congestion fisica; indica que la lectura debe contrastarse antes de priorizar fuerte.
+- No sustituye una simulación eléctrica detallada ni un estudio de despacho.
+- La estabilidad del resultado indica si la barra conserva una lectura similar al probar criterios alternativos del análisis. Resultado del caso: Estabilidad baja (48.20 puntos). No prueba causalidad ni congestión física.
 
 ## Accion Recomendada
 

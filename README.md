@@ -2,7 +2,7 @@
 
 SEIN Industrial Nodal Risk Intelligence is a closed-code data product for industrial electricity due diligence in Peru.
 
-It transforms COES nodal marginal-price outputs into a barra-month analytical panel, builds ICPI and OANRI screening indicators, and translates those signals into due-diligence priorities for industrial exposure analysis.
+It transforms COES nodal marginal-price outputs into a barra-month analytical panel and translates relative **nodal stress**, **operational priority**, **result stability** and reviewed topology context into an industrial due-diligence queue.
 
 ## What This Project Does
 
@@ -26,12 +26,13 @@ This public showcase documents the methodology, product design, selected visuals
 
 ## Product Pages
 
-1. Executive Overview
-2. Barra Priority Ranking
-3. ICPI vs OANRI Scatter
-4. Monthly Watchlist
-5. Industrial Exposure Scenario
-6. Barra Case Study
+1. Product Home
+2. Executive Overview
+3. Barra Priority Ranking
+4. Signal Map
+5. Monthly Monitoring
+6. Industrial Exposure Scenario
+7. Barra Case Study
 
 ## Portfolio Value
 

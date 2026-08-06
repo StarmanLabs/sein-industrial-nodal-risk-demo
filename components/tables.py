@@ -9,6 +9,10 @@ COLUMN_LABELS = {
     "topology_context_asset": "Activo/conexión",
     "topology_context_type_es": "Tipo de contexto",
     "evidence_family_es": "Rol de evidencia",
+    "public_evidence_family_es": "Tipo de evidencia contextual",
+    "accepted_evidence_sources": "Fuentes aceptadas",
+    "reviewed_evidence_sources": "Fuentes revisadas",
+    "context_advisory_es": "Advertencia contextual",
     "topology_context_summary": "Contexto actual",
     "external_evidence_summary": "Evidencia externa",
     "zona_geografica": "Zona geográfica",
@@ -41,8 +45,8 @@ COLUMN_LABELS = {
     "sector": "Sector",
     "contract_type": "Contrato",
     "avg_industrial_exposure_score": "Score exposición prom.",
-    "p90_industrial_exposure_score": "Score exposición p90",
-    "priority_months": "Meses revisión inmediata",
+    "p90_industrial_exposure_score": "Umbral del 10% superior",
+    "priority_months": "Meses con señal prioritaria",
     "watchlist_months": "Meses seguimiento",
     "robustness_inclusion_share": "Sensibilidad interna",
     "profile_priority_score": "Score de revisión",
@@ -50,8 +54,8 @@ COLUMN_LABELS = {
     "monthly_mwh": "MWh mensual",
     "spot_share": "Participación spot",
     "avg_exposure_score": "Score exposición prom.",
-    "p90_exposure_score": "Score exposición p90",
-    "priority_rows": "Filas revisión inmediata",
+    "p90_exposure_score": "Umbral del 10% superior",
+    "priority_rows": "Filas con señal prioritaria",
     "watchlist_rows": "Filas seguimiento",
 }
 
@@ -228,7 +232,7 @@ def priority_table(df: pd.DataFrame) -> None:
     display = present(work[[c for c in cols if c in work.columns]]).rename(columns=labels)
     st.dataframe(
         _style_table(display),
-        use_container_width=True,
+        width="stretch",
         hide_index=True,
         height=438,
     )
@@ -238,7 +242,7 @@ def compact_table(df: pd.DataFrame, columns: list[str]) -> None:
     display = present(df[[c for c in columns if c in df.columns]])
     st.dataframe(
         _style_table(display),
-        use_container_width=True,
+        width="stretch",
         hide_index=True,
         height=430,
     )

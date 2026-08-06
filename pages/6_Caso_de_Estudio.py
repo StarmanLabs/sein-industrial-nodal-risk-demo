@@ -65,7 +65,12 @@ with cols[2]:
 with cols[3]:
     metric_card("Rank prioridad operativa", f"{row['rank_oanri']:.0f}", "1 = mayor prioridad", kind="info")
 with cols[4]:
-    metric_card("Soporte", row["evidence_grade"], "contexto revisado", kind="good")
+    metric_card(
+        "Fuentes aceptadas",
+        f"{int(row.get('accepted_evidence_sources', 0) or 0)}",
+        "contexto revisado",
+        kind="good",
+    )
 
 decision_summary_card(
     priority_label,
@@ -73,7 +78,7 @@ decision_summary_card(
     row["priority_reason"],
     row["recommended_action"],
     (
-        f"Soporte de contexto {row['evidence_grade']}; "
+        f"{_clean(row.get('public_evidence_family_es'), 'Contexto técnico revisado')}; "
         f"{humanize_analytical_text(row.get('signal_stability_label_es', row.get('robustness_flag_es', row['robustness_flag'])))}; "
         f"{humanize_analytical_text(row.get('score_coverage_class_es', 'cobertura analítica no clasificada'))}."
     ),
@@ -96,7 +101,8 @@ insight_grid(
         ),
         (
             "Tipo de contexto",
-            f"{_clean(row.get('topology_context_type_es'))}. Rol: {_clean(row.get('evidence_family_es'))}.",
+            f"{_clean(row.get('topology_context_type_es'))}. {_clean(row.get('public_evidence_family_es'))}; "
+            f"{int(row.get('accepted_evidence_sources', 0) or 0)} fuentes aceptadas.",
             "evidence",
         ),
         (
@@ -131,8 +137,11 @@ insight_grid(
             "decision",
         ),
         (
-            "Calidad de soporte",
-            f"Soporte de contexto {row['evidence_grade']}; {humanize_analytical_text(row.get('signal_stability_label_es', row.get('robustness_flag_es', row['robustness_flag'])))}; {humanize_analytical_text(row.get('score_coverage_class_es', 'cobertura analítica no clasificada'))}.",
+            "Profundidad del contexto",
+            f"{_clean(row.get('public_evidence_family_es'))}; "
+            f"{int(row.get('accepted_evidence_sources', 0) or 0)} de "
+            f"{int(row.get('reviewed_evidence_sources', 0) or 0)} fuentes revisadas aceptadas. "
+            f"{_clean(row.get('context_advisory_es'))}",
             "evidence",
         ),
         (
@@ -154,17 +163,17 @@ section_header(
 )
 left, right = st.columns(2)
 with left:
-    st.plotly_chart(barra_profile_score_bars(row), use_container_width=True)
+    st.plotly_chart(barra_profile_score_bars(row), width="stretch")
 with right:
     if not panel.empty:
-        st.plotly_chart(barra_component_profile(panel, barra), use_container_width=True)
+        st.plotly_chart(barra_component_profile(panel, barra), width="stretch")
 
 section_header(
     "Evolución mensual",
     "Permite diferenciar señal persistente, episódica o puntual antes de decidir la siguiente revisión.",
 )
 if not panel.empty:
-    st.plotly_chart(barra_month_line(panel, barra), use_container_width=True)
+    st.plotly_chart(barra_month_line(panel, barra), width="stretch")
 
 section_header("Due-diligence checklist")
 check_cols = st.columns(2)

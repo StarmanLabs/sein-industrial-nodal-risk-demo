@@ -84,7 +84,7 @@ section_header(
 if filtered.empty:
     action_panel("Sin resultados para el escenario", "Cambia sector o contrato para recuperar perfiles de exposición industrial.")
 else:
-    st.plotly_chart(sector_exposure_bar_chart(filtered), use_container_width=True)
+    st.plotly_chart(sector_exposure_bar_chart(filtered), width="stretch")
     compact_table(
         filtered.head(50),
         [
@@ -104,7 +104,7 @@ else:
 if not contract_df.empty:
     section_header("Sensibilidad contractual", "Comparación agregada por tipo de contrato para entender cómo cambia la prioridad del escenario.")
     selected_contract_df = contract_df[contract_df["sector"] == sector] if sector else contract_df
-    st.plotly_chart(contract_comparison_chart(selected_contract_df), use_container_width=True)
+    st.plotly_chart(contract_comparison_chart(selected_contract_df), width="stretch")
     compact_table(
         selected_contract_df,
         ["sector", "contract_type", "unique_barras", "monthly_mwh", "spot_share", "avg_exposure_score", "p90_exposure_score", "priority_rows", "watchlist_rows"],

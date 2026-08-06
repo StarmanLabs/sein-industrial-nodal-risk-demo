@@ -6,7 +6,7 @@ Señal prioritaria - candidato fuerte
 
 ## Lectura Ejecutiva
 
-`ZORRITOS 220` aparece como **Señal prioritaria** dentro de la capa producto porque combina una señal relativa de estrés nodal/prioridad operativa relevante con contexto topologico revisado y una recomendacion explicita de due diligence.
+`ZORRITOS 220` aparece como **Prioridad A** dentro de la capa producto porque combina estrés nodal, prioridad operativa, estabilidad del resultado y contexto topológico revisado.
 
 Esta lectura no identifica la causa fisica de la senal ni reemplaza revision contractual, topologica o de confiabilidad. Su valor es ordenar la investigacion.
 
@@ -15,23 +15,23 @@ Esta lectura no identifica la causa fisica de la senal ni reemplaza revision con
 | Campo | Valor |
 |---|---|
 | Barra | ZORRITOS 220 |
-| Tipo de señal | Señal prioritaria |
-| Score de prioridad | 75.39 |
-| Estres nodal promedio | 76.10 |
+| Prioridad | Prioridad A |
+| Score de revisión | 75.39 |
+| Estrés nodal promedio | 76.10 |
 | Prioridad operativa promedio | 64.80 |
-| Ranking estres nodal | 3 |
-| Ranking prioridad operativa | 3 |
-| Meses de señal prioritaria | 11 |
-| Meses en seguimiento | 19 |
+| Ranking de estrés nodal | 3 |
+| Ranking de prioridad operativa | 3 |
+| Meses de prioridad | 11 |
+| Meses en watchlist | 19 |
 | Persistencia | Persistente |
 | Estres episodico | Estres episodico alto |
-| Grado de evidencia | A |
-| Estabilidad del resultado | Estable |
+| Soporte contextual | Contexto geográfico oficial directo; 1 de 4 fuentes revisadas aceptadas |
+| Estabilidad del resultado | Estabilidad alta |
 | Driver dominante | price_level |
 
-## Meses Criticos o de Mayor Senal OANRI
+## Meses críticos o de mayor prioridad operativa
 
-| month | ICPI_v8 | OANRI_v10 | ranking_mensual_v10 | decision_tier | primary_driver | system_regime_v10_0_1 |
+| Mes | Estrés nodal | Prioridad operativa | Ranking mensual | Lectura mensual | Driver principal | Régimen del sistema |
 | --- | --- | --- | --- | --- | --- | --- |
 | 2023-08 | 78.94 | 98.57 | 6.0 | Priority due diligence | price_level | 1.0 |
 | 2024-11 | 78.01 | 96.69 | 3.0 | Priority due diligence | price_level | 0.94 |
@@ -42,7 +42,7 @@ Esta lectura no identifica la causa fisica de la senal ni reemplaza revision con
 
 ## Escenarios Industriales Relevantes
 
-| sector | contract_type | avg_industrial_exposure_score | p90_industrial_exposure_score | priority_months | watchlist_months | profile_priority_score |
+| Sector | Contrato | Exposición promedio | Umbral del 10% superior | Meses prioritarios | Meses de seguimiento | Score del perfil |
 | --- | --- | --- | --- | --- | --- | --- |
 | mining_continuous_load | full_spot_exposure | 66.82 | 77.63 | 0 | 22 | 70.48 |
 | data_center_or_high_availability | full_spot_exposure | 66.38 | 77.23 | 0 | 21 | 69.7 |
@@ -67,8 +67,8 @@ Para usuarios industriales, el siguiente paso no es asumir un sobrecosto, sino r
 - No prueba congestion fisica.
 - No predice precios electricos.
 - No calcula montos de facturacion especificos.
-- No realiza estudios electricos de flujo de red o despacho.
-- La estabilidad del resultado se evalua para todo el universo de barras bajo criterios alternativos del analisis. Resultado del caso: Estable (99.35 puntos). No prueba causalidad ni congestion fisica.
+- No sustituye una simulación eléctrica detallada ni un estudio de despacho.
+- La estabilidad del resultado indica si la barra conserva una lectura similar al probar criterios alternativos del análisis. Resultado del caso: Estabilidad alta (99.35 puntos). No prueba causalidad ni congestión física.
 
 ## Accion Recomendada
 

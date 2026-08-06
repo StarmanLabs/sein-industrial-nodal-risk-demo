@@ -86,7 +86,6 @@ if selected_tension:
 filtered = filtered.sort_values("decision_priority_score", ascending=False)
 
 priority_ab_count = int(filtered["due_diligence_priority"].isin(["Priority A", "Priority B"]).sum())
-evidence_a_count = int(filtered["evidence_grade"].astype(str).str.upper().eq("A").sum())
 context_count = int(
     filtered["topology_context_asset"].astype(str).str.strip().ne("").sum()
     if "topology_context_asset" in filtered.columns
