@@ -2839,7 +2839,6 @@ def render_exposicion() -> None:
     )
 
     st.markdown('<div class="exposure-section-label">1. Configuración del escenario</div>', unsafe_allow_html=True)
-    st.markdown('<div class="exposure-card exposure-filter-card">', unsafe_allow_html=True)
     selector_cols = st.columns(2, gap="medium")
     with selector_cols[0]:
         selected_sector_label = st.selectbox(
@@ -2858,7 +2857,6 @@ def render_exposicion() -> None:
     st.markdown(
         f"""
 <div class="exposure-selected"><span>✓</span><div>Escenario seleccionado: <b>{escape(selected_sector_label)}</b> <span>|</span> <b>{escape(selected_contract_label)}</b></div></div>
-</div>
 """,
         unsafe_allow_html=True,
     )
