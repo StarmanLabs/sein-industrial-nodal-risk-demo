@@ -22,6 +22,20 @@ The indicators are screening tools. They help decide where to investigate deeper
 
 The project includes a reproducible index audit in `docs/index_methodology_audit.md`. It validates coverage, score ranges, relationships between the two public signals, threshold sensitivity, reference-price sensitivity, component correlations and all-bar result stability.
 
+## Review-queue weight sensitivity
+
+`src/validation/build_priority_weight_sensitivity.py` is a separate diagnostic: it tests seven transparent weighting profiles across operational priority, an ICPI-based relative exposure proxy, extremes, continuity and stability. It does not replace the productive score, thresholds or review categories. The weights are stress tests, not universal preferences or investment weights; the proxy is not an invoice or facility cost estimate.
+
+For the current layer, the alternative Top 20 lists retain 98.6% overlap on average with the balanced reference (95.0% minimum). This is ranking-stability evidence, not causal validation or a price forecast.
+
+The public scenario-by-scenario results and interpretation rules are available in [`weight_sensitivity_evidence.md`](weight_sensitivity_evidence.md). The reproducible diagnostic remains in the private analytical repository; the public package exposes only sanitized evidence.
+
+## Mining-location use boundary
+
+The public data can screen real barras, compare explicit industrial and contract archetypes, inspect monthly recurrence and attach reviewed topology context. It does not contain the full information required to choose a mine location or connection alternative. In particular, the product does not model available network capacity, flows, contingencies, hourly plant dispatch, reservoir hydrology, project load, connection cost or permit feasibility.
+
+The [`TINTAYA EXISTENTE 138` walkthrough](mining_siting_screening_case.md) shows the strongest defensible use: converting a real barra and an illustrative continuous-load mining scenario into a structured evidence request.
+
 Key interpretation:
 
 - Estrés nodal y prioridad operativa son señales descriptivas relativas, no probabilidades.

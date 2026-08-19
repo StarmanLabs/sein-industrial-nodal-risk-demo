@@ -600,6 +600,13 @@ def render_ranking() -> None:
   text-decoration: none !important;
 }
 
+.rank-next-button.is-disabled {
+  background: #d8e3ea !important;
+  color: #64748b !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+}
+
 .rank-filter-title {
   display: flex !important;
   gap: 0.55rem !important;
@@ -934,13 +941,20 @@ div[data-testid="stDataFrame"] {
     watch_count = _count_priority("Watchlist")
     immediate_count = _count_priority("Priority A")
     top_barras = filtered["barra"].head(3).tolist()
-    while len(top_barras) < 3:
-        top_barras.append("Sin resultado")
+    visible_top_barras = top_barras + ["Sin resultado"] * (3 - len(top_barras))
     next_action = (
         f"Abrir caso de estudio de {top_barras[0]} para contrastar contrato, demanda industrial, contexto y recurrencia."
         if not filtered.empty
         else "Amplía los filtros para recuperar barras candidatas de revisión."
     )
+    if top_barras:
+        next_action_control = (
+            f'<a class="rank-next-button" target="_self" '
+            f'href="?page=Caso%20de%20Estudio&amp;barra={quote_plus(top_barras[0])}">'
+            "Abrir caso de estudio →</a>"
+        )
+    else:
+        next_action_control = '<span class="rank-next-button is-disabled" aria-disabled="true">Sin caso disponible</span>'
     with summary_slot.container():
         st.markdown(
             f"""
@@ -959,14 +973,14 @@ div[data-testid="stDataFrame"] {
   <div class="rank-start-box">
     <strong>La revisión empieza por:</strong>
     <ol>
-      <li>{escape(str(top_barras[0]))}</li>
-      <li>{escape(str(top_barras[1]))}</li>
-      <li>{escape(str(top_barras[2]))}</li>
+      <li>{escape(str(visible_top_barras[0]))}</li>
+      <li>{escape(str(visible_top_barras[1]))}</li>
+      <li>{escape(str(visible_top_barras[2]))}</li>
     </ol>
   </div>
   <div class="rank-next-box">
     <span class="exec-icon exec-icon-case" aria-hidden="true"></span>
-    <div><strong>Siguiente paso recomendado:</strong><p>{escape(next_action)}</p><a class="rank-next-button" href="?page=Caso%20de%20Estudio&amp;barra={quote_plus(top_barras[0])}">Abrir caso de estudio →</a></div>
+    <div><strong>Siguiente paso recomendado:</strong><p>{escape(next_action)}</p>{next_action_control}</div>
   </div>
 </div>
 """,
@@ -1003,8 +1017,10 @@ div[data-testid="stDataFrame"] {
         with page_tools[0]:
             rows_per_page = st.selectbox("Filas por página", [10, 25, 50, 100], index=0, key="ranking_rows")
         total_pages = max(1, int((len(filtered) - 1) // rows_per_page) + 1)
+        if int(st.session_state.get("ranking_page", 1)) > total_pages:
+            st.session_state["ranking_page"] = total_pages
         with page_tools[1]:
-            page_number = st.number_input("Página", min_value=1, max_value=total_pages, value=1, step=1, key="ranking_page")
+            page_number = st.number_input("Página", min_value=1, max_value=total_pages, step=1, key="ranking_page")
         start = (page_number - 1) * rows_per_page
         end = start + rows_per_page
         page_df = filtered.iloc[start:end].copy()
@@ -1937,7 +1953,7 @@ def render_icpi_oanri() -> None:
   <p><b>Estrés nodal:</b> resume intensidad, volatilidad y episodios de la señal local.</p>
   <p><b>Prioridad operativa:</b> parte de esa señal y la ajusta según los meses de mayor presión del sistema. Por eso ambos ejes están relacionados; interesa observar qué barras ganan o pierden relevancia con el ajuste.</p>
   <p><b>Ranking:</b> añade recurrencia, estabilidad y contexto para decidir qué revisar primero.</p>
-  <a href="?page=Ranking%20de%20Prioridad">→ Ir a Ranking de Prioridad</a>
+  <a target="_self" href="?page=Ranking%20de%20Prioridad">→ Ir a Ranking de Prioridad</a>
 </div>
 """,
             unsafe_allow_html=True,
@@ -1996,7 +2012,10 @@ def render_icpi_oanri() -> None:
                 f"<td class='metric'>{float(row['avg_icpi']):.2f}</td>"
                 f"<td class='metric'>{float(row['avg_oanri']):.2f}</td>"
                 f"<td class='metric'>{float(row['decision_priority_score']):.2f}</td>"
-                f"<td class='num'><a class='signal-table-action' href='?page=Caso%20de%20Estudio&amp;barra={quote_plus(str(row['barra']))}'>↗</a></td>"
+                f"<td class='num'><a class='signal-table-action' target='_self' "
+                f"aria-label='Abrir caso de estudio de {escape(str(row['barra']))}' "
+                f"title='Abrir caso de estudio de {escape(str(row['barra']))}' "
+                f"href='?page=Caso%20de%20Estudio&amp;barra={quote_plus(str(row['barra']))}'>↗</a></td>"
                 "</tr>"
             )
         table_rows = "\n".join(rendered_rows)
@@ -2029,7 +2048,7 @@ def render_icpi_oanri() -> None:
   </div>
   <div class="signal-actions-row">
     <span>Mostrando 1 a {shown_count:,} de {filtered_count:,} barras en cola de revisión según filtros.</span>
-    <a class="rank-next-button" href="?page=Ranking%20de%20Prioridad">Ver cola completa en Ranking de Prioridad →</a>
+    <a class="rank-next-button" target="_self" href="?page=Ranking%20de%20Prioridad">Ver cola completa en Ranking de Prioridad →</a>
   </div>
 </div>
 """,
@@ -3030,7 +3049,7 @@ def render_exposicion() -> None:
             width="stretch",
         )
     with action_cols[2]:
-        st.markdown('<a class="exposure-rank-link" href="?page=Ranking%20de%20Prioridad">Ver Ranking de Prioridad →</a>', unsafe_allow_html=True)
+        st.markdown('<a class="exposure-rank-link" target="_self" href="?page=Ranking%20de%20Prioridad">Ver Ranking de Prioridad →</a>', unsafe_allow_html=True)
 
 
 def render_caso() -> None:
@@ -3132,6 +3151,8 @@ def render_caso() -> None:
     )
 
     barra = st.selectbox("Barra", ordered_barras, index=default_index, key="case_barra")
+    if st.query_params.get("barra") != barra:
+        st.query_params["barra"] = barra
     row = profiles[profiles["barra"].astype(str) == barra].iloc[0]
     priority_label = _clean(row.get("due_diligence_priority_es", row.get("due_diligence_priority")), "Contexto base")
     stability_label = _clean(row.get("signal_stability_label_es", row.get("robustness_flag_es")), "No clasificado")

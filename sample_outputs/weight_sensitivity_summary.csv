@@ -1,0 +1,8 @@
+scenario,operational_priority_weight,relative_price_exposure_weight,extremes_weight,continuity_weight,result_stability_weight,top20_overlap_with_reference
+reference_balanced,0.35,0.20,0.20,0.15,0.10,1.00
+operational_priority_heavy,0.50,0.15,0.15,0.10,0.10,1.00
+relative_price_exposure_heavy,0.25,0.40,0.15,0.10,0.10,0.95
+extremes_heavy,0.25,0.15,0.40,0.10,0.10,0.95
+continuity_heavy,0.25,0.15,0.15,0.35,0.10,1.00
+result_stability_heavy,0.25,0.15,0.15,0.10,0.35,1.00
+equal_constructs,0.20,0.20,0.20,0.20,0.20,1.00
