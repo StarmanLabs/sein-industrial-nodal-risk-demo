@@ -22,7 +22,7 @@ Shows when stress episodes appear and whether they are persistent or episodic.
 
 ## 6. Industrial Exposure Scenario
 
-Reviews sector and contract archetypes under explicit exposure assumptions.
+Compares all barras under one common industrial and contractual scenario. It distinguishes observed historical signals from assumed monthly consumption and spot/indexed participation, then produces a relative review order. The result is a due-diligence queue, not a bill, loss estimate or siting recommendation.
 
 ## 7. Barra Case Study
 

@@ -96,23 +96,23 @@ CONTEXT_TYPE_ES = {
 
 SECTORS = {
     "mining_continuous_load": {
-        "monthly_mwh": 42000,
+        "monthly_mwh": 50000,
         "sensitivity": 1.10,
     },
     "cement_and_heavy_materials": {
-        "monthly_mwh": 32000,
+        "monthly_mwh": 20000,
         "sensitivity": 0.96,
     },
     "data_center_or_high_availability": {
-        "monthly_mwh": 21000,
+        "monthly_mwh": 30000,
         "sensitivity": 1.18,
     },
     "general_manufacturing": {
-        "monthly_mwh": 16000,
+        "monthly_mwh": 10000,
         "sensitivity": 0.84,
     },
     "agroindustry_seasonal": {
-        "monthly_mwh": 12000,
+        "monthly_mwh": 6000,
         "sensitivity": 0.78,
     },
 }
@@ -122,7 +122,7 @@ CONTRACTS = {
     "indexed_50pct_spot": 0.50,
     "balanced_30pct_spot_ppa": 0.30,
     "hedged_10pct_spot": 0.10,
-    "fixed_reference_ppa": 0.04,
+    "fixed_reference_ppa": 0.00,
 }
 
 
@@ -470,12 +470,18 @@ def _build_sector_rows() -> pd.DataFrame:
 
 @st.cache_data(show_spinner=False)
 def load_sector_profiles() -> pd.DataFrame:
+    published = load_csv("data/public_demo/industrial_exposure_profiles_demo.csv")
+    if not published.empty:
+        published["signal_stability_label_es"] = published["signal_stability_label_es"].map(
+            _result_stability_label
+        )
+        return published
     return _build_sector_rows()
 
 
 @st.cache_data(show_spinner=False)
 def load_contract_scenarios() -> pd.DataFrame:
-    sector_rows = _build_sector_rows()
+    sector_rows = load_sector_profiles()
     if sector_rows.empty:
         return sector_rows
     return (

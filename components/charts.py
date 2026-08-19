@@ -448,8 +448,8 @@ def sector_exposure_bar_chart(df: pd.DataFrame, n: int = 15):
         color_continuous_scale=HEAT_SCALE,
         title=None,
         labels={
-            score_col: "Score de exposición prom.",
-            "avg_industrial_exposure_score": "Exposición promedio",
+            score_col: "Score relativo promedio",
+            "avg_industrial_exposure_score": "Score relativo promedio",
             "barra": "Barra",
         },
         hover_data=[
@@ -466,12 +466,12 @@ def sector_exposure_bar_chart(df: pd.DataFrame, n: int = 15):
         marker_line_width=0,
         text=data[score_col].map(lambda value: f"{value:.1f}"),
         textposition="outside",
-        hovertemplate="<b>%{y}</b><br>Score de exposición prom.: %{x:.1f}<extra></extra>",
+        hovertemplate="<b>%{y}</b><br>Score relativo promedio: %{x:.1f}<extra></extra>",
     )
     fig = apply_chart_style(fig, height=470)
     fig.update_layout(title_text="", margin={"l": 130, "r": 40, "t": 14, "b": 44})
     fig.update_yaxes(categoryorder="array", categoryarray=data["barra"].tolist())
-    fig.update_coloraxes(colorbar={"title": "Exposición<br>promedio", "thickness": 10, "len": 0.72})
+    fig.update_coloraxes(colorbar={"title": "Score<br>relativo", "thickness": 10, "len": 0.72})
     return fig
 
 
@@ -489,7 +489,7 @@ def contract_comparison_chart(df: pd.DataFrame):
         color_continuous_scale=STRESS_SCALE,
         title=None,
         labels={
-            "avg_exposure_score": "Score promedio de exposición",
+            "avg_exposure_score": "Score relativo promedio",
             "contract_type": "Contrato",
             "spot_share": "Participación spot",
         },

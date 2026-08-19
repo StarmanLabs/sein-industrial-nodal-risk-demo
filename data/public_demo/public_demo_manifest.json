@@ -1,5 +1,5 @@
 {
-  "date_created_utc": "2026-08-06T20:24:54.307585+00:00",
+  "date_created_utc": "2026-08-19T21:52:00.510125+00:00",
   "public_scope": "217-barra sanitized portfolio layer",
   "source_layer_description": [
     "validated private barra-level product layer",
@@ -10,14 +10,17 @@
     "data/public_demo/barra_profile_demo.csv",
     "data/public_demo/barra_month_demo.csv",
     "data/public_demo/monthly_system_context_demo.csv",
+    "data/public_demo/industrial_exposure_profiles_demo.csv",
     "product/public_repo/data/public_demo/barra_profile_demo.csv",
     "product/public_repo/data/public_demo/barra_month_demo.csv",
-    "product/public_repo/data/public_demo/monthly_system_context_demo.csv"
+    "product/public_repo/data/public_demo/monthly_system_context_demo.csv",
+    "product/public_repo/data/public_demo/industrial_exposure_profiles_demo.csv"
   ],
   "rows": {
     "barra_profile_demo": 217,
     "barra_month_demo": 6779,
-    "monthly_system_context_demo": 36
+    "monthly_system_context_demo": 36,
+    "industrial_exposure_profiles_demo": 5425
   },
   "columns": {
     "barra_profile_demo": [
@@ -83,6 +86,24 @@
     "monthly_system_context_demo": [
       "mes_periodo",
       "regimen_sistema"
+    ],
+    "industrial_exposure_profiles_demo": [
+      "sector",
+      "contract_type",
+      "barra",
+      "months_observed",
+      "avg_industrial_exposure_score",
+      "p90_industrial_exposure_score",
+      "max_industrial_exposure_score",
+      "priority_months",
+      "watchlist_months",
+      "low_info_months",
+      "spot_share",
+      "monthly_mwh",
+      "dominant_driver",
+      "watchlist_share",
+      "profile_priority_score",
+      "signal_stability_label_es"
     ]
   },
   "public_metric_names": {

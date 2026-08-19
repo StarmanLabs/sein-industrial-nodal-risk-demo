@@ -117,6 +117,7 @@ st.set_page_config(
 def render_inicio() -> None:
     profiles = load_product_layer()
     panel = load_monthly_panel()
+    st.html('<div class="home-page-anchor" aria-hidden="true"></div>')
 
     hero_header(
         "Prioriza barras del SEIN para due diligence industrial",
@@ -347,8 +348,11 @@ def render_ranking() -> None:
 <style>
 /* Critical CSS kept in-page so Streamlit Cloud cannot render this tab as plain markdown
    if the shared stylesheet is cached or loaded out of order. */
-.block-container {
-  max-width: 1500px !important;
+.block-container:has(.rank-page) {
+  width: 100% !important;
+  max-width: none !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
   padding-left: 2.35rem !important;
   padding-right: 2.35rem !important;
 }
@@ -2613,6 +2617,43 @@ def render_exposicion() -> None:
 .exposure-selected b { color: #102033; }
 .exposure-selected span:first-child { color: #1f8a5b; font-weight: 950; }
 
+.exposure-logic-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.8rem;
+  margin: 0.75rem 0 0.2rem 0;
+}
+
+.exposure-logic-item {
+  border: 1px solid #d8e3ea;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 0.82rem 0.9rem;
+}
+
+.exposure-logic-item b {
+  display: block;
+  color: #087a82;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 0.3rem;
+}
+
+.exposure-logic-item strong {
+  display: block;
+  color: #102033;
+  font-size: 0.92rem;
+  margin-bottom: 0.22rem;
+}
+
+.exposure-logic-item span {
+  display: block;
+  color: #526174;
+  font-size: 0.77rem;
+  line-height: 1.42;
+}
+
 .exposure-kpi-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -2827,6 +2868,7 @@ def render_exposicion() -> None:
     padding-right: 1rem !important;
   }
   .exposure-header,
+  .exposure-logic-grid,
   .exposure-bottom-grid {
     grid-template-columns: 1fr;
   }
@@ -2857,7 +2899,7 @@ def render_exposicion() -> None:
     <div class="exec-icon exec-icon-info" aria-hidden="true"></div>
     <div>
       <strong>Esta vista no predice precios ni congestión física.</strong>
-      <span>Mide exposición industrial relativa para priorizar revisión y negociación contractual.</span>
+      <span>Compara barras bajo un mismo sector y contrato hipotético para decidir dónde revisar primero.</span>
     </div>
   </div>
 </div>
@@ -2899,69 +2941,78 @@ def render_exposicion() -> None:
     contract_label = CONTRACT_LABELS.get(contract, contract) if contract else "Todos los contratos"
 
     leader = filtered.iloc[0] if not filtered.empty else None
-    stable_pct = (
-        filtered["signal_stability_label_es"].astype(str).str.strip().eq("Estable").mean() * 100
-        if "signal_stability_label_es" in filtered and not filtered.empty
-        else 0
-    )
     score_series = pd.to_numeric(filtered[scenario_score_col], errors="coerce") if not filtered.empty else pd.Series(dtype=float)
     avg_exposure = score_series.mean() if not score_series.empty else 0
     p90_exposure = score_series.quantile(0.90) if not score_series.empty else 0
-    avg_priority_months = filtered["priority_months"].mean() if "priority_months" in filtered and not filtered.empty else 0
+    assumed_mwh = float(pd.to_numeric(filtered["monthly_mwh"], errors="coerce").dropna().iloc[0]) if not filtered.empty else 0
+    assumed_spot_share = float(pd.to_numeric(filtered["spot_share"], errors="coerce").dropna().iloc[0]) if not filtered.empty else 0
     combo_count = (
         filtered[["sector", "contract_type", "barra"]].drop_duplicates().shape[0]
         if {"sector", "contract_type", "barra"}.issubset(filtered.columns)
         else len(filtered)
     )
     leader_text = (
-        f"Bajo {sector_label} y {contract_label}, {leader['barra']} lidera el escenario con score de exposición {leader[scenario_score_col]:.1f}."
+        f"Bajo {sector_label} y {contract_label}, {leader['barra']} lidera el escenario con score relativo {leader[scenario_score_col]:.1f}."
         if leader is not None
         else "No hay combinaciones para el filtro activo."
     )
     leader_name = str(leader["barra"]) if leader is not None else "Sin resultado"
+    leader_score = float(leader[scenario_score_col]) if leader is not None else 0
 
-    st.markdown('<div class="exposure-section-label">2. Resumen del escenario</div>', unsafe_allow_html=True)
+    st.markdown('<div class="exposure-section-label">2. Qué entra en el escenario</div>', unsafe_allow_html=True)
+    st.markdown(
+        f"""
+<div class="exposure-logic-grid">
+  <div class="exposure-logic-item"><b>Dato observado</b><strong>Señales mensuales 2023-2025</strong><span>Estrés nodal, prioridad operativa, episodios y estabilidad calculados para cada barra.</span></div>
+  <div class="exposure-logic-item"><b>Supuesto industrial</b><strong>{assumed_mwh:,.0f} MWh/mes</strong><span>Consumo arquetípico de {escape(sector_label)}; no es la demanda observada de una empresa real.</span></div>
+  <div class="exposure-logic-item"><b>Supuesto contractual</b><strong>{assumed_spot_share:.0%} expuesto a spot/indexación</strong><span>El resto se trata como referencia contratada para comparar sensibilidad entre estructuras.</span></div>
+</div>
+""",
+        unsafe_allow_html=True,
+    )
+
+    st.markdown('<div class="exposure-section-label">3. Resultado del escenario</div>', unsafe_allow_html=True)
     st.markdown(
         f"""
 <div class="exposure-kpi-grid">
   <div class="exposure-kpi soft"><div class="exposure-kpi-icon">▥</div><div><span>Barras evaluadas</span><strong>{combo_count:,.0f}</strong><em>para el escenario seleccionado</em></div></div>
   <div class="exposure-kpi soft leader"><div class="exposure-kpi-icon">⌖</div><div><span>Barra líder</span><strong>{escape(leader_name)}</strong><em>mayor score relativo</em></div></div>
-  <div class="exposure-kpi hot"><div class="exposure-kpi-icon">↗</div><div><span>Exposición promedio del escenario</span><strong>{avg_exposure:.1f}</strong><em>exposición media</em></div></div>
-  <div class="exposure-kpi risk"><div class="exposure-kpi-icon">◎</div><div><span>Umbral del 10% superior</span><strong>{p90_exposure:.1f}</strong><em>percentil 90 (P90)</em></div></div>
-  <div class="exposure-kpi purple"><div class="exposure-kpi-icon">▦</div><div><span>Meses con señal prioritaria</span><strong>{avg_priority_months:.1f}</strong><em>promedio de 36 meses</em></div></div>
-  <div class="exposure-kpi good"><div class="exposure-kpi-icon">◇</div><div><span>Resultados estables</span><strong>{stable_pct:.0f}%</strong><em>mantienen lectura ante otros criterios</em></div></div>
+  <div class="exposure-kpi hot"><div class="exposure-kpi-icon">↗</div><div><span>Score relativo de la líder</span><strong>{leader_score:.1f}</strong><em>mayor = revisar antes</em></div></div>
+  <div class="exposure-kpi risk"><div class="exposure-kpi-icon">◎</div><div><span>Corte del 10% superior</span><strong>{p90_exposure:.1f}</strong><em>referencia para lista corta</em></div></div>
+  <div class="exposure-kpi purple"><div class="exposure-kpi-icon">▦</div><div><span>Promedio del universo</span><strong>{avg_exposure:.1f}</strong><em>base comparativa del escenario</em></div></div>
+  <div class="exposure-kpi good"><div class="exposure-kpi-icon">◇</div><div><span>Horizonte observado</span><strong>36</strong><em>meses, 2023-2025</em></div></div>
 </div>
 """,
         unsafe_allow_html=True,
     )
 
-    st.markdown('<div class="exposure-section-label">3. Insights del escenario</div>', unsafe_allow_html=True)
+    st.markdown('<div class="exposure-section-label">4. Lectura para decidir</div>', unsafe_allow_html=True)
     st.markdown(
         f"""
 <div class="exposure-insight-grid">
-  <div class="exposure-insight"><strong><span class="dot">?</span>Pregunta de decisión</strong><p>¿Qué combinaciones sector-barra deben revisarse primero bajo supuestos explícitos de exposición?</p></div>
-  <div class="exposure-insight"><strong><span class="dot">↗</span>Hallazgo del escenario</strong><p>{escape(leader_text)}</p></div>
-  <div class="exposure-insight"><strong><span class="dot">✓</span>Acción recomendada</strong><p>Revisar covenants contractuales, participación spot, demanda mensual y sensibilidad operativa del sector seleccionado.</p></div>
-  <div class="exposure-insight"><strong><span class="dot">!</span>Caveat metodológico</strong><p>Los escenarios son salidas de screening basadas en supuestos; no forecast de factura ni valoración financiera.</p></div>
+  <div class="exposure-insight"><strong><span class="dot">?</span>Qué compara</strong><p>Las 217 barras bajo exactamente el mismo arquetipo sectorial y contractual.</p></div>
+  <div class="exposure-insight"><strong><span class="dot">↗</span>Qué encontró</strong><p>{escape(leader_text)}</p></div>
+  <div class="exposure-insight"><strong><span class="dot">✓</span>Qué hacer ahora</strong><p>Abrir la barra líder y contrastar contrato real, curva de carga, conexión y contexto técnico.</p></div>
+  <div class="exposure-insight"><strong><span class="dot">!</span>Cómo no leerlo</strong><p>El score no es costo, probabilidad de pérdida, factura ni recomendación de localización.</p></div>
 </div>
 """,
         unsafe_allow_html=True,
     )
 
     st.markdown(
-        '<div class="exposure-chart-title">4. Barras con mayor exposición bajo el escenario seleccionado'
-        '<span>Un mayor score indica mayor prioridad relativa de revisión bajo el escenario seleccionado, no mayor monto real de factura.</span></div>',
+        '<div class="exposure-chart-title">5. Ranking de exposición relativa bajo el escenario seleccionado'
+        '<span>La comparación mantiene constantes sector y contrato. Una barra más alta merece revisión antes; no representa un monto monetario.</span></div>',
         unsafe_allow_html=True,
     )
     st.plotly_chart(sector_exposure_bar_chart(filtered), width="stretch")
 
-    st.markdown('<div class="exposure-table-title">5. Top combinaciones candidatas</div>', unsafe_allow_html=True)
+    st.markdown('<div class="exposure-table-title">6. Lista corta de barras candidatas</div>', unsafe_allow_html=True)
     top_table = filtered.head(10).copy()
     table = pd.DataFrame(
         {
             "Barra": top_table["barra"],
-            "Score exposición prom.": top_table["avg_industrial_exposure_score"].round(2),
-            "Escenario alto (P90)": top_table["p90_industrial_exposure_score"].round(2),
+            "Score relativo promedio": top_table["avg_industrial_exposure_score"].round(2),
+            "Score alto histórico (P90)": top_table["p90_industrial_exposure_score"].round(2),
             "Meses señal prioritaria": top_table["priority_months"].astype("Int64"),
             "Meses seguimiento": top_table["watchlist_months"].astype("Int64"),
             "Estabilidad del resultado": top_table["signal_stability_label_es"].fillna("No clasificado"),
@@ -2973,17 +3024,17 @@ def render_exposicion() -> None:
         width="stretch",
         height=315,
         column_config={
-            "Score exposición prom.": st.column_config.NumberColumn(format="%.2f"),
-            "Escenario alto (P90)": st.column_config.NumberColumn(format="%.2f"),
+            "Score relativo promedio": st.column_config.NumberColumn(format="%.2f"),
+            "Score alto histórico (P90)": st.column_config.NumberColumn(format="%.2f"),
         },
     )
 
-    st.markdown('<div class="exposure-section-label">6. Sensibilidad y lectura del escenario</div>', unsafe_allow_html=True)
+    st.markdown('<div class="exposure-section-label">7. Qué cambia si cambia el contrato</div>', unsafe_allow_html=True)
     bottom_left, bottom_right = st.columns([1.05, 0.95], gap="medium")
     with bottom_left:
         st.markdown(
             '<div class="exposure-chart-title" style="margin-top:0;">Sensibilidad por tipo de contrato'
-            '<span>Exposición promedio por arquetipo contractual bajo el escenario seleccionado.</span></div>',
+          '<span>Misma actividad y mismas barras; solo cambia la participación spot/indexada asumida.</span></div>',
             unsafe_allow_html=True,
         )
         if not contract_df.empty:
@@ -2993,30 +3044,30 @@ def render_exposicion() -> None:
         st.markdown(
             f"""
 <div class="exposure-reading-card">
-  <h3>Lectura del escenario</h3>
-  <p>Una combinación con mayor score merece más atención porque reúne señal nodal, prioridad mensual, participación spot, consumo y supuestos sectoriales. El score pondera prioridad operativa (35%), costo incremental relativo (25%), cola sectorial (hasta 20%), criticidad y confiabilidad sectorial (hasta 10%) y estabilidad del resultado (10%).</p>
+  <h3>Cómo se forma el score</h3>
+  <p>Ordena la revisión combinando prioridad operativa (35%), exposición incremental relativa (25%), comportamiento de cola ajustado al sector (hasta 20%), criticidad operativa ajustada al sector (hasta 10%) y estabilidad del resultado (10%). Es un índice de prioridad; no es una escala monetaria ni una probabilidad.</p>
 </div>
 <div class="exposure-reading-card">
-  <h3>Acciones sugeridas</h3>
+  <h3>Secuencia de due diligence</h3>
   <ul>
-    <li>Priorizar revisión de contratos en los perfiles con mayor exposición.</li>
-    <li>Evaluar alternativas de mezcla spot y PPA como supuestos de exposición, no como recomendación automática.</li>
-    <li>Completar lectura de meses con señal prioritaria y resultados sensibles.</li>
-    <li>Monitorear resultados si cambian los supuestos del escenario.</li>
+    <li>Verificar si la barra es una alternativa de conexión real para el proyecto.</li>
+    <li>Reemplazar el consumo arquetípico por la curva de carga del proyecto.</li>
+    <li>Reemplazar la mezcla spot/PPA por las cláusulas contractuales reales.</li>
+    <li>Solicitar revisión eléctrica, contractual y económica antes de decidir.</li>
   </ul>
 </div>
 """,
             unsafe_allow_html=True,
         )
 
-    st.markdown('<div class="exposure-section-label">7. Notas importantes</div>', unsafe_allow_html=True)
+    st.markdown('<div class="exposure-section-label">8. Regla de interpretación</div>', unsafe_allow_html=True)
     st.markdown(
         """
 <div class="exposure-notes">
-  <div>Los scores son relativos dentro del universo filtrado.</div>
-  <div>Sirven para priorizar revisión contractual y gestión de flexibilidad.</div>
-  <div>No predice precios futuros ni congestión física.</div>
-  <div>Basado en supuestos explícitos definidos para el escenario.</div>
+  <div><b>Observado:</b> señales históricas de cada barra entre 2023 y 2025.</div>
+  <div><b>Supuesto:</b> consumo sectorial y participación spot/indexada.</div>
+  <div><b>Resultado:</b> orden relativo para iniciar revisión experta.</div>
+  <div><b>Decisión final:</b> requiere datos reales del proyecto y validación técnica.</div>
 </div>
 """,
         unsafe_allow_html=True,
@@ -3030,8 +3081,8 @@ def render_exposicion() -> None:
                 "Sector industrial": filtered["sector"].map(lambda value: SECTOR_LABELS.get(value, value)),
                 "Arquetipo contractual": filtered["contract_type"].map(lambda value: CONTRACT_LABELS.get(value, value)),
                 "Barra": filtered["barra"],
-                "Score exposición prom.": pd.to_numeric(filtered["avg_industrial_exposure_score"], errors="coerce").round(2),
-                "Escenario alto (P90)": pd.to_numeric(filtered["p90_industrial_exposure_score"], errors="coerce").round(2),
+                "Score relativo promedio": pd.to_numeric(filtered["avg_industrial_exposure_score"], errors="coerce").round(2),
+                "Score alto histórico (P90)": pd.to_numeric(filtered["p90_industrial_exposure_score"], errors="coerce").round(2),
                 "Meses señal prioritaria": pd.to_numeric(filtered["priority_months"], errors="coerce").fillna(0).astype(int),
                 "Meses seguimiento": pd.to_numeric(filtered["watchlist_months"], errors="coerce").fillna(0).astype(int),
                 "Estabilidad del resultado": filtered["signal_stability_label_es"].fillna("No clasificado"),

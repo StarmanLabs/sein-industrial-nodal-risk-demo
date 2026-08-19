@@ -12,7 +12,17 @@ The private pipeline processes COES marginal-price files into a monthly barra-le
 2. **Prioridad operativa:** la misma base de precios leída bajo el régimen mensual del sistema.
 3. **Estabilidad del resultado:** cuánto cambia la relevancia de una barra al probar criterios alternativos.
 4. **Contexto topológico revisado:** tipo de activo o conexión, familia de evidencia, cantidad de fuentes aceptadas y advertencias específicas.
-5. Industrial scenarios: sector and contract archetype assumptions.
+5. **Escenarios industriales:** comparan las 217 barras manteniendo fijo un arquetipo de consumo sectorial y una participación spot/indexada supuesta.
+
+## Cómo leer el escenario industrial
+
+La página separa tres capas:
+
+1. **Observado:** estrés nodal, prioridad operativa, episodios y estabilidad calculados con información histórica 2023-2025.
+2. **Supuesto:** consumo mensual del arquetipo industrial y participación spot/indexada del contrato hipotético.
+3. **Resultado:** score relativo que ordena qué barras merecen revisión primero bajo ese mismo escenario.
+
+El score combina prioridad operativa, exposición incremental relativa, comportamiento de cola, criticidad ajustada al sector y estabilidad del resultado. No es dinero, probabilidad, factura ni recomendación de localización. Para una decisión real deben reemplazarse los arquetipos por curva de carga, contrato, barra de liquidación, conexión y estudios eléctricos del proyecto.
 
 ## Interpretation
 

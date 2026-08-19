@@ -210,6 +210,19 @@ footer {
   padding-bottom: 3rem;
 }
 
+/* Inicio, Resumen and Ranking share the fluid framing already used by the
+   analytical pages. Their internal grids still control readable line length. */
+.block-container:has(.home-page-anchor),
+.block-container:has(.exec-page),
+.block-container:has(.rank-page) {
+  width: 100% !important;
+  max-width: none !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: 1.45rem !important;
+  padding-right: 1.45rem !important;
+}
+
 h1 {
   color: var(--sein-ink);
   font-weight: 760;
