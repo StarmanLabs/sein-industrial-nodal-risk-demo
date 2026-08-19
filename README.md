@@ -53,7 +53,7 @@ The project demonstrates data engineering, index construction, energy-economics 
 
 ## A Concrete Review Path
 
-1. Filter the Industrial Exposure page to `Continuous-load mining` and select a contract archetype.
+1. On the Industrial Exposure page, select the visible filter `Minería de carga continua` and choose a contract archetype.
 2. Compare the relative exposure ranking and identify the main driver under that scenario.
 3. Open the Barra Priority Ranking to check queue position and result stability.
 4. Review `TINTAYA EXISTENTE 138` as an evidence-backed illustration of how a real barra can be investigated.

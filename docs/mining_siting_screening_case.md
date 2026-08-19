@@ -41,7 +41,7 @@ These differences show how the review priority changes under explicit exposure a
 
 ## How an analyst uses the dashboard
 
-1. Open **Industrial Exposure**, select `Continuous-load mining`, and compare contract archetypes.
+1. Open **Industrial Exposure**, select the visible filter `Minería de carga continua`, and compare contract archetypes.
 2. Check whether `TINTAYA EXISTENTE 138` remains relevant and identify the assumed exposure driver.
 3. Open **Barra Priority Ranking** and review its score, category and result stability.
 4. Open the [barra case directly](https://sein-industrial-nodal-risk-demo-edaw4ndep4pm9plvudnyov.streamlit.app/?page=Caso%20de%20Estudio&barra=TINTAYA+EXISTENTE+138) to inspect monthly recurrence and reviewed context.
