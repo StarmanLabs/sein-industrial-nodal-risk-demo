@@ -114,10 +114,36 @@ st.set_page_config(
 )
 
 
+def _apply_fluid_page_frame(page_class: str, padding: str = "2rem") -> None:
+    """Apply page-local critical CSS without relying on cached :has() selectors."""
+    st.markdown(
+        f"""
+<style>
+.stMainBlockContainer,
+section.main > div.block-container,
+.block-container {{
+  width: 100% !important;
+  max-width: none !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: {padding} !important;
+  padding-right: {padding} !important;
+}}
+.{page_class} {{
+  width: 100% !important;
+  max-width: none !important;
+}}
+</style>
+<div class="{page_class}" aria-hidden="true"></div>
+""",
+        unsafe_allow_html=True,
+    )
+
+
 def render_inicio() -> None:
     profiles = load_product_layer()
     panel = load_monthly_panel()
-    st.html('<div class="home-page-anchor" aria-hidden="true"></div>')
+    _apply_fluid_page_frame("home-page-anchor")
 
     hero_header(
         "Prioriza barras del SEIN para due diligence industrial",
@@ -163,6 +189,7 @@ def render_inicio() -> None:
 
 
 def render_resumen() -> None:
+    _apply_fluid_page_frame("exec-page-anchor")
     profiles = load_product_layer()
     panel = load_monthly_panel()
     regime = load_system_regime()
