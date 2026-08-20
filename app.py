@@ -358,7 +358,7 @@ def render_resumen() -> None:
         """
 <div class="exec-bottom-action">
   <div><strong>Lectura ejecutiva:</strong> usa esta vista como entrada para armar tu lista corta de revisión. El detalle por barra está en el ranking y en el caso de estudio.</div>
-  <span>Ir a Ranking de Prioridad →</span>
+  <a href="?page=Ranking%20de%20Prioridad" target="_self" aria-label="Ir a Ranking de Prioridad">Ir a Ranking de Prioridad →</a>
 </div>
 """,
     )

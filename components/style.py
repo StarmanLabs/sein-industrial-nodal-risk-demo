@@ -1960,13 +1960,29 @@ h2, h3 {
   box-shadow: 0 9px 24px rgba(16,32,51,0.045);
 }
 
-.exec-bottom-action span {
+.exec-bottom-action a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 6px;
   background: var(--sein-navy);
   color: #ffffff;
   font-weight: 820;
   padding: 0.75rem 1rem;
   white-space: nowrap;
+  text-decoration: none;
+  transition: background-color 160ms ease, box-shadow 160ms ease;
+}
+
+.exec-bottom-action a:hover {
+  background: #0b6171;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.exec-bottom-action a:focus-visible {
+  outline: 3px solid rgba(29, 198, 207, 0.35);
+  outline-offset: 2px;
 }
 
 .rank-page {
@@ -2821,7 +2837,7 @@ div[data-testid="stMetric"] {
     flex-direction: column;
   }
 
-  .exec-bottom-action span {
+  .exec-bottom-action a {
     width: 100%;
     text-align: center;
   }
