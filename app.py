@@ -140,11 +140,15 @@ section.main > div.block-container,
     )
 
 
-def _navigate_to_page(page_name: str) -> None:
+def _navigate_to_page(page_name: str, barra: str | None = None) -> None:
     """Synchronize native controls with the custom sidebar and query route."""
     st.session_state["selected_product_page"] = page_name
     st.session_state["_last_query_page"] = page_name
     st.query_params["page"] = page_name
+    if barra:
+        st.query_params["barra"] = barra
+    elif "barra" in st.query_params:
+        del st.query_params["barra"]
 
 
 def render_inicio() -> None:
@@ -993,14 +997,6 @@ div[data-testid="stDataFrame"] {
         if not filtered.empty
         else "Amplía los filtros para recuperar barras candidatas de revisión."
     )
-    if top_barras:
-        next_action_control = (
-            f'<a class="rank-next-button" target="_self" '
-            f'href="?page=Caso%20de%20Estudio&amp;barra={quote_plus(top_barras[0])}">'
-            "Abrir caso de estudio →</a>"
-        )
-    else:
-        next_action_control = '<span class="rank-next-button is-disabled" aria-disabled="true">Sin caso disponible</span>'
     with summary_slot.container():
         st.markdown(
             f"""
@@ -1026,12 +1022,23 @@ div[data-testid="stDataFrame"] {
   </div>
   <div class="rank-next-box">
     <span class="exec-icon exec-icon-case" aria-hidden="true"></span>
-    <div><strong>Siguiente paso recomendado:</strong><p>{escape(next_action)}</p>{next_action_control}</div>
+    <div><strong>Siguiente paso recomendado:</strong><p>{escape(next_action)}</p></div>
   </div>
 </div>
 """,
             unsafe_allow_html=True,
         )
+        summary_action_cols = st.columns([5, 1.2])
+        with summary_action_cols[1]:
+            st.button(
+                "Abrir caso de estudio →" if top_barras else "Sin caso disponible",
+                key="ranking_open_case",
+                type="primary",
+                width="stretch",
+                disabled=not top_barras,
+                on_click=_navigate_to_page if top_barras else None,
+                args=("Caso de Estudio", top_barras[0]) if top_barras else (),
+            )
 
     st.markdown(
         """
@@ -3142,7 +3149,14 @@ def render_exposicion() -> None:
             width="stretch",
         )
     with action_cols[2]:
-        st.markdown('<a class="exposure-rank-link" target="_self" href="?page=Ranking%20de%20Prioridad">Ver Ranking de Prioridad →</a>', unsafe_allow_html=True)
+        st.button(
+            "Ver Ranking de Prioridad →",
+            key="exposure_go_to_ranking",
+            type="primary",
+            width="stretch",
+            on_click=_navigate_to_page,
+            args=("Ranking de Prioridad",),
+        )
 
 
 def render_caso() -> None:
