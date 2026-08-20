@@ -1921,8 +1921,69 @@ h2, h3 {
   font-size: 0.8rem;
 }
 
+.exec-regime-insights {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(150px, 0.72fr)) minmax(300px, 1.65fr);
+  align-items: stretch;
+  border: 1px solid var(--sein-line);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 0.35rem;
+  margin-bottom: 0.8rem;
+  background: #ffffff;
+  box-shadow: 0 9px 24px rgba(16,32,51,0.045);
+}
+
+.exec-regime-insight {
+  padding: 0.78rem 0.95rem;
+  border-right: 1px solid var(--sein-line);
+}
+
+.exec-regime-insight span,
+.exec-regime-insight small {
+  display: block;
+  color: #64748b;
+  font-size: 0.7rem;
+  line-height: 1.35;
+}
+
+.exec-regime-insight span {
+  color: #164a63;
+  font-weight: 820;
+  text-transform: uppercase;
+}
+
+.exec-regime-insight strong {
+  display: block;
+  color: var(--sein-ink);
+  font-size: 1.12rem;
+  line-height: 1.15;
+  margin: 0.25rem 0 0.12rem;
+}
+
+.exec-regime-reading {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 0.65rem;
+  align-items: center;
+  padding: 0.78rem 0.95rem;
+  background: #f2f8fa;
+}
+
+.exec-regime-reading > .exec-icon {
+  color: #168c8c;
+  font-size: 1.35rem;
+}
+
+.exec-regime-reading p {
+  color: #26384d;
+  font-size: 0.76rem;
+  line-height: 1.45;
+  margin: 0;
+}
+
 .exec-regime-note {
-  min-height: 290px;
+  min-height: auto;
   border: 1px solid var(--sein-line);
   border-radius: 8px;
   background: #ffffff;

@@ -339,6 +339,29 @@ def render_resumen() -> None:
 """,
     )
     if not regime.empty:
+        regime_summary = regime[["month", "system_regime_v10_0_1"]].copy()
+        regime_summary["month"] = pd.to_datetime(regime_summary["month"], errors="coerce")
+        regime_summary["system_regime_v10_0_1"] = pd.to_numeric(
+            regime_summary["system_regime_v10_0_1"], errors="coerce"
+        )
+        regime_summary = regime_summary.dropna().sort_values("month")
+        peak_row = regime_summary.loc[regime_summary["system_regime_v10_0_1"].idxmax()]
+        high_pressure_threshold = regime_summary["system_regime_v10_0_1"].quantile(0.75)
+        high_pressure_months = int(
+            (regime_summary["system_regime_v10_0_1"] >= high_pressure_threshold).sum()
+        )
+        latest_change = (
+            float(regime_summary["system_regime_v10_0_1"].iloc[-1])
+            - float(regime_summary["system_regime_v10_0_1"].iloc[-2])
+            if len(regime_summary) >= 2
+            else 0.0
+        )
+        if latest_change > 0.02:
+            latest_direction = "Aumentó"
+        elif latest_change < -0.02:
+            latest_direction = "Disminuyó"
+        else:
+            latest_direction = "Se mantuvo"
         st.html(
             """
 <div class="exec-regime-shell">
@@ -352,19 +375,33 @@ def render_resumen() -> None:
 </div>
 """,
         )
-        chart_col, note_col = st.columns([4.3, 1.2])
-        with chart_col:
-            st.plotly_chart(system_regime_line(regime), width="stretch")
-        with note_col:
-            st.html(
-                """
-<div class="exec-regime-note">
-  <div class="exec-regime-note-icon">♢</div>
-  <p>Los meses de mayor presión del sistema ayudan a explicar por qué ciertas barras ganan prioridad en determinados periodos.</p>
-  <strong>No indica causalidad física por barra específica.</strong>
+        st.plotly_chart(system_regime_line(regime), width="stretch")
+        st.markdown(
+            f"""
+<div class="exec-regime-insights">
+  <div class="exec-regime-insight">
+    <span>Pico observado</span>
+    <strong>{peak_row['month']:%Y-%m}</strong>
+    <small>presión {float(peak_row['system_regime_v10_0_1']):.2f}</small>
+  </div>
+  <div class="exec-regime-insight">
+    <span>Meses de presión alta</span>
+    <strong>{high_pressure_months}</strong>
+    <small>cuartil superior del periodo</small>
+  </div>
+  <div class="exec-regime-insight">
+    <span>Último movimiento</span>
+    <strong>{latest_direction}</strong>
+    <small>{latest_change:+.2f} frente al mes previo</small>
+  </div>
+  <div class="exec-regime-reading">
+    <span class="exec-icon exec-icon-info" aria-hidden="true"></span>
+    <p><strong>Cómo usarlo:</strong> identifica meses en que el contexto del sistema puede elevar la prioridad relativa de ciertas barras. No atribuye causalidad física a una barra específica.</p>
+  </div>
 </div>
 """,
-            )
+            unsafe_allow_html=True,
+        )
     with st.container(border=True):
         note_col, action_col = st.columns([5, 1.2], vertical_alignment="center")
         with note_col:
@@ -509,6 +546,29 @@ def render_ranking() -> None:
   box-shadow: 0 12px 30px rgba(16,32,51,0.05) !important;
   padding: 1rem 1.15rem !important;
   margin: 0.2rem 0 0.85rem 0 !important;
+}
+
+div[data-testid="stVerticalBlockBorderWrapper"]:has(.rank-summary-native-marker) {
+  border-color: #cddde7 !important;
+  border-radius: 8px !important;
+  background: linear-gradient(90deg, #ffffff 0%, #f8fcfd 70%, #edf7fa 100%) !important;
+  box-shadow: 0 12px 30px rgba(16,32,51,0.05) !important;
+  padding: 0.2rem 0.3rem !important;
+  margin: 0.2rem 0 0.85rem 0 !important;
+}
+
+.rank-summary-native-marker {
+  display: none !important;
+}
+
+.rank-summary-native-left {
+  padding: 0.25rem 0 !important;
+}
+
+.rank-next-box-native {
+  border-left: 0 !important;
+  padding-left: 0 !important;
+  margin-bottom: -0.25rem !important;
 }
 
 .rank-summary-left {
@@ -997,11 +1057,13 @@ div[data-testid="stDataFrame"] {
         if not filtered.empty
         else "Amplía los filtros para recuperar barras candidatas de revisión."
     )
-    with summary_slot.container():
-        st.markdown(
-            f"""
-<div class="rank-summary-card">
-  <div class="rank-summary-left">
+    with summary_slot.container(border=True):
+        st.markdown('<div class="rank-summary-native-marker"></div>', unsafe_allow_html=True)
+        summary_columns = st.columns([5.2, 1.65, 2.15], gap="medium", vertical_alignment="center")
+        with summary_columns[0]:
+            st.markdown(
+                f"""
+<div class="rank-summary-left rank-summary-native-left">
     <div class="rank-summary-icon"><span class="exec-icon exec-icon-target" aria-hidden="true"></span></div>
     <div class="rank-summary-kpis">
       <div class="rank-summary-title">Con los filtros actuales:</div>
@@ -1011,25 +1073,34 @@ div[data-testid="stDataFrame"] {
       <div class="rank-kpi"><strong>{stable_count:,.0f}</strong><span>con resultado<br>estable</span></div>
       <div class="rank-kpi"><strong>{immediate_count:,.0f}</strong><span>con señal<br>prioritaria</span></div>
     </div>
-  </div>
-  <div class="rank-start-box">
+</div>
+""",
+                unsafe_allow_html=True,
+            )
+        with summary_columns[1]:
+            st.markdown(
+                f"""
+<div class="rank-start-box">
     <strong>La revisión empieza por:</strong>
     <ol>
       <li>{escape(str(visible_top_barras[0]))}</li>
       <li>{escape(str(visible_top_barras[1]))}</li>
       <li>{escape(str(visible_top_barras[2]))}</li>
     </ol>
-  </div>
-  <div class="rank-next-box">
-    <span class="exec-icon exec-icon-case" aria-hidden="true"></span>
-    <div><strong>Siguiente paso recomendado:</strong><p>{escape(next_action)}</p></div>
-  </div>
 </div>
 """,
-            unsafe_allow_html=True,
-        )
-        summary_action_cols = st.columns([5, 1.2])
-        with summary_action_cols[1]:
+                unsafe_allow_html=True,
+            )
+        with summary_columns[2]:
+            st.markdown(
+                f"""
+<div class="rank-next-box rank-next-box-native">
+    <span class="exec-icon exec-icon-case" aria-hidden="true"></span>
+    <div><strong>Siguiente paso recomendado:</strong><p>{escape(next_action)}</p></div>
+</div>
+""",
+                unsafe_allow_html=True,
+            )
             st.button(
                 "Abrir caso de estudio →" if top_barras else "Sin caso disponible",
                 key="ranking_open_case",

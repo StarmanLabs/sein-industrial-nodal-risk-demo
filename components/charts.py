@@ -268,7 +268,9 @@ def system_regime_line(df: pd.DataFrame):
         showlegend=False,
     )
     fig = apply_chart_style(fig, height=290)
-    fig.update_layout(title_text="", margin={"l": 24, "r": 18, "t": 10, "b": 42})
+    fig.update_layout(title_text="", margin={"l": 42, "r": 46, "t": 10, "b": 42})
+    fig.update_xaxes(automargin=True)
+    fig.update_yaxes(automargin=True)
     return fig
 
 
