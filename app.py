@@ -140,6 +140,13 @@ section.main > div.block-container,
     )
 
 
+def _navigate_to_page(page_name: str) -> None:
+    """Synchronize native controls with the custom sidebar and query route."""
+    st.session_state["selected_product_page"] = page_name
+    st.session_state["_last_query_page"] = page_name
+    st.query_params["page"] = page_name
+
+
 def render_inicio() -> None:
     profiles = load_product_layer()
     panel = load_monthly_panel()
@@ -354,14 +361,22 @@ def render_resumen() -> None:
 </div>
 """,
             )
-    st.html(
-        """
-<div class="exec-bottom-action">
-  <div><strong>Lectura ejecutiva:</strong> usa esta vista como entrada para armar tu lista corta de revisión. El detalle por barra está en el ranking y en el caso de estudio.</div>
-  <a href="?page=Ranking%20de%20Prioridad" target="_self" aria-label="Ir a Ranking de Prioridad">Ir a Ranking de Prioridad →</a>
-</div>
-""",
-    )
+    with st.container(border=True):
+        note_col, action_col = st.columns([5, 1.2], vertical_alignment="center")
+        with note_col:
+            st.markdown(
+                "**Lectura ejecutiva:** usa esta vista como entrada para armar tu lista corta de revisión. "
+                "El detalle por barra está en el ranking y en el caso de estudio."
+            )
+        with action_col:
+            st.button(
+                "Ir a Ranking de Prioridad →",
+                key="exec_go_to_ranking",
+                type="primary",
+                width="stretch",
+                on_click=_navigate_to_page,
+                args=("Ranking de Prioridad",),
+            )
 
 
 def render_ranking() -> None:
